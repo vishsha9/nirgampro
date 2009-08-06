@@ -181,7 +181,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\NWTile_for_test.cpp"
+				RelativePath=".\NWTile.cpp"
 				>
 			</File>
 			<File
@@ -194,10 +194,6 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
-			<File
-				RelativePath=".\BaseNWTile.h"
-				>
-			</File>
 			<File
 				RelativePath=".\constants.h"
 				>
@@ -215,7 +211,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\NWTile_for_test.h"
+				RelativePath=".\NWTile.h"
 				>
 			</File>
 			<File

@@ -31,7 +31,7 @@
 #ifndef __NOC__
 #define __NOC__
 
-#include "NWTile_for_test.h"
+#include "NWTile.h"
 #include "wires.h"
 //#include "../config/extern.h"
 
@@ -47,17 +47,21 @@ struct NoC : public sc_module {
 	SC_HAS_PROCESS(NoC);
 	NoC(sc_module_name noc_name, int num_rows, int num_cols, int num_vert);  // format
 
+	~NoC();
+
 
 	sc_in<bool> switch_cntrl;	///< Clock input port
 	
-	int rows;	///< number of rows in topology
-	int cols;	///< number of columns in topology
-	int vert;   /// format number of vertical in topology
+	//int rows;	///< number of rows in topology
+	//int cols;	///< number of columns in topology
+	//int vert;   /// format number of vertical in topology
 
-	BaseNWTile	*nwtile[MAX_NUM_ROWS][MAX_NUM_COLS][MAX_NUM_VERT];	///< A 2-d array of network tiles
-	wires		*sigs[MAX_NUM_ROWS][MAX_NUM_COLS][MAX_NUM_VERT];	///< Signals to interconnect network tiles
+	UI tileNum;
 
-	wires * connect(BaseNWTile * tile1, BaseNWTile * tile2);
+	NWTile * *nwtile;	///< A 2-d array of network tiles
+	wires * *sigs;	///< Signals to interconnect network tiles
+
+	wires * connect(sc_module_name wire_name, UI length, NWTile * tile1, NWTile * tile2);
 		
 	void entry();	///< Keeps count of number of simulation cycles
 };

@@ -47,31 +47,26 @@ NoC::NoC(sc_module_name NoC, int num_rows, int num_cols, int num_vert): sc_modul
 
 	//////////////////////////////////////////////////////////////////////////
 	// create tiles
-	nwtile[0][0][0] = new NWTile_for_test<NUM_NB, NUM_IC, NUM_OC>("tile0", 0);
-	(ptr nwtile[0][0][0])->clk(switch_cntrl);
-	nwtile[0][0][1] = new NWTile_for_test<NUM_NB, NUM_IC, NUM_OC>("tile1", 1);
-	(ptr nwtile[0][0][1])->clk(switch_cntrl);
+	nwtile = new NWTile*[3];
+
+	nwtile[0]= new NWTile("tile0", 0, 2);
+	nwtile[0]->clk(switch_cntrl);
+	nwtile[1] = new NWTile("tile1", 1, 2);
+	nwtile[1]->clk(switch_cntrl);
+	nwtile[2] = new NWTile("tile2", 2, 2);
+	nwtile[2]->clk(switch_cntrl);
 	//////////////////////////////////////////////////////////////////////////
 	
 
 	//////////////////////////////////////////////////////////////////////////
 	// connect tiles
-	sigs[0][0][0] = new wires("wires0", 2500);
-	wires* w_0to1 = sigs[0][0][0] ;
-	w_0to1->clk(switch_cntrl);
-	(ptr nwtile[0][0][0])->op_port[0](w_0to1->sig_from1);
-	(ptr nwtile[0][0][0])->ip_port[0](w_0to1->sig_to1);
-	for(int i=0; i<NUM_VCS; i++){
-		(ptr nwtile[0][0][0])->credit_out[0][i](w_0to1->credit_from1[i]);
-		(ptr nwtile[0][0][0])->credit_in[0][i](w_0to1->credit_to1[i]);
-	}
+	sigs = new wires*[3];
+	sigs[0] = connect("wire0", 2000, nwtile[0], nwtile[1]);
+	sigs[1] = connect("wire1", 2000, nwtile[1], nwtile[2]);
+	sigs[2] = connect("wire2", 2000, nwtile[2], nwtile[0]);
+	//wires* w_0to1 = sigs[0] ;
+	//w_0to1->clk(switch_cntrl);
 
-	(ptr nwtile[0][0][1])->op_port[0](w_0to1->sig_from2);
-	(ptr nwtile[0][0][1])->ip_port[0](w_0to1->sig_to2);
-	for(int i=0; i<NUM_VCS; i++){
-		(ptr nwtile[0][0][1])->credit_out[0][i](w_0to1->credit_from2[i]);
-		(ptr nwtile[0][0][1])->credit_in[0][i](w_0to1->credit_to2[i]);
-	}
 	//////////////////////////////////////////////////////////////////////////
 	
 
@@ -79,13 +74,50 @@ NoC::NoC(sc_module_name NoC, int num_rows, int num_cols, int num_vert): sc_modul
 	sensitive_pos << switch_cntrl;
 }
 
-wires* NoC::connect(BaseNWTile* tile1, BaseNWTile * tile2){
-	wires* w_0to1 = new wires("wires0", 2500); 
-	w_0to1->clk(switch_cntrl);
+NoC::~NoC(){
 	
-	
-	return NULL;
 }
+
+wires* NoC::connect(sc_module_name wire_name, UI length, NWTile* tile1, NWTile * tile2){
+	wires* w_1to2 = new wires(wire_name, length); 
+	w_1to2->clk(switch_cntrl);
+	
+	tile1->connect(tile2->tileID, 
+					&w_1to2->sig_from2,
+					&w_1to2->sig_to2,
+					w_1to2->credit_from2,
+					w_1to2->credit_to2);
+	tile2->connect(tile1->tileID,
+					&w_1to2->sig_from1,
+					&w_1to2->sig_to1,
+					w_1to2->credit_from1,
+					w_1to2->credit_to1);
+	//sc_signal<flit> aa;
+	//tile1->connect(&aa);
+
+	/*tile1->op_port[tile1->nb_initPtr](w_1to2->sig_from1);
+	tile1->ip_port[tile1->nb_initPtr](w_1to2->sig_to1);
+	for(int i=0; i<NUM_VCS; i++){
+		tile1->credit_out[tile1->nb_initPtr][i](w_1to2->credit_from1[i]);
+		tile1->credit_in[tile1->nb_initPtr][i](w_1to2->credit_to1[i]);
+	}
+	tile1->nb_id[tile1->nb_initPtr] = tile2->tileID;
+	tile1->nb_initPtr++;
+
+	tile2->op_port[tile2->nb_initPtr](w_1to2->sig_from2);
+	tile2->ip_port[tile2->nb_initPtr](w_1to2->sig_to2);
+	for(int i=0; i<NUM_VCS; i++){
+		tile2->credit_out[tile2->nb_initPtr][i](w_1to2->credit_from2[i]);
+		tile2->credit_in[tile2->nb_initPtr][i](w_1to2->credit_to2[i]);
+	}
+	tile2->nb_id[tile2->nb_initPtr] = tile1->tileID;
+	tile2->nb_initPtr++;*/
+
+	return w_1to2;
+}
+
+
+
 
 ///////////////////////////////////////////////////////////
 /// This thread keeps track of global simulation count.
