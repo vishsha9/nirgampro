@@ -53,22 +53,37 @@
 /// - num_ic: Number of input channels
 /// - num_oc: Number of output channels
 //////////////////////////////////////////////////////////////////////////
-template <int num_nb = NUM_NB, int num_ic = NUM_IC, int num_oc = NUM_OC>
-struct NWTile_for_test : public BaseNWTile {
+
+//template <int num_nb = NUM_NB, int num_ic = NUM_IC, int num_oc = NUM_OC>
+struct NWTile: public sc_module {
 
 	// PORTS ////////////////////////////////////////////////////////////////////////////////////
 	sc_in<bool>	clk;		///< input clock port
-	sc_in<flit>	ip_port[num_nb];	///< input data/flit ports
-	sc_out<flit>	op_port[num_nb];	///< output data/flit ports
+	sc_in<flit>*	ip_port;	///< input data/flit ports
+	sc_out<flit>*	op_port;	///< output data/flit ports
 
-	sc_in<creditLine>	credit_in[num_nb][NUM_VCS];	///< input ports for credit line (buffer status)
-	sc_out<creditLine>	credit_out[num_nb][NUM_VCS];	///< output ports for credit line (buffer status)
+	UI tileID;
+
+	UI nb_num;
+	UI* nb_id;
+
+	UI nb_initPtr;
+
+	sc_in<creditLine> (*credit_in)[NUM_VCS];	///< input ports for credit line (buffer status)
+	sc_out<creditLine> (*credit_out)[NUM_VCS];	///< output ports for credit line (buffer status)
+
+	bool connect(UI nb_id, 
+		sc_signal<flit>* sig_in, 
+		sc_signal<flit>* sig_out, 
+		sc_signal<creditLine> crd_in[NUM_VCS], 
+		sc_signal<creditLine> crd_out[NUM_VCS]);
+
 	// PORTS END ////////////////////////////////////////////////////////////////////////////////
 
 	/// Constructor
 	// Parameter - module name, tile id.
-	SC_HAS_PROCESS(NWTile_for_test);
-	NWTile_for_test(sc_module_name NWTile, UI tileID);
+	SC_HAS_PROCESS(NWTile);
+	NWTile(sc_module_name NWTile, UI tileID, UI nb_num);
 
 	// PROCESSES //////////////////////////////////////////////////////////////////////////////////////////
 	void entry();		///< Writes buffer utilization information at the tile, at each clock cycle

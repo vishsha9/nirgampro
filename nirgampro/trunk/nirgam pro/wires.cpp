@@ -28,7 +28,7 @@ void wires::doDelay(){
 			map_sig_1to2.insert(pair<int, flit>(cur_time.value(), f_1to2));
 			delaylogin << "CLK: " << sc_time_stamp() << "\twire readflit from 1 " << f_1to2.data4<< "\ttimestamp "<< f_1to2.simdata.gtime  << endl;
 		}
-		wait(1333, SC_PS);
+		wait(333, SC_PS);
 		cur_time = sc_time_stamp();
 		sig_to2.write(f_1to2);
 		delaylogout << "write\tCLK: " << sc_time_stamp() << "\twire writeflit from 1 " << f_1to2.data4<< "\ttimestamp "<< f_1to2.simdata.gtime  << endl;
