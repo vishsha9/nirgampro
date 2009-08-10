@@ -23,9 +23,26 @@ struct wires : public sc_module {
 	wires(sc_module_name wires, UI length);	
 
 	void entry();
-	void delay_sig();
-	void delay_credit();
-	void doDelay();
+	
+	void delay();
+
+	void doDelaySig1();
+	void doDelaySig2();
+	void doDelayCrd1();
+	void doDelayCrd2();
+
+	/////
+	/*sc_event e_sig_1;
+	sc_event e_sig_2;
+	sc_event e_crd_1[NUM_VCS];
+	sc_event e_crd_2[NUM_VCS];
+	void notify();
+	void delay_notf();
+	flit b_s1to2;
+	flit b_s2to1;
+	creditLine b_c1to2[NUM_VCS];
+	creditLine b_c2to1[NUM_VCS];*/
+	/////
 
 
 	UI getDelay(UI length);
