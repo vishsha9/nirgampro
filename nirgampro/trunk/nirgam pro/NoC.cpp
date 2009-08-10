@@ -61,9 +61,10 @@ NoC::NoC(sc_module_name NoC, int num_rows, int num_cols, int num_vert): sc_modul
 	//////////////////////////////////////////////////////////////////////////
 	// connect tiles
 	sigs = new wires*[3];
-	sigs[0] = connect("wire0", 2000, nwtile[0], nwtile[1]);
-	sigs[1] = connect("wire1", 2000, nwtile[1], nwtile[2]);
-	sigs[2] = connect("wire2", 2000, nwtile[2], nwtile[0]);
+	sigs[0] = connect("wire0", 444, nwtile[0], nwtile[1]);
+	sigs[1] = connect("wire1", 444, nwtile[1], nwtile[2]);
+	sigs[2] = connect("wire2", 444
+		, nwtile[2], nwtile[0]);
 	//wires* w_0to1 = sigs[0] ;
 	//w_0to1->clk(switch_cntrl);
 
@@ -83,13 +84,13 @@ wires* NoC::connect(sc_module_name wire_name, UI length, NWTile* tile1, NWTile *
 	w_1to2->clk(switch_cntrl);
 	
 	tile1->connect(tile2->tileID, 
-					&w_1to2->sig_from2,
-					&w_1to2->sig_to2,
+					w_1to2->sig_from2,
+					w_1to2->sig_to2,
 					w_1to2->credit_from2,
 					w_1to2->credit_to2);
 	tile2->connect(tile1->tileID,
-					&w_1to2->sig_from1,
-					&w_1to2->sig_to1,
+					w_1to2->sig_from1,
+					w_1to2->sig_to1,
 					w_1to2->credit_from1,
 					w_1to2->credit_to1);
 	//sc_signal<flit> aa;

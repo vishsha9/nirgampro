@@ -73,8 +73,8 @@ struct NWTile: public sc_module {
 	sc_out<creditLine> (*credit_out)[NUM_VCS];	///< output ports for credit line (buffer status)
 
 	bool connect(UI nb_id, 
-		sc_signal<flit>* sig_in, 
-		sc_signal<flit>* sig_out, 
+		sc_signal<flit>& sig_in, 
+		sc_signal<flit>& sig_out, 
 		sc_signal<creditLine> crd_in[NUM_VCS], 
 		sc_signal<creditLine> crd_out[NUM_VCS]);
 

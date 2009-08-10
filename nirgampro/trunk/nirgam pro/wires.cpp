@@ -11,28 +11,110 @@ wires::wires(sc_module_name wires, UI length): sc_module(wires){
 	}
 	sensitive<< clk << sig_from1<< sig_from2;*/
 
-	SC_THREAD(doDelay);
+	SC_THREAD(doDelaySig1);
 	sensitive<< sig_from1;
 
+	SC_THREAD(doDelaySig2);
+	sensitive<< sig_from2;
 
+	SC_THREAD(doDelayCrd1);
+	for(int i=0; i< NUM_VCS ; i++){
+		sensitive << credit_from1[i];
+	}
+
+	SC_THREAD(doDelayCrd2);
+	for(int i=0; i< NUM_VCS ; i++){
+		sensitive << credit_from2[i];
+	}
+
+	/*SC_THREAD(notify);
+	for(int i=0; i< NUM_VCS ; i++){
+	sensitive << credit_from1[i] << credit_from2[i];
+	}
+	sensitive << sig_from1<< sig_from2;
+
+	SC_THREAD(delay_notf);
+	sensitive << e_sig_1 << e_sig_2;
+	for(int i=0; i< NUM_VCS; i++)
+	{
+	sensitive << e_crd_1[i] << e_crd_2[i];
+	}*/
 }
 
 
-void wires::doDelay(){
+void wires::doDelaySig1(){
 	flit f_1to2;
-	sc_time cur_time;
 	while(true){
 		wait();
 		if(sig_from1.event()){
 			f_1to2 = sig_from1.read();
-			map_sig_1to2.insert(pair<int, flit>(cur_time.value(), f_1to2));
-			delaylogin << "CLK: " << sc_time_stamp() << "\twire readflit from 1 " << f_1to2.data4<< "\ttimestamp "<< f_1to2.simdata.gtime  << endl;
+			delaylogin << "CLK: " << sc_time_stamp() << "\twire readflit from 1 data:" << f_1to2.data4<< "\ttimestamp "<< f_1to2.simdata.gtime  << endl;
 		}
-		wait(333, SC_PS);
-		cur_time = sc_time_stamp();
+		wait(delay_time, SC_PS);
 		sig_to2.write(f_1to2);
-		delaylogout << "write\tCLK: " << sc_time_stamp() << "\twire writeflit from 1 " << f_1to2.data4<< "\ttimestamp "<< f_1to2.simdata.gtime  << endl;
+		delaylogout << "write\tCLK: " << sc_time_stamp() << "\twire writeflit from 1 data:" << f_1to2.data4<< "\ttimestamp "<< f_1to2.simdata.gtime  << endl;
+	}
+}
 
+void wires::doDelaySig2(){
+	flit f_2to1;
+	while(true){
+		wait();
+		if(sig_from2.event()){
+			f_2to1 = sig_from2.read();
+			delaylogin << "CLK: " << sc_time_stamp() << "\twire readflit from 2 data:" << f_2to1.data4<< "\ttimestamp "<< f_2to1.simdata.gtime  << endl;
+		}
+		wait(delay_time, SC_PS);
+		sig_to1.write(f_2to1);
+		delaylogout << "write\tCLK: " << sc_time_stamp() << "\twire writeflit from 2 data:" << f_2to1.data4<< "\ttimestamp "<< f_2to1.simdata.gtime  << endl;
+	}
+}
+
+void wires::doDelayCrd1(){
+	creditLine c_1to2[NUM_VCS];
+	bool inflag[NUM_VCS];
+	while(true){
+		wait();
+		for(int i=0; i<NUM_VCS; i++){
+			if(credit_from1[i].event()){
+				c_1to2[i] = credit_from1[i].read();
+				inflag[i] = true;
+				delaylogin << "CLK: " << sc_time_stamp() << "\t credit from 1\ttimestamp "<< c_1to2[i].gtime  << endl;
+			}
+			else
+				inflag[i] = false;
+		}
+		wait(delay_time, SC_PS);
+		for(int i=0; i<NUM_VCS; i++){
+			if(inflag[i]){
+				credit_to2[i].write(c_1to2[i]);
+				delaylogout << "write\tCLK: " << sc_time_stamp() << "\twire credit from 1\tVC_"<< i <<"\ttimestamp "<< c_1to2[i].gtime  << endl;
+			}
+		}
+	}
+}
+
+void wires::doDelayCrd2(){
+	creditLine c_2to1[NUM_VCS];
+	bool inflag[NUM_VCS];
+	while(true){
+		wait();
+		for(int i=0; i<NUM_VCS; i++){
+			if(credit_from2[i].event()){
+				c_2to1[i] = credit_from2[i].read();
+				inflag[i] = true;
+				delaylogin << "CLK: " << sc_time_stamp() << "\t credit from 1\ttimestamp "<< c_2to1[i].gtime  << endl;
+			}
+			else
+				inflag[i] = false;
+		}
+		wait(delay_time, SC_PS);
+		for(int i=0; i<NUM_VCS; i++){
+			if(inflag[i]){
+				credit_to1[i].write(c_2to1[i]);
+				delaylogout << "write\tCLK: " << sc_time_stamp() << "\twire credit from 1\tVC_"<< i <<"\ttimestamp "<< c_2to1[i].gtime  << endl;
+			}
+		}
 	}
 }
 
@@ -42,11 +124,8 @@ UI wires::getDelay(UI length){
 	return length;
 }
 
-void wires::delay_credit(){
-	creditLine c_1to2[NUM_VCS], c_2to1[NUM_VCS];
-}
 
-void wires::delay_sig(){
+void wires::delay(){
 
 	//map<int, flit> map1to2;
 	sc_time cur_time;
@@ -158,3 +237,60 @@ void wires::delay_sig(){
 		}
 	}
 }
+
+
+
+
+/////
+/*
+void wires::notify(){
+while(true)
+{
+wait();
+if(sig_from1.event()){
+b_s1to2 = sig_from1.read();
+e_sig_1.notify(delay_time, SC_PS);
+delaylogin << "CLK: " << sc_time_stamp() << "\twire readflit from 1 " << b_s1to2.data4<< "\ttimestamp "<< b_s1to2.simdata.gtime  << endl;
+}
+if(sig_from2.event()){
+b_s2to1 = sig_from2.read();
+e_sig_2.notify(delay_time, SC_PS);
+delaylogin << "CLK: " << sc_time_stamp() << "\twire readflit from 2 " << b_s2to1.data4<< "\ttimestamp "<< b_s2to1.simdata.gtime  << endl;
+}
+for(int i= 0; i < NUM_VCS; i++){
+if(credit_from1[i].event()){
+b_c1to2[i] = credit_from1[i].read();
+e_crd_1[i].notify(delay_time, SC_PS);
+}
+if(credit_from2[i].event()){
+b_c2to1[i] = credit_from2[i].read();
+e_crd_2[i].notify(delay_time, SC_PS);
+}
+}
+}
+}
+
+void wires::delay_notf(){
+while(true)
+{
+wait();
+if(e_sig_1){
+delaylogout << "write\tCLK: " << sc_time_stamp() << "\twire writeflit from 1 " << b_s2to1.data4<< "\ttimestamp "<< b_s2to1.simdata.gtime  << endl;
+sig_to2.write(b_s1to2);
+}
+if(e_sig_2){
+delaylogout << "write\tCLK: " << sc_time_stamp() << "\twire writeflit from 2 " << b_s2to1.data4<< "\ttimestamp "<< b_s2to1.simdata.gtime  << endl;
+sig_to1.write(b_s2to1);
+b_s2to1 = sig_from2.read();
+}
+for(int i= 0; i < NUM_VCS; i++){
+if(e_crd_1[i]){
+credit_to2[i].write(b_c1to2[i]);
+}
+if(e_crd_2[i]){
+credit_to1[i].write(b_c2to1[i]);
+}
+}
+}
+}*/
+//////

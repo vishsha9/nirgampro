@@ -88,9 +88,9 @@ NWTile::NWTile(sc_module_name NWTile, UI id, UI nb): sc_module(NWTile){
 	sensitive_pos<<clk;
 } // end constructor
 
-bool NWTile::connect(UI nb_id, sc_signal<flit>* sig_from, sc_signal<flit>* sig_to, sc_signal<creditLine> credit_from[NUM_VCS], sc_signal<creditLine> credit_to[NUM_VCS]){
-	op_port[nb_initPtr](*sig_from);
-	ip_port[nb_initPtr](*sig_to);
+bool NWTile::connect(UI nb_id, sc_signal<flit>& sig_from, sc_signal<flit>& sig_to, sc_signal<creditLine> credit_from[NUM_VCS], sc_signal<creditLine> credit_to[NUM_VCS]){
+	op_port[nb_initPtr](sig_from);
+	ip_port[nb_initPtr](sig_to);
 	for(int i=0; i<NUM_VCS; i++){
 		credit_out[nb_initPtr][i](credit_from[i]);
 		credit_in[nb_initPtr][i](credit_to[i]);
@@ -106,19 +106,20 @@ void NWTile::read(){
 	while(true){
 		wait();
 		for(int i=0; i<nb_num; i++){
-			if (ip_port[i].event())
+			/*if (ip_port[i].event())
 			{
-				flit r = ip_port[0].read();
-				readlog << "CLK: " << sc_time_stamp() << "\ttile_" << this->tileID << " port_"<< i <<"\treadflit " << r.data4 << "\ttimestamp "<< r.simdata.gtime <<endl;
+			flit r = ip_port[i].read();
+			readlog << "CLK: " << sc_time_stamp() << "\ttile_" << this->tileID << " port_"<< i <<"\treadflit data:" << r.data4 << "\ttimestamp "<< r.simdata.gtime <<endl;
 
+			}*/
+
+			for(int j = 0; j< NUM_VCS; j++){
+				if(credit_in[i][j].event()){
+					creditLine c = credit_in[i][j].read();
+					readlog << "CLK: " << sc_time_stamp() << "\ttile_" << this->tileID << "\tVC_" << j <<"\treadCreditLine\ttimestamp "<< c.gtime <<endl;
+				}
 			}
 		}
-		/*for(int i = 0; i< NUM_VCS; i++){
-		if(credit_in[0][i].event()){
-		creditLine c = credit_in[0][i].read();
-		readlog << "CLK: " << sc_time_stamp() << "\ttile_" << this->tileID << "\tVC_" << i <<"\treadCreditLine\ttimestamp "<< c.gtime <<endl;
-		}
-		}*/
 	}
 }
 
@@ -128,20 +129,22 @@ void NWTile::write(){
 	while(true){
 		wait();
 
-		flit w;
-		w.data4 = count;
+		/*flit w;
+		w.data4 = count+2;
 		w.simdata.gtime = sc_time_stamp();
 
 		op_port[(count+1)%nb_num].write(w);
-		writelog << "CLK: " << sc_time_stamp() << "\tPort "<< (count+1)%nb_num <<"\ttile_" << this->tileID << " to "<< nb_id[(count+1)%nb_num] <<"\twriteflit " << w.data4 << "\ttimestamp "<< w.simdata.gtime << endl;
-		count ++;
-
-		/*for(int i = 0; i< NUM_VCS; i++){
-		creditLine c;
-		c.gtime = sc_time_stamp();
-		credit_out[0][i].write(c);
-		writelog << "CLK: " << sc_time_stamp() << "\ttile_" << this->tileID <<"\twriteCreditLine\ttimestamp "<< c.gtime << endl;
-		}*/
+		writelog << "CLK: " << sc_time_stamp() << "\tPort "<< (count+1)%nb_num <<"\ttile_" << this->tileID << " to "<< nb_id[(count+1)%nb_num] <<"\twriteflit data:" << w.data4 << "\ttimestamp "<< w.simdata.gtime << endl;
+		count ++;*/
+		if(count<2){
+			for(int i = 0; i< NUM_VCS; i++){
+				creditLine c;
+				c.gtime = sc_time_stamp();
+				credit_out[(count+1)%nb_num][i].write(c);
+				writelog << "CLK: " << sc_time_stamp() << "\ttile_" << this->tileID <<" Port:"<< (count+1)%nb_num <<" VC_"<< i <<"\twriteCreditLine\ttimestamp "<< c.gtime << endl;
+			}
+			count ++;
+		}
 	}
 }
 
