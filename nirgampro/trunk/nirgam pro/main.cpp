@@ -41,7 +41,9 @@ int sc_main(int argc, char *argv[]) {
 	}
 
 	nw_clock = new sc_clock("NW_CLOCK",CLK_PERIOD,SC_NS);	// create global clock
-	NoC noc("noc", 3, 3, 3);
+
+	AdjList* a = analyze("a.nfn", cout);
+	NoC noc("noc", a);
 	noc.switch_cntrl(*nw_clock);
 	
 	string trace_filename = string("trace");

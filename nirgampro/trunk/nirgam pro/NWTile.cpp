@@ -106,19 +106,19 @@ void NWTile::read(){
 	while(true){
 		wait();
 		for(int i=0; i<nb_num; i++){
-			/*if (ip_port[i].event())
+			if (ip_port[i].event())
 			{
 			flit r = ip_port[i].read();
 			readlog << "CLK: " << sc_time_stamp() << "\ttile_" << this->tileID << " port_"<< i <<"\treadflit data:" << r.data4 << "\ttimestamp "<< r.simdata.gtime <<endl;
 
-			}*/
+			}
 
-			for(int j = 0; j< NUM_VCS; j++){
+			/*for(int j = 0; j< NUM_VCS; j++){
 				if(credit_in[i][j].event()){
 					creditLine c = credit_in[i][j].read();
 					readlog << "CLK: " << sc_time_stamp() << "\ttile_" << this->tileID << "\tVC_" << j <<"\treadCreditLine\ttimestamp "<< c.gtime <<endl;
 				}
-			}
+			}*/
 		}
 	}
 }
@@ -129,21 +129,23 @@ void NWTile::write(){
 	while(true){
 		wait();
 
-		/*flit w;
-		w.data4 = count+2;
-		w.simdata.gtime = sc_time_stamp();
+		if(count<nb_num){
+			flit w;
+			w.data4 = count+2;
+			w.simdata.gtime = sc_time_stamp();
 
-		op_port[(count+1)%nb_num].write(w);
-		writelog << "CLK: " << sc_time_stamp() << "\tPort "<< (count+1)%nb_num <<"\ttile_" << this->tileID << " to "<< nb_id[(count+1)%nb_num] <<"\twriteflit data:" << w.data4 << "\ttimestamp "<< w.simdata.gtime << endl;
-		count ++;*/
-		if(count<2){
-			for(int i = 0; i< NUM_VCS; i++){
+			op_port[(count+1)%nb_num].write(w);
+			writelog << "CLK: " << sc_time_stamp() << "\tPort "<< (count+1)%nb_num <<"\ttile_" << this->tileID << " to "<< nb_id[(count+1)%nb_num] <<"\twriteflit data:" << w.data4 << "\ttimestamp "<< w.simdata.gtime << endl;
+			count ++;
+
+		
+			/*for(int i = 0; i< NUM_VCS; i++){
 				creditLine c;
 				c.gtime = sc_time_stamp();
 				credit_out[(count+1)%nb_num][i].write(c);
 				writelog << "CLK: " << sc_time_stamp() << "\ttile_" << this->tileID <<" Port:"<< (count+1)%nb_num <<" VC_"<< i <<"\twriteCreditLine\ttimestamp "<< c.gtime << endl;
 			}
-			count ++;
+			count ++;*/
 		}
 	}
 }
