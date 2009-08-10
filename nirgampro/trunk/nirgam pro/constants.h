@@ -17,7 +17,7 @@ enum flit_type{
 };
 
 /// number of virtual channels
-#define NUM_VCS 2
+#define NUM_VCS 1
 // parameters for bitwidth
 #define ADDR_SIZE 32
 #define VCS_BITSIZE 2

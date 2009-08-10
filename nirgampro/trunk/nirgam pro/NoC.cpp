@@ -28,7 +28,6 @@
 
 #include "NoC.h"
 
-
 ULL SIM_NUM = 30;	
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -43,9 +42,9 @@ ULL SIM_NUM = 30;
 /// - assign tile IDs
 /// - connect clock signal to clock input port of tiles.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-NoC::NoC(sc_module_name NoC, int num_rows, int num_cols, int num_vert): sc_module(NoC) {
+NoC::NoC(sc_module_name NoC, AdjList* a): sc_module(NoC) {
 
-	//////////////////////////////////////////////////////////////////////////
+	/*//////////////////////////////////////////////////////////////////////////
 	// create tiles
 	nwtile = new NWTile*[3];
 
@@ -68,7 +67,22 @@ NoC::NoC(sc_module_name NoC, int num_rows, int num_cols, int num_vert): sc_modul
 	//wires* w_0to1 = sigs[0] ;
 	//w_0to1->clk(switch_cntrl);
 
-	//////////////////////////////////////////////////////////////////////////
+	*//////////////////////////////////////////////////////////////////////////
+	
+	for (int i=0; i<a->nodeNum; i++){
+		Node * node = a->nodes[i];
+		string name = "tile" +string(1, node->nodeId+'0');
+		NWTile * tile = new NWTile(name.c_str(), node->nodeId, node->adjNum);
+		tile->clk(switch_cntrl);
+		nwtile.push_back(tile);
+	}
+
+	for (int i=0; i<a->edgeNum; i++)
+	{
+		Edge * edge = a->edges[i];
+		string name = "wire" + string(1, edge->edgeId+'0');
+		sigs.push_back(connect(name.c_str(), edge->length, nwtile[edge->node1->nodeId], nwtile[edge->node2->nodeId]));
+	}
 	
 
 	SC_THREAD(entry);	// Thread entry() sensitive to clock

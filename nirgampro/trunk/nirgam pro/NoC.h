@@ -33,6 +33,7 @@
 
 #include "NWTile.h"
 #include "wires.h"
+#include "netlist_analyzer.h"
 //#include "../config/extern.h"
 
 
@@ -45,7 +46,7 @@
 struct NoC : public sc_module {
 	/// Constructor
 	SC_HAS_PROCESS(NoC);
-	NoC(sc_module_name noc_name, int num_rows, int num_cols, int num_vert);  // format
+	NoC(sc_module_name noc_name, AdjList* a);  // format
 
 	~NoC();
 
@@ -58,8 +59,8 @@ struct NoC : public sc_module {
 
 	UI tileNum;
 
-	NWTile * *nwtile;	///< A 2-d array of network tiles
-	wires * *sigs;	///< Signals to interconnect network tiles
+	vector<NWTile *> nwtile;	///< A 2-d array of network tiles
+	vector<wires *>sigs;	///< Signals to interconnect network tiles
 
 	wires * connect(sc_module_name wire_name, UI length, NWTile * tile1, NWTile * tile2);
 		
