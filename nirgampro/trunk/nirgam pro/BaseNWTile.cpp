@@ -25,13 +25,12 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include "systemc.h"
-#include "NWTile.h"
+#include "BaseNWTile.h"
 #include <string>
 #include <fstream>
 //#include "../config/extern.h"
 
 /// array to store library name of application attached to ipcore on each tile
-//extern string app_libname[MAX_NUM_TILES];
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 /// Constructor to create a network tile.
@@ -52,8 +51,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////
 
 
-//template <int num_nb, int num_ic, int num_oc>
-NWTile::NWTile(sc_module_name NWTile, UI id, UI nb): sc_module(NWTile){
+BaseNWTile::BaseNWTile(sc_module_name NWTile, UI id, UI nb): sc_module(NWTile){
 	this->tileID = id;
 	this->nb_num = nb;
 	this->nb_initPtr = 0;
@@ -88,7 +86,7 @@ NWTile::NWTile(sc_module_name NWTile, UI id, UI nb): sc_module(NWTile){
 	sensitive_pos<<clk;
 } // end constructor
 
-bool NWTile::connect(UI nb_id, sc_signal<flit>& sig_from, sc_signal<flit>& sig_to, sc_signal<creditLine> credit_from[NUM_VCS], sc_signal<creditLine> credit_to[NUM_VCS]){
+bool BaseNWTile::connect(UI nb_id, sc_signal<flit>& sig_from, sc_signal<flit>& sig_to, sc_signal<creditLine> credit_from[NUM_VCS], sc_signal<creditLine> credit_to[NUM_VCS]){
 	op_port[nb_initPtr](sig_from);
 	ip_port[nb_initPtr](sig_to);
 	for(int i=0; i<NUM_VCS; i++){
@@ -101,8 +99,8 @@ bool NWTile::connect(UI nb_id, sc_signal<flit>& sig_from, sc_signal<flit>& sig_t
 }
 
 
-//template <int num_nb, int num_ic, int num_oc>
-void NWTile::read(){
+
+void BaseNWTile::read(){
 	while(true){
 		wait();
 		for(int i=0; i<nb_num; i++){
@@ -123,8 +121,8 @@ void NWTile::read(){
 	}
 }
 
-//template <int num_nb, int num_ic, int num_oc>
-void NWTile::write(){
+
+void BaseNWTile::write(){
 	int count=0;
 	while(true){
 		wait();
@@ -154,8 +152,7 @@ void NWTile::write(){
 /// Process sensitive to clock.
 /// Writes buffer utilization info at each clock
 ///////////////////////////////////////////////////////////////////////////
-//template <int num_nb, int num_ic, int num_oc>
-void NWTile::entry() {
+void BaseNWTile::entry() {
 	while(true) {
 		wait();
 		//////////////////////////////////////////////////////////////////////////
@@ -169,14 +166,6 @@ void NWTile::entry() {
 /// - set unique tile ID
 /// - map port number to port direction
 //////////////////////////////////////////////////////////////////////////
-//template <int num_nb, int num_ic, int num_oc>
-void NWTile::setID(UI id) {
+void BaseNWTile::setID(UI id) {
 
 }
-
-
-
-
-//template struct NWTile_for_test<NUM_NB, NUM_IC, NUM_OC>;
-//template struct NWTile_for_test<NUM_NB_B, NUM_IC_B, NUM_OC_B>;
-//template struct NWTile_for_test<NUM_NB_C, NUM_IC_C, NUM_OC_C>;

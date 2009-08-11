@@ -58,12 +58,12 @@ struct sim_hdr {
 ////////////////////////////////////////////////
 struct flit 
 {
-	int	 vcid;		///< virtual channel id
-	UI	 src;		///< source tileID
+	flit_type type; ///< HDT, HEAD, DATA or TAIL, defined in constants.h
 	UI	pktid;		///< packet id
 	UI	flitid;		///<flit id
-	flit_type type; ///< HDT, HEAD, DATA or TAIL, defined in constants.h
-
+	int	 vcid;		///< virtual channel id
+	UI	 src;		///< source tileID
+	
 	//128 bit wire
 
 	UI	data1;		// for HDT/HEAD flit, it is route information

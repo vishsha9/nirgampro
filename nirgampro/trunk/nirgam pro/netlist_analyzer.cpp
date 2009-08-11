@@ -66,7 +66,7 @@ AdjList* analyze(string filename, ostream & msg){
 	map<int, Node*> nodem;
 
 	WirePara * wp;
-)()()((()))
+
 	showMsg(msg, "Start analysis ...");
 
 	st.push(MAIN);

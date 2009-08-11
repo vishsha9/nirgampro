@@ -16,11 +16,13 @@ enum flit_type{
 	HDT
 };
 
+// buffer parameters
+#define	BUF_BITSIZE	4
 /// number of virtual channels
 #define NUM_VCS 1
 // parameters for bitwidth
 #define ADDR_SIZE 32
-#define VCS_BITSIZE 2
+#define VCS_BITSIZE 3 // 0~7
 
 
 // parameters for NWTile
