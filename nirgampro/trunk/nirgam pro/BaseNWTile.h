@@ -1,6 +1,6 @@
 
 /*
- * BaseNWTile.h
+ * NWTile.h
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License,
@@ -20,41 +20,79 @@
  */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/// \file BaseNWTile.h
-/// \brief Defines abstract module for network tile
+/// \file NWTile.h
+/// \brief Defines a network tile
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _BASE_NWTILE_
-#define _BASE_NWTILE_
+#ifndef __BASE_NW_TILE__
+#define __BASE_NW_TILE__
 
-#include "constants.h"
 #include "systemc.h"
+//#include "../config/constants.h"
 #include "flit.h"
 #include "credit.h"
+//#include "InputChannel.h"
+//#include "OutputChannel.h"
+//#include "VCAllocator.h"
+//#include "ipcore.h"
+//#include "Controller.h"
+//#include "BaseNWTile.h"
 
-///////////////////////////////////////////////////////////////////
-/// \brief Abstract class to represent network tile.
-//////////////////////////////////////////////////////////////////
-struct BaseNWTile : public sc_module {
+//#define ptr (NWTile_for_test<NUM_NB, NUM_IC, NUM_OC> *)
+//#define ptr_b (NWTile_for_test<NUM_NB_B, NUM_IC_B, NUM_OC_B> *)
+//#define ptr_c (NWTile_for_test<NUM_NB_C, NUM_IC_C, NUM_OC_C> *)
+//#define ptr_f (NWTile_for_test<NUM_NB_F, NUM_IC_F, NUM_OC_F> *) // format
 
-	UI tileID;	///< unique tile id
-	UI portN;	///< port representing North direction
-	UI portS;	///< port representing South direction
-	UI portE;	///< port representing East direction
-	UI portW;	///< port representing West direction
-	BaseNWTile() {	}	///< default constructor
+//////////////////////////////////////////////////////////////////////////
+/// \brief Module to represent a tile in NoC
+///
+/// This module defines a network tile and submodules within it.
+/// It is derived from abstract class BaseNWTile.
+/// Template parameters:
+/// - num_nb: Number of neighbors
+/// - num_ic: Number of input channels
+/// - num_oc: Number of output channels
+//////////////////////////////////////////////////////////////////////////
 
-	/// systemC constructor
-	/// parameters - module name, tile id.
+//template <int num_nb = NUM_NB, int num_ic = NUM_IC, int num_oc = NUM_OC>
+struct BaseNWTile: public sc_module {
+	// PORTS ////////////////////////////////////////////////////////////////////////////////////
+	sc_in<bool>	clk;		///< input clock port
+	sc_in<flit>*	ip_port;	///< input data/flit ports
+	sc_out<flit>*	op_port;	///< output data/flit ports
+
+	UI tileID;
+
+	UI nb_num;
+	UI* nb_id;
+
+	UI nb_initPtr;
+
+	sc_in<creditLine> (*credit_in)[NUM_VCS];	///< input ports for credit line (buffer status)
+	sc_out<creditLine> (*credit_out)[NUM_VCS];	///< output ports for credit line (buffer status)
+
+	bool connect(UI nb_id, 
+		sc_signal<flit>& sig_in, 
+		sc_signal<flit>& sig_out, 
+		sc_signal<creditLine> crd_in[NUM_VCS], 
+		sc_signal<creditLine> crd_out[NUM_VCS]);
+
+	// PORTS END ////////////////////////////////////////////////////////////////////////////////
+
+	/// Constructor
+	// Parameter - module name, tile id.
 	SC_HAS_PROCESS(BaseNWTile);
-	BaseNWTile(sc_module_name BaseNWTile, UI id) : sc_module(BaseNWTile) {
-	}
+	BaseNWTile(sc_module_name NWTile, UI tileID, UI nb_num);
+
+	// PROCESSES //////////////////////////////////////////////////////////////////////////////////////////
+	void entry();		///< Writes buffer utilization information at the tile, at each clock cycle
+	void setID(UI);		///< sets unique tile id and associates ports with directions
 	
-//	virtual float return_latency(int) = 0;		///< returns average latency per packet for a channel
-//	virtual float return_latency_flit(int) = 0;	///< returns average latency per flit for a channel
-//	virtual float return_avg_tput(int) = 0;		///< returns average throughput for a channel
-//	virtual int return_total_latency() = 0;		///< returns total latency for a channel
-//	virtual int return_total_flits() = 0;		///< returns total number of flits through a channel
+	//////////////////////////////////////////////////////////////////////////
+	// for test
+	void read();
+	void write();
+	//////////////////////////////////////////////////////////////////////////
 };
 
 #endif

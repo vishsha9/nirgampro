@@ -72,7 +72,7 @@ NoC::NoC(sc_module_name NoC, AdjList* a): sc_module(NoC) {
 	for (int i=0; i<a->nodeNum; i++){
 		Node * node = a->nodes[i];
 		string name = "tile" +string(1, node->nodeId+'0');
-		NWTile * tile = new NWTile(name.c_str(), node->nodeId, node->adjNum);
+		BaseNWTile * tile = new BaseNWTile(name.c_str(), node->nodeId, node->adjNum);
 		tile->clk(switch_cntrl);
 		nwtile.push_back(tile);
 	}
@@ -93,7 +93,7 @@ NoC::~NoC(){
 	
 }
 
-wires* NoC::connect(sc_module_name wire_name, UI length, NWTile* tile1, NWTile * tile2){
+wires* NoC::connect(sc_module_name wire_name, UI length, BaseNWTile* tile1, BaseNWTile * tile2){
 	wires* w_1to2 = new wires(wire_name, length); 
 	w_1to2->clk(switch_cntrl);
 	
