@@ -29,12 +29,14 @@
 
 #include "systemc.h"
 #include "credit.h"
-#include "../config/constants.h"
+#include "constants.h"
 #include "flit.h"
 #include <string>
 #include <fstream>
 #include <iostream>
+#include "typedef.h"
 
+#include "InnerSigs.h"
 /// required for stl
 using namespace std;
 
@@ -43,24 +45,29 @@ using namespace std;
 ///
 /// This module defines a Virtual channel allocator (VCA) in a network tile
 /////////////////////////////////////////////////////////////////////////////
-template<UI num_ip = NUM_IC>
 struct VCAllocator : public sc_module {
-	
+	/// Constructor
+	SC_HAS_PROCESS(VCAllocator);
+	VCAllocator(sc_module_name VCAllocator, UI io_num);
+
+	UI io_num;
 	// PORTS //////////////////////////////////////////////////////////////////////////////////	
 	sc_in<bool> switch_cntrl;				///< input clock port
-	sc_in<bool> vcRequest[num_ip];				///< input ports for request signals from ICs
-	sc_in<sc_uint<2> > opRequest[num_ip];			///< input ports to recieve output channel requested from ICs
-		
-	sc_out<sc_uint<VCS_BITSIZE+1> > nextVCID[num_ip];	///< output ports to send next VCID to ICs
-	sc_out<bool> vcReady[num_ip];				///< output ports to send ready signal to ICs
+	sc_in<bool>* vcRequest;				///< input ports for request signals from ICs
+	sc_in<port_id>* opRequest;			///< input ports to recieve output channel requested from ICs
+	sc_out<sc_uint<VCS_BITSIZE+1> >* nextVCID;	///< output ports to send next VCID to ICs
+	sc_out<bool>* vcReady;				///< output ports to send ready signal to ICs
 	
-	sc_in<creditLine> Icredit[num_ip][NUM_VCS];		///< input ports to recieve credit info (buffer status) from ICs
+	sc_in<creditLine> (*credit_in)[NUM_VCS];	///< input ports to recieve credit info (buffer status) from ICs
 	// PORTS END //////////////////////////////////////////////////////////////////////////////////	
-	
-	/// Constructor
-	SC_CTOR(VCAllocator);
 
 	// FUNCTIONS /////////////////////////////////////////////////////////////////////////////
+	void innerConnect(UI ioId,
+					sc_clock & switch_cntrl,
+					Sigs_IcVca & sigs_InVca,
+					sc_sigs_creditLine & creditIC_CS,
+					sc_in<creditLine> (*credit_in)[NUM_VCS]
+					);
 	void allocate_VC();	///< process sensitive to VC request
 	void update_credit();	///< process sensitive to credit input,  updates credit (buffer status)
 	/// sets tile ID and id corresponding to port directions
@@ -69,12 +76,8 @@ struct VCAllocator : public sc_module {
 	// FUNCTIONS END /////////////////////////////////////////////////////////////////////////////
 	
 	// VARIABLES /////////////////////////////////////////////////////////////////////////////
-	bool vcFree[num_ip][NUM_VCS];	///< status registers to store credit info (buffer status)
+	bool (*vcFree)[NUM_VCS];	///< status registers to store credit info (buffer status)
 	UI tileID;	///< TileID
-	UI portN;	///< port number representing North direction
-	UI portS;	///< port number representing South direction
-	UI portE;	///< port number representing East direction
-	UI portW;	///< port number representing West direction
 	// VARIABLES END /////////////////////////////////////////////////////////////////////////////
 };
 

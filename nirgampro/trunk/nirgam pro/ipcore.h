@@ -28,7 +28,7 @@
 #define _IPCORE_
 
 #include "systemc.h"
-#include "../config/constants.h"
+#include "constants.h"
 #include "flit.h"
 #include "credit.h"
 #include "rng.h"
@@ -36,7 +36,7 @@
 #include <fstream>
 #include <string>
 #include <math.h>
-#include <dlfcn.h>
+//#include <dlfcn.h>
 
 using namespace std;
 

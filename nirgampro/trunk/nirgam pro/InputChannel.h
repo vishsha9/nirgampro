@@ -35,6 +35,9 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include "extern.h"
+
+#include "InnerSigs.h"
 
 /// required for stl
 using namespace std;
@@ -46,7 +49,8 @@ struct  VC {
 	sc_uint<VCS_BITSIZE>	id;		///< unique identifier
 	sc_uint<VCS_BITSIZE+1>	vc_next_id;	///< virtual channel id on next tile to which flit is supposed to go
 	sc_uint<BUF_BITSIZE>	num_buf;	///< number of buffers in this VC
-	sc_uint<3>		vc_route;	///< routing decision (next hop) for the flits stored in this VC
+	//sc_uint<3>		vc_route;	
+	port_id			vc_route;	///< routing decision (next hop) for the flits stored in this VC
 	fifo			vcQ;		///< buffer (fifo queue)
 };
 
@@ -55,44 +59,59 @@ struct  VC {
 ///
 /// This module defines an Input Channel in a network tile
 //////////////////////////////////////////////////////////////////////////
-template<UI num_op = NUM_OC>
 struct InputChannel : public sc_module {
+	/// Constructor
+	SC_HAS_PROCESS(InputChannel);
+	InputChannel(sc_module_name InputChannel, UI io_num);
+
+	UI io_num;
 
 	// PORTS //////////////////////////////////////////////////////////////////////////////////
 	sc_in<bool> switch_cntrl;	///< input clock port
-	sc_in<flit> inport;		///< input data/flit port
-	sc_out<flit> outport[num_op];	///< ouput data/flit ports (one for each output channel)
+
+	sc_in<flit> inport;			///< input data/flit port
 	
-	sc_in<bool>  outReady[num_op];	///< input ports for ready signal from OCs
+	sc_out<flit>* outport;		///< ouput data/flit ports (one for each output channel)
+	sc_in<bool>* outReady;		///< input ports for ready signal from OCs
+
 	sc_out<bool> vcRequest;		///< output port for sending request to VCA
 	sc_in<bool> vcReady;		///< input port for ready signal from VCA
+
 	// format 2->3
-	sc_out<sc_uint<3> >  opRequest;	///< output port for sending OC requested to VCA
-	sc_in<sc_uint<VCS_BITSIZE+1> >	nextVCID;	///< input port to recieve next VCID from VCA
-	sc_out<creditLine> credit_out[NUM_VCS];		///< output ports to send credit info (buffer status) to OC, VCA and Ctr
+	sc_out<port_id>  opRequest;	///< output port for sending OC requested to VCA
+	sc_in<sc_uint<VCS_BITSIZE+1>>	nextVCID;	///< input port to recieve next VCID from VCA
 	
-	sc_out<request_type> rtRequest;			///< output port to send request to Controller
+	sc_out<creditLine> credit_out[NUM_VCS];		///< output ports to send credit info (buffer status) to OC, VCA and Ctr
+	sc_out<request_type> rtRequest;		///< output port to send request to Controller
 	sc_in<bool> rtReady;				///< input port to recieve ready signal from Controller
-	sc_out<sc_uint<ADDR_SIZE> > destRequest;	///< output port to send destination address to Controller
-	sc_out<sc_uint<ADDR_SIZE> > sourceAddress;	///< output port to send source address to Controller
-	sc_in<sc_uint<3> > nextRt;			///< input port to recieve routing decision (next hop) from Controller
+	sc_out<addr> destRequest;	///< output port to send destination address to Controller
+	sc_out<addr> sourceAddress;	///< output port to send source address to Controller
+	sc_in<port_id> nextRt;		///< input port to recieve routing decision (next hop) from Controller
 	// PORTS END //////////////////////////////////////////////////////////////////////////////
 	
-	/// Constructor
-	SC_CTOR(InputChannel);
-
+	
+	bool isCoreIO(UI i);
 	// FUNCTIONS /////////////////////////////////////////////////////////////////////////////
-	void read_flit();		///< reads flit from i/p port and calls function to store it in buffer
+	void innerConnect(UI ioId,
+					sc_clock & switch_cntrl,
+					sc_in<flit> & ip_port,
+					sc_signal<creditLine> (&creditIC_CS)[NUM_VCS],
+					Sigs_IcVca & sigs_InVca,
+					Sigs_IcOc & sigs_InOut,
+					Sigs_IcCtl & sigs_InCtl,
+					Sigs_IcIp & sigs_InIp 
+					);
+	void read_flit();			///< reads flit from i/p port and calls function to store it in buffer
 	void store_flit_VC(flit*);	///< stores flit in buffer
-	void route_flit();		///< routes the flit at the front of fifo buffer
+	void route_flit();			///< routes the flit at the front of fifo buffer
 	void routing_src(flit*);	///< routing function for algorithms containing entire path in header (source routing)
 	void routing_dst(flit*);	///< routing function for algorithms containing destination address in header
 
 	void transmit_flit();		///< transmits flit at the front of fifo to output port
 	/// sets tile ID and id corresponding to port directions
 	void setTileID(UI tileID, UI portN, UI portS, UI portE, UI portW, UI portU, UI portD);
-	void resetCounts();		///< resets buffer counts to zero
-	void closeLogs();		///< closes logfiles
+	void resetCounts();			///< resets buffer counts to zero
+	void closeLogs();			///< closes logfiles
 
 	int reverse_route(int);		///< reverses route (to be used in future)
 	// FUNCTIONS END /////////////////////////////////////////////////////////////////////////
@@ -100,14 +119,16 @@ struct InputChannel : public sc_module {
 	// VARIABLES /////////////////////////////////////////////////////////////////////////////
 	VC	vc[NUM_VCS];	///< Virtual channels
 	
-	int	cntrlID;	///< Control ID to identify channel direction
-	UI	tileID;		///< Tile ID
+	int	cntrlID;		///< Control ID to identify channel direction
+	// if cntrlId == num_op then this InputChannel connect to IP
+
+	UI	tileID;			///< Tile ID
 	
 	UI	numBufReads;	///< number of buffer reads in the channel
 	UI	numBufWrites;	///< number of buffer writes in the channel
-	UI	numBufsOcc;	///< number of occupied buffers
-	UI	numVCOcc;	///< number of occupied virtual channels
-	ULL sim_count;	///< keeps track of number of clock cycles
+	UI	numBufsOcc;		///< number of occupied buffers
+	UI	numVCOcc;		///< number of occupied virtual channels
+	ULL sim_count;		///< keeps track of number of clock cycles
 	// VARIABLES END /////////////////////////////////////////////////////////////////////////
 };
 

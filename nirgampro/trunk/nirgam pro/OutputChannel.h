@@ -28,35 +28,60 @@
 #define	_OP_CHANNEL_
 
 #include "systemc.h"
-#include "switch_reg.h"
+//#include "switch_reg.h"
 #include "flit.h"
 #include "credit.h"
 #include <string>
 #include <fstream>
 #include <iostream>
 
+#include "InnerSigs.h"
+
 using namespace std;
+
+///////////////////////////////////////////////////////////////
+/// \brief register data structure
+///
+/// used in OC to store a single flit 
+///////////////////////////////////////////////////////////////
+struct switch_reg {
+	flit	val;	///< flit stored in register
+	bool	free;	///< register status (0 - register is occupied, 1 - register is free)
+
+	/// Constructor
+	switch_reg() {
+		free = true;
+	}
+};
 
 //////////////////////////////////////////////////////////////////////////
 /// \brief Module to represent an Output Channel
 ///
 /// This module defines an Output Channel in a network tile
 //////////////////////////////////////////////////////////////////////////
-template<UI num_ip = NUM_IC>
 struct OutputChannel : public sc_module {
-	
+	/// Constructor
+	SC_HAS_PROCESS(OutputChannel);
+	OutputChannel(sc_module_name OutputChannel, UI io_num);
+
+	UI io_num;
+
 	// PORTS ////////////////////////////////////////////////////////////////////////////////////
-	sc_in<flit> inport[num_ip];		///< input data/flit ports (one for each IC)
-	sc_out<bool> inReady[num_ip];		///< output port to send ready signal to IC
+	sc_in<flit>* inport;		///< input data/flit ports (one for each IC)
+	sc_out<bool>* inReady;		///< output port to send ready signal to IC
 	sc_in<bool>  switch_cntrl;		///< clock input port
 	sc_out<flit> outport;			///< output data/flit port
 	sc_in<creditLine> credit_in[NUM_VCS];	///< input port to recieve credit info (buffer status) from ICs of neighbor tiles
 	// PORTS END ////////////////////////////////////////////////////////////////////////////////////
 	
-	/// Constructor
-	SC_CTOR(OutputChannel);
-	
+	bool isCoreIO(UI i);
 	// PROCESSES ///////////////////////////////////////////////////////////////////////////////////////////////
+	void innerConnect(UI ioId,
+					sc_clock & switch_cntrl,
+					Sigs_IcOc & sigs_InOut,
+					Sigs_OcIp & sigs_OcIp,
+					sc_out<flit>& op_port
+					);
 	void entry();			///< reads and processes incoming flit
 	void closeLogs();		///< closes logfiles at the end of simulation and computes performance stats
 	/// sets tile ID and id corresponding to port directions
@@ -66,12 +91,8 @@ struct OutputChannel : public sc_module {
 	// VARIABLES //////////////////////////////////////////////////////////////////////////////////////////
 	UI tileID;	///< unique tile ID
 	UI cntrlID;	///< control ID to identify channel direction (N, S, E, W, C)
-	UI portN;	///< port number representing North direction
-	UI portS;	///< port number representing South direction
-	UI portE;	///< port number representing East direction
-	UI portW;	///< port number representing West direction
 		
-	switch_reg	r_in[num_ip];	///< registers to store flit from inport, one for each inport
+	switch_reg*	r_in;	///< registers to store flit from inport, one for each inport
 	switch_reg	r_vc[NUM_VCS];	///< registers, one for each next VCID
 
 	ULL latency;			///< total latency

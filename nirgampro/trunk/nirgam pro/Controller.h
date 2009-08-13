@@ -29,12 +29,15 @@
 
 #include "systemc.h"
 #include "credit.h"
-#include "../config/constants.h"
+#include "constants.h"
 #include "router.h"
 #include <string>
 #include <fstream>
 #include <iostream>
-#include <dlfcn.h>
+#include "typedef.h"
+
+#include "InnerSigs.h"
+//#include <dlfcn.h>
 
 using namespace std;
 
@@ -43,24 +46,31 @@ using namespace std;
 ///
 /// This module defines a Controller (implements router)
 //////////////////////////////////////////////////////////////////////////
-template<UI num_ip = NUM_IC>
 struct Controller : public sc_module {
+	/// Constructor
+	SC_HAS_PROCESS(Controller);
+	Controller(sc_module_name Controller, UI io_num);
 
+	UI io_num;
 	// PORTS ////////////////////////////////////////////////////////////////////////////////
 	sc_in<bool> switch_cntrl;		///< input clock port
-	sc_in<request_type> rtRequest[num_ip];	///< input ports to recieve route request from ICs
-	sc_in<sc_uint<ADDR_SIZE> > destRequest[num_ip];	///< input ports to recieve destination address
-	sc_in<sc_uint<ADDR_SIZE> > sourceAddress[num_ip]; ///< input ports to recieve source address
-	sc_in<creditLine> Icredit[num_ip][NUM_VCS];	///< input ports to recieve credit info (buffer info) from ICs
-	sc_out<bool> rtReady[num_ip];		///< output ports to send ready signal to ICs
-	sc_out<sc_uint<3> > nextRt[num_ip];	///< output ports to send routing decision to ICs
+	sc_in<request_type>* rtRequest;	///< input ports to recieve route request from ICs
+	sc_in<sc_uint<ADDR_SIZE> > * destRequest;	///< input ports to recieve destination address
+	sc_in<sc_uint<ADDR_SIZE> > * sourceAddress; ///< input ports to recieve source address
+	sc_in<creditLine> (*Icredit)[NUM_VCS];	///< input ports to recieve credit info (buffer info) from ICs
+	sc_out<bool>* rtReady;		///< output ports to send ready signal to ICs
+	sc_out<port_id> * nextRt;	///< output ports to send routing decision to ICs
 	// PORTS END /////////////////////////////////////////////////////////////////////////////
 	
-	/// Constructor
-	SC_CTOR(Controller);
-	
+
+	bool isCoreIO(UI i);
 	// PROCESSES /////////////////////////////////////////////////////////////////////////////
 	/// sets tile ID and id corresponding to port directions
+	void innerConnect(UI icId,
+					sc_clock & switch_cntrl,
+					Sigs_IcCtl & sigs_IcCtl,
+					sc_sigs_creditLine &creditIC_CS,
+					sc_in<creditLine> (*credit_in)[NUM_VCS]);
 	void setTileID(UI tileID, UI portN, UI portS, UI portE, UI portW);
 	void allocate_route();	///< does routing
 	UI idToDir(UI);		///< returns port id for a given direction (N, S, E, W)
@@ -69,10 +79,6 @@ struct Controller : public sc_module {
 	
 	// VARIABLES /////////////////////////////////////////////////////////////////////////////
 	UI tileID;	///< Unique tile identifier
-	UI portN;	///< port number representing North direction
-	UI portS;	///< port number representing South direction
-	UI portE;	///< port number representing North direction
-	UI portW;	///< port number representing North direction
 	
 	router *rtable;	///< router (plug-in point for routing algorithm)
 	// VARIABLES END /////////////////////////////////////////////////////////////////////////
