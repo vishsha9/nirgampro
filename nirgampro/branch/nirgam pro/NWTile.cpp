@@ -52,21 +52,20 @@
 /////////////////////////////////////////////////////////////////////////////////////////////
 
 
-//template <int num_nb, int num_ic, int num_oc>
-NWTile::NWTile(sc_module_name NWTile, UI id, UI nb): sc_module(NWTile){
+template <int num_nb, int num_ic, int num_oc>
+NWTile::NWTile(sc_module_name NWTile, UI id): sc_module(NWTile){
 	this->tileID = id;
-	this->nb_num = nb;
 	this->nb_initPtr = 0;
 
-	ip_port = new sc_in<flit>[nb_num];
-	op_port = new sc_out<flit>[nb_num];
+	//ip_port = new sc_in<flit>[nb_num];
+	//op_port = new sc_out<flit>[nb_num];
 
-	credit_in = new sc_in<creditLine>[nb_num][NUM_VCS];
-	credit_out = new sc_out<creditLine>[nb_num][NUM_VCS];
+	//credit_in = new sc_in<creditLine>[nb_num][NUM_VCS];
+	//credit_out = new sc_out<creditLine>[nb_num][NUM_VCS];
 
-	nb_id = new UI[nb_num];
+	nb_id = new UI[num_nb];
 
-	for (int i=0; i<nb_num; i++)
+	for (int i=0; i<num_nb; i++)
 	{
 		nb_id[i] = -1;
 	}
@@ -77,7 +76,7 @@ NWTile::NWTile(sc_module_name NWTile, UI id, UI nb): sc_module(NWTile){
 	//////////////////////////////////////////////////////////////////////////
 	SC_THREAD(read);
 	sensitive << clk ;
-	for(int i=0; i<nb_num; i++){
+	for(int i=0; i<num_nb; i++){
 		sensitive << ip_port[i];
 		for(int j=0; j< NUM_VCS ; j++){
 			sensitive << credit_in[i][j];
@@ -88,6 +87,7 @@ NWTile::NWTile(sc_module_name NWTile, UI id, UI nb): sc_module(NWTile){
 	sensitive_pos<<clk;
 } // end constructor
 
+template <int num_nb, int num_ic, int num_oc>
 bool NWTile::connect(UI nb_id, sc_signal<flit>& sig_from, sc_signal<flit>& sig_to, sc_signal<creditLine> credit_from[NUM_VCS], sc_signal<creditLine> credit_to[NUM_VCS]){
 	op_port[nb_initPtr](sig_from);
 	ip_port[nb_initPtr](sig_to);
@@ -101,11 +101,11 @@ bool NWTile::connect(UI nb_id, sc_signal<flit>& sig_from, sc_signal<flit>& sig_t
 }
 
 
-//template <int num_nb, int num_ic, int num_oc>
+template <int num_nb, int num_ic, int num_oc>
 void NWTile::read(){
 	while(true){
 		wait();
-		for(int i=0; i<nb_num; i++){
+		for(int i=0; i<num_nb; i++){
 			if (ip_port[i].event())
 			{
 			flit r = ip_port[i].read();
@@ -123,13 +123,13 @@ void NWTile::read(){
 	}
 }
 
-//template <int num_nb, int num_ic, int num_oc>
+template <int num_nb, int num_ic, int num_oc>
 void NWTile::write(){
 	int count=0;
 	while(true){
 		wait();
 
-		if(count<nb_num){
+		if(count<num_nb){
 			flit w;
 			w.data4 = count+2;
 			w.simdata.gtime = sc_time_stamp();
@@ -154,7 +154,7 @@ void NWTile::write(){
 /// Process sensitive to clock.
 /// Writes buffer utilization info at each clock
 ///////////////////////////////////////////////////////////////////////////
-//template <int num_nb, int num_ic, int num_oc>
+template <int num_nb, int num_ic, int num_oc>
 void NWTile::entry() {
 	while(true) {
 		wait();
@@ -169,7 +169,7 @@ void NWTile::entry() {
 /// - set unique tile ID
 /// - map port number to port direction
 //////////////////////////////////////////////////////////////////////////
-//template <int num_nb, int num_ic, int num_oc>
+template <int num_nb, int num_ic, int num_oc>
 void NWTile::setID(UI id) {
 
 }
