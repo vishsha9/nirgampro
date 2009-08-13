@@ -38,23 +38,22 @@
 struct BaseNWTile : public sc_module {
 
 	UI tileID;	///< unique tile id
-	UI portN;	///< port representing North direction
-	UI portS;	///< port representing South direction
-	UI portE;	///< port representing East direction
-	UI portW;	///< port representing West direction
+	sc_in<bool>	clk;		///< input clock port
+
 	BaseNWTile() {	}	///< default constructor
+
+
+	virtual bool connect(UI nb_id, 
+		sc_signal<flit>& sig_in, 
+		sc_signal<flit>& sig_out, 
+		sc_signal<creditLine> crd_in[NUM_VCS], 
+		sc_signal<creditLine> crd_out[NUM_VCS]);
 
 	/// systemC constructor
 	/// parameters - module name, tile id.
 	SC_HAS_PROCESS(BaseNWTile);
 	BaseNWTile(sc_module_name BaseNWTile, UI id) : sc_module(BaseNWTile) {
 	}
-	
-//	virtual float return_latency(int) = 0;		///< returns average latency per packet for a channel
-//	virtual float return_latency_flit(int) = 0;	///< returns average latency per flit for a channel
-//	virtual float return_avg_tput(int) = 0;		///< returns average throughput for a channel
-//	virtual int return_total_latency() = 0;		///< returns total latency for a channel
-//	virtual int return_total_flits() = 0;		///< returns total number of flits through a channel
 };
 
 #endif

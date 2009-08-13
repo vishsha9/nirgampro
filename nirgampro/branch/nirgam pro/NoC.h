@@ -59,10 +59,10 @@ struct NoC : public sc_module {
 
 	UI tileNum;
 
-	vector<NWTile *> nwtile;	///< A 2-d array of network tiles
+	vector<BaseNWTile *> nwtile;	///< A 2-d array of network tiles
 	vector<wires *>sigs;	///< Signals to interconnect network tiles
 
-	wires * connect(sc_module_name wire_name, UI length, NWTile * tile1, NWTile * tile2);
+	wires * connect(sc_module_name wire_name, UI length, BaseNWTile * tile1, BaseNWTile * tile2);
 		
 	void entry();	///< Keeps count of number of simulation cycles
 };
