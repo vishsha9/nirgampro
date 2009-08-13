@@ -24,13 +24,35 @@
 
 #include "BaseNWTile.h"
 #include "InputChannel.h"
+#include "OutputChannel.h"
+#include "VCAllocator.h"
+#include "Controller.h"
+#include "ipcore.h"
+
+
+#include "InnerSigs.h"
 
 struct NWTile : public BaseNWTile{
 	SC_HAS_PROCESS(NWTile);
 	NWTile(sc_module_name NWTile, UI tileID, UI nb_num);
 
-	InputChannel *Ichannel[num_ic];	///< Input channels
+	InputChannel **Ichannel;	///< Input channels
+	OutputChannel **Ochannel;
+	VCAllocator vcAlloc;
+	Controller	ctr;
+	ipcore *ip;
 
+	UI nb_num;
+	UI io_num;
+
+	Sigs_IcOc** sigs_IcOc;
+	Sigs_IcIp sigs_IcIp;
+	Sigs_IcVca* sigs_IcVca;
+	Sigs_IcCtl* sigs_IcCtl;
+	Sigs_OcIp sigs_OcIp;
+	sc_sigs_creditLine creditIC_CS;
+	
+	void innerConnect();
 };
 
 #endif

@@ -25,29 +25,35 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include "VCAllocator.h"
-#include "../config/extern.h"
+#include "extern.h"
 	
 ////////////////////////
 /// Constructor
 ////////////////////////
-template<UI num_ip>
-VCAllocator<num_ip>::VCAllocator(sc_module_name VCAllocator): sc_module(VCAllocator) {
+VCAllocator::VCAllocator(sc_module_name VCAllocator, UI io_num): sc_module(VCAllocator) {
+	this->io_num = io_num;
+	vcRequest = new sc_in<bool>[io_num];
+	opRequest = new sc_in<port_id>[io_num];
+	nextVCID = new sc_out<sc_uint<VCS_BITSIZE+1> >[io_num];
+	vcReady = new sc_out<bool>[io_num];
+	credit_in = new sc_in<creditLine>[io_num][NUM_VCS];
+	vcFree = new bool[io_num][NUM_VCS];
 
 	// process sensitive to VC request, calls VC allocation
 	SC_THREAD(allocate_VC);
-	for(UI i = 0; i < num_ip; i++)
+	for(UI i = 0; i < io_num; i++)
 		sensitive << vcRequest[i];
 	
 	// process sensitive to credit info, updates credit status
 	SC_THREAD(update_credit);
-	for(UI i = 0; i < num_ip; i++){
+	for(UI i = 0; i < io_num; i++){
 		for(UI j = 0; j < NUM_VCS; j++) {
-			sensitive << Icredit[i][j];
+			sensitive << credit_in[i][j];
 		}
 	}
 	
 	// initialize credit status
-	for(UI i = 0; i < num_ip; i++){
+	for(UI i = 0; i < io_num; i++){
 		for(UI j = 0; j < NUM_VCS; j++) {
 			vcFree[i][j] = true;
 		}
@@ -58,14 +64,13 @@ VCAllocator<num_ip>::VCAllocator(sc_module_name VCAllocator): sc_module(VCAlloca
 /// Process sensitive to incoming credit information.
 /// updates credit info (buffer status) of neighbor tiles
 ///////////////////////////////////////////////////////////////////////////
-template<UI num_ip>
-void VCAllocator<num_ip>::update_credit() {
+void VCAllocator::update_credit() {
 	while(true) {
 		wait();	// wait until change in credit info
-		for(UI i = 0; i < num_ip; i++) {
+		for(UI i = 0; i < io_num; i++) {
 			for(UI j = 0; j < NUM_VCS; j++) {
-				if(Icredit[i][j].event()) {
-					vcFree[i][j] = Icredit[i][j].read().freeVC;	// update credit
+				if(credit_in[i][j].event()) {
+					vcFree[i][j] = credit_in[i][j].read().freeVC;	// update credit
 					if(LOG >= 4)
 						eventlog<<"\nTime: "<<sc_time_stamp()<<" name: "<<this->name()<<" tile: "<<tileID<<" Credit change in "<<i<<" dir, vc num: "<<j<<" status: "<<vcFree[i][j];
 				}
@@ -80,11 +85,10 @@ void VCAllocator<num_ip>::update_credit() {
 /// - allocates virtual channel in the requested channel on neighbor tile
 /// - returns allocated vcid and ready signal
 ///////////////////////////////////////////////////////////////////////////
-template<UI num_ip>
-void VCAllocator<num_ip>::allocate_VC() {
+void VCAllocator::allocate_VC() {
 	while(true) {
 		wait();		// wait until request from any IC
-		for(UI i = 0; i < num_ip; i++) {
+		for(UI i = 0; i < io_num; i++) {
 			if(vcRequest[i].event() && vcRequest[i].read() == true) {
 				// read output direction in which VC is requested
 				sc_uint<2> dir = opRequest[i].read();
@@ -114,8 +118,7 @@ void VCAllocator<num_ip>::allocate_VC() {
 /// .
 /// return allocated VC id
 ///////////////////////////////////////////////////////////////////////////
-template<UI num_ip>
-sc_uint<VCS_BITSIZE+1> VCAllocator<num_ip>::getNextVCID (int dir, int dir_from) {	
+sc_uint<VCS_BITSIZE+1> VCAllocator::getNextVCID (int dir, int dir_from) {	
 	for(int i = 0; i < NUM_VCS; i++) {
 		if(vcFree[dir][i]) {
 			vcFree[dir][i] = false;
@@ -130,15 +133,10 @@ sc_uint<VCS_BITSIZE+1> VCAllocator<num_ip>::getNextVCID (int dir, int dir_from) 
 ///////////////////////////////////////////////////////////////////////////
 /// Method to assign tile IDs and port IDs
 ///////////////////////////////////////////////////////////////////////////
-template<UI num_ip>
-void VCAllocator<num_ip>::setTileID(UI id, UI port_N, UI port_S, UI port_E, UI port_W){
+void VCAllocator::setTileID(UI id, UI port_N, UI port_S, UI port_E, UI port_W){
 	tileID = id;
-	portN = port_N;
-	portS = port_S;
-	portE = port_E;
-	portW = port_W;
+	//portN = port_N;
+	//portS = port_S;
+	//portE = port_E;
+	//portW = port_W;
 }
-
-template struct VCAllocator<NUM_IC>;
-template struct VCAllocator<NUM_IC_C>;
-template struct VCAllocator<NUM_IC_B>;

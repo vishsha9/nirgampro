@@ -27,7 +27,7 @@
 #ifndef _FIFO_
 #define _FIFO_
 #include "flit.h"
-#include "../config/extern.h"
+#include "extern.h"
 
 /////////////////////////////////////////
 /// \brief fifo data structure

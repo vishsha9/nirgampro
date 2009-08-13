@@ -28,8 +28,6 @@
 
 #include "NoC.h"
 
-ULL SIM_NUM = 30;	
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// Constructor to generate topology.
 /// It creates 2-d toroidal or non- toroidal mesh of m x n network tiles depending on input from user.
@@ -69,7 +67,6 @@ NoC::NoC(sc_module_name NoC, AdjList* a): sc_module(NoC) {
 
 	*//////////////////////////////////////////////////////////////////////////
 	
-<<<<<<< .working
 	for (int i=0; i<a->nodeNum; i++){
 		Node * node = a->nodes[i];
 		string name = "tile" +string(1, node->nodeId+'0');
@@ -77,15 +74,7 @@ NoC::NoC(sc_module_name NoC, AdjList* a): sc_module(NoC) {
 		tile->clk(switch_cntrl);
 		nwtile.push_back(tile);
 	}
-=======
-	for (int i=0; i<a->nodeNum; i++){
-		Node * node = a->nodes[i];
-		string name = "tile" +string(1, node->nodeId+'0');
-		NWTile * tile = new NWTile(name.c_str(), node->nodeId, node->adjNum);
-		tile->clk(switch_cntrl);
-		nwtile.push_back(tile);
-	}
->>>>>>> .merge-right.r7
+
 
 	for (int i=0; i<a->edgeNum; i++)
 	{

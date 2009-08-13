@@ -34,6 +34,7 @@
 #include "BaseNWTile.h"
 #include "wires.h"
 #include "netlist_analyzer.h"
+#include "extern.h"
 //#include "../config/extern.h"
 
 
@@ -59,13 +60,9 @@ struct NoC : public sc_module {
 
 	UI tileNum;
 
-<<<<<<< .working
 	vector<BaseNWTile *> nwtile;	///< A 2-d array of network tiles
 	vector<wires *>sigs;	///< Signals to interconnect network tiles
-=======
-	vector<NWTile *> nwtile;	///< A 2-d array of network tiles
-	vector<wires *>sigs;	///< Signals to interconnect network tiles
->>>>>>> .merge-right.r7
+
 
 	wires * connect(sc_module_name wire_name, UI length, BaseNWTile * tile1, BaseNWTile * tile2);
 		

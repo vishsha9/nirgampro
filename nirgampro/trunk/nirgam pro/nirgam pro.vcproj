@@ -200,7 +200,15 @@
 					>
 				</File>
 				<File
+					RelativePath=".\rng.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\VCAllocator.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\win32.cpp"
 					>
 				</File>
 			</Filter>
@@ -250,6 +258,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\InnerSigs.h"
+					>
+				</File>
+				<File
 					RelativePath=".\InputChannel.h"
 					>
 				</File>
@@ -266,7 +278,15 @@
 					>
 				</File>
 				<File
+					RelativePath=".\rng.h"
+					>
+				</File>
+				<File
 					RelativePath=".\VCAllocator.h"
+					>
+				</File>
+				<File
+					RelativePath=".\win32.h"
 					>
 				</File>
 			</Filter>
@@ -286,6 +306,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\default.h"
+					>
+				</File>
+				<File
+					RelativePath=".\extern.h"
+					>
+				</File>
+				<File
 					RelativePath=".\flit.h"
 					>
 				</File>
@@ -295,6 +323,10 @@
 				</File>
 				<File
 					RelativePath=".\NoC.h"
+					>
+				</File>
+				<File
+					RelativePath=".\router.h"
 					>
 				</File>
 				<File

@@ -25,13 +25,14 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include "InputChannel.h"
-#include "../config/extern.h"
 
 ////////////////////////
 /// Constructor
 ////////////////////////
-template<UI num_op>
-InputChannel<num_op>::InputChannel(sc_module_name InputChannel): sc_module(InputChannel) {
+InputChannel::InputChannel(sc_module_name InputChannel, UI io_num): sc_module(InputChannel) {
+	this->io_num = io_num;
+	outport = new sc_out<flit>[io_num];
+	outReady = new sc_in<bool>[io_num];
 
 	// process sensitive to inport event, reads in flit and stores in buffer
 	SC_THREAD(read_flit);
@@ -77,8 +78,7 @@ InputChannel<num_op>::InputChannel(sc_module_name InputChannel): sc_module(Input
 /// Process sensitive to inport event
 /// Reads flit from input port and calls function to store in buffer
 ///////////////////////////////////////////////////////////////////////////
-template<UI num_op>
-void InputChannel<num_op> :: read_flit() 
+void InputChannel :: read_flit() 
 {
 	//flit that is read into the input channel
 	flit flit_in;
@@ -115,8 +115,7 @@ void InputChannel<num_op> :: read_flit()
 /// Process sensitive to clock
 /// Calls routing functions if head/hdt flit at the front of fifo
 ///////////////////////////////////////////////////////////////////////////
-template<UI num_op>
-void InputChannel<num_op> :: route_flit() 
+void InputChannel :: route_flit() 
 {
 	sim_count = 0;
 	while(sim_count < SIM_NUM) 
@@ -128,7 +127,7 @@ void InputChannel<num_op> :: route_flit()
 			sim_count++;
 
 			ULL vc_to_serve;
-			if(cntrlID == C)	// assuming only 1 VC at IchannelC
+			if(cntrlID == this->io_num)	// assuming only 1 VC at IchannelC
 				vc_to_serve = 0;
 			else
 				vc_to_serve = (sim_count-1) % NUM_VCS;	// serving VCs in round robin manner
@@ -165,6 +164,9 @@ void InputChannel<num_op> :: route_flit()
 		}
 	}
 }
+bool InputChannel::isCoreIO(UI i){
+	return i == io_num -1 ;
+}
 
 ///////////////////////////////////////////////////////////////////////////
 /// Process sensitive to clock
@@ -172,8 +174,7 @@ void InputChannel<num_op> :: route_flit()
 /// - If head/hdt flit, send VC request
 /// - write flit to output port if ready signal from OC
 ///////////////////////////////////////////////////////////////////////////
-template<UI num_op>
-void InputChannel<num_op> :: transmit_flit() {
+void InputChannel :: transmit_flit() {
 	ULL sim_count = 0;
 	while(sim_count < SIM_NUM) 
 	{
@@ -191,7 +192,7 @@ void InputChannel<num_op> :: transmit_flit() {
 			*/
 			// serve a VC in round robin manner
 			ULL vc_to_serve;
-			if(cntrlID == C)	// assuming only 1 VC at IchannelC
+			if( isCoreIO(cntrlID) )	// assuming only 1 VC at IchannelC
 				vc_to_serve = 0;
 			else
 				vc_to_serve = (sim_count-1) % NUM_VCS;
@@ -203,14 +204,13 @@ void InputChannel<num_op> :: transmit_flit() {
 			int oldvcid;
 
 			UI i;
-			switch(TOPO) {
-
+			i = vc[vc_to_serve].vc_route;
+			/*switch(TOPO) {
 			case TORUS:
 				//#ifdef TORUS
 				i = vc[vc_to_serve].vc_route;
 				//#endif
 				break;
-
 			case MESH:
 				//#ifdef MESH
 				UI dir = vc[vc_to_serve].vc_route;
@@ -228,7 +228,7 @@ void InputChannel<num_op> :: transmit_flit() {
 				}
 				//#endif
 				break;
-			}
+			}*/
 
 			if(vc[vc_to_serve].vcQ.empty == false) {	// fifo not empty
 				if(outReady[i].read() == true) {	// OC ready to recieve flit
@@ -243,9 +243,9 @@ void InputChannel<num_op> :: transmit_flit() {
 						<<this->name()<<" IC: Attempting to forward  flit: "
 						<<flit_out;
 
-					if(i != num_op - 1) 	// not to be done for core OC
+					if(  !isCoreIO(i) ) 	// not to be done for core OC
 					{	
-						if( vc[vc_to_serve].vc_next_id == NUM_VCS+1 && cntrlID != C) 
+						if( vc[vc_to_serve].vc_next_id == NUM_VCS+1 &&  !isCoreIO(cntrlID)) 
 						{
 							if(flit_out.type == DATA || flit_out.type == TAIL) 
 							{
@@ -306,7 +306,7 @@ void InputChannel<num_op> :: transmit_flit() {
 					} // end if, this block not executed for core OC
 
 					flit_out = vc[vc_to_serve].vcQ.flit_out();	// read flit from fifo
-					if(i != num_op - 1) {	// not to be done for core OC
+					if( !isCoreIO(i) ) {	// not to be done for core OC
 						flit_out.vcid = vc[vc_to_serve].vc_next_id;
 					}
 					// write flit to output port
@@ -355,21 +355,19 @@ void InputChannel<num_op> :: transmit_flit() {
 ///////////////////////////////////////////////////////////////////////////
 /// Method to assign tile IDs and port IDs
 ///////////////////////////////////////////////////////////////////////////
-template<UI num_op>
-void InputChannel<num_op>::setTileID(UI id, UI port_N, UI port_S, UI port_E, UI port_W) {
+void InputChannel::setTileID(UI id, UI port_N, UI port_S, UI port_E, UI port_W, UI portU, UI portD) {
 	tileID = id;
-	portN = port_N;
+	/*portN = port_N;
 	portS = port_S;
 	portE = port_E;
-	portW = port_W;
+	portW = port_W;*/
 	resetCounts();
 }
 
 ///////////////////////////////////////////////////////////////////////////
 /// Method to resut buffer stats to zero
 ///////////////////////////////////////////////////////////////////////////
-template<UI num_op>
-void InputChannel<num_op>::resetCounts(){
+void InputChannel::resetCounts(){
 	numBufReads = numBufWrites = 0;
 	numBufsOcc = 0;
 	numVCOcc = 0;
@@ -378,16 +376,14 @@ void InputChannel<num_op>::resetCounts(){
 ///////////////////////////////////////////////////////////////////////////
 /// Method to close logfiles
 ///////////////////////////////////////////////////////////////////////////
-template<UI num_op>
-void InputChannel<num_op>::closeLogs(){
+void InputChannel::closeLogs(){
 	//	logcout.close();
 }
 
 ///////////////////////////////////////////////////////////////////////////
 /// Method to store flit in fifo buffer
 ///////////////////////////////////////////////////////////////////////////
-template<UI num_op>
-void InputChannel<num_op>::store_flit_VC(flit *flit_in) 
+void InputChannel::store_flit_VC(flit *flit_in) 
 {
 	int vc_id = flit_in->vcid;
 	if(LOG >= 4)
@@ -412,8 +408,7 @@ void InputChannel<num_op>::store_flit_VC(flit *flit_in)
 ///////////////////////////////////////////////////////////////////////////
 /// Method to call Controller for source routing
 ///////////////////////////////////////////////////////////////////////////
-template<UI num_op>
-void InputChannel<num_op>::routing_src(flit *flit_in) {
+void InputChannel::routing_src(flit *flit_in) {
 	int vc_id = flit_in->vcid;
 	rtRequest.write(ROUTE);
 	sourceAddress.write(flit_in->src);
@@ -444,8 +439,7 @@ void InputChannel<num_op>::routing_src(flit *flit_in) {
 ///////////////////////////////////////////////////////////////////////////////////////
 /// Method to call controller for routing algorithms that require destination address
 //////////////////////////////////////////////////////////////////////////////////////
-template<UI num_op>
-void InputChannel<num_op>::routing_dst(flit *flit_in) {
+void InputChannel::routing_dst(flit *flit_in) {
 	int vc_id = flit_in->vcid;
 	rtRequest.write(ROUTE);
 	sourceAddress.write(flit_in->src);
@@ -472,8 +466,7 @@ void InputChannel<num_op>::routing_dst(flit *flit_in) {
 // Ant routines
 
 // Route table lookup on basis of interconnects
-template<UI num_op>
-int InputChannel<num_op>::reverse_route(int rt_code) {
+int InputChannel::reverse_route(int rt_code) {
 	int rt_rev;
 	switch(rt_code) {
 		case 0: rt_rev = 1; break;
