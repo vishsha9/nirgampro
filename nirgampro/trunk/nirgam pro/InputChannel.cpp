@@ -31,8 +31,8 @@
 ////////////////////////
 InputChannel::InputChannel(sc_module_name InputChannel, UI io_num): sc_module(InputChannel) {
 	this->io_num = io_num;
-	outport = new sc_out<flit>[io_num];
-	outReady = new sc_in<bool>[io_num];
+	ports_oc.outport = new sc_out<flit>[io_num];
+	ports_oc.outReady = new sc_in<bool>[io_num];
 
 	// process sensitive to inport event, reads in flit and stores in buffer
 	SC_THREAD(read_flit);
@@ -40,19 +40,19 @@ InputChannel::InputChannel(sc_module_name InputChannel, UI io_num): sc_module(In
 
 	// transmit flit at the front of fifo to output port at each clock cycle
 	SC_THREAD(transmit_flit);
-	sensitive << vcReady;
+	sensitive << ports_VCA.vcReady;
 	sensitive_pos << switch_cntrl;
 
 	// route flit at the front of fifo if required
 	SC_THREAD(route_flit);
-	sensitive << rtReady;
+	sensitive << ports_ctr.rtReady;
 	sensitive_pos << switch_cntrl;
 
 	// initialize VC request to false
-	vcRequest.initialize(false);
+	ports_VCA.vcRequest.initialize(false);
 
 	// initialize route request to NONE
-	rtRequest.initialize(NONE);
+	ports_ctr.rtRequest.initialize(NONE);
 
 	// initialize virtual channels and buffers
 	for(UI i=0; i < NUM_VCS ; i++) {
@@ -231,7 +231,7 @@ void InputChannel :: transmit_flit() {
 			}*/
 
 			if(vc[vc_to_serve].vcQ.empty == false) {	// fifo not empty
-				if(outReady[i].read() == true) {	// OC ready to recieve flit
+				if(ports_oc.outReady[i].read() == true) {	// OC ready to recieve flit
 					//flit_out = vc[vc_to_serve].vcQ.flit_out();	// read flit from fifo
 					flit_out = vc[vc_to_serve].vcQ.flit_read();	// read flit from fifo
 					numBufReads++;		// increase buffer read count
@@ -268,11 +268,11 @@ void InputChannel :: transmit_flit() {
 								eventlog<<"\ntime: "<<sc_time_stamp()<<" name: "<<this->name()
 								<<" tile: "<<tileID<<" cntrlID: "<<cntrlID<<" vcRequest: "<<i;
 
-							vcRequest.write(true);
-							opRequest.write(i);
+							ports_VCA.vcRequest.write(true);
+							ports_VCA.opRequest.write(i);
 
 							wait();	// wait for ready event from VC
-							if(vcReady.event()) 
+							if(ports_VCA.vcReady.event()) 
 							{
 								if(LOG >= 4)
 									eventlog<<"\ntime: "<<sc_time_stamp()<<" name: "
@@ -286,7 +286,7 @@ void InputChannel :: transmit_flit() {
 							}
 
 							// read next VCid sent by VC
-							vc[vc_to_serve].vc_next_id = nextVCID.read();
+							vc[vc_to_serve].vc_next_id = ports_VCA.nextVCID.read();
 
 							if(vc[vc_to_serve].vc_next_id == NUM_VCS+1) {	// VC not granted
 								if(LOG >= 4) 
@@ -296,7 +296,7 @@ void InputChannel :: transmit_flit() {
 								// push flit back in fifo
 								//flit_out.simdata.num_waits++;
 								//vc[vc_to_serve].vcQ.flit_push(flit_out);
-								vcRequest.write(false);
+								ports_VCA.vcRequest.write(false);
 								continue;
 							}
 						}
@@ -312,7 +312,7 @@ void InputChannel :: transmit_flit() {
 					// write flit to output port
 					flit_out.simdata.num_sw++;
 					flit_out.simdata.ctime = sc_time_stamp();
-					outport[i].write(flit_out);
+					ports_oc.outport[i].write(flit_out);
 
 					if(LOG >= 2)
 						eventlog<<"\ntime: "<<sc_time_stamp()<<" name: "
@@ -340,7 +340,7 @@ void InputChannel :: transmit_flit() {
 						creditLine t; t.freeVC = false; t.freeBuf = true;
 						credit_out[vc_to_serve].write(t);
 					}
-					vcRequest.write(false);
+					ports_VCA.vcRequest.write(false);
 				} // end outReady == true
 				else {
 					if(LOG >= 4)
@@ -410,15 +410,15 @@ void InputChannel::store_flit_VC(flit *flit_in)
 ///////////////////////////////////////////////////////////////////////////
 void InputChannel::routing_src(flit *flit_in) {
 	int vc_id = flit_in->vcid;
-	rtRequest.write(ROUTE);
-	sourceAddress.write(flit_in->src);
-	destRequest.write(flit_in->data1);
+	ports_ctr.rtRequest.write(ROUTE);
+	ports_ctr.sourceAddress.write(flit_in->src);
+	ports_ctr.destRequest.write(flit_in->data1);
 	flit_in->data1 = flit_in->data1 >> 3; //Right shift
 	if(LOG >= 4)
 		eventlog<<"\ntime: "<<sc_time_stamp()<<" name: "
 		<<this->name()<<" IC: rtRequest sent!"<<endl;
 	wait();
-	if(rtReady.event()) {
+	if(ports_ctr.rtReady.event()) {
 		if(LOG >= 4)
 			eventlog<<"\ntime: "<<sc_time_stamp()<<" name: "
 			<<this->name()<<" IC: rtReady event..."<<endl;
@@ -432,8 +432,8 @@ void InputChannel::routing_src(flit *flit_in) {
 		eventlog<<"\ntime: "<<sc_time_stamp()<<" name: "
 		<<this->name()<<" IC: Unknown Event!"<<endl;
 
-	vc[vc_id].vc_route = nextRt.read();
-	rtRequest.write(NONE);
+	vc[vc_id].vc_route = ports_ctr.nextRt.read();
+	ports_ctr.rtRequest.write(NONE);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -441,14 +441,14 @@ void InputChannel::routing_src(flit *flit_in) {
 //////////////////////////////////////////////////////////////////////////////////////
 void InputChannel::routing_dst(flit *flit_in) {
 	int vc_id = flit_in->vcid;
-	rtRequest.write(ROUTE);
-	sourceAddress.write(flit_in->src);
-	destRequest.write(flit_in->data1);
+	ports_ctr.rtRequest.write(ROUTE);
+	ports_ctr.sourceAddress.write(flit_in->src);
+	ports_ctr.destRequest.write(flit_in->data1);
 	if(LOG >= 4)
 		eventlog<<"\ntime: "<<sc_time_stamp()<<" name: "
 		<<this->name()<<" IC: rtRequest sent!"<<endl;
 	wait();
-	if(rtReady.event()) {
+	if(ports_ctr.rtReady.event()) {
 		if(LOG >= 4)
 			eventlog<<"\ntime: "<<sc_time_stamp()<<" name: "
 			<<this->name()<<" IC: rtReady event..."<<endl;
@@ -458,8 +458,8 @@ void InputChannel::routing_dst(flit *flit_in) {
 			eventlog<<"\ntime: "<<sc_time_stamp()<<" name: "
 			<<this->name()<<" IC: unknown clock event..."<<endl;
 	}
-	vc[vc_id].vc_route = nextRt.read();
-	rtRequest.write(NONE);
+	vc[vc_id].vc_route = ports_ctr.nextRt.read();
+	ports_ctr.rtRequest.write(NONE);
 }
 
 //////////////////////////////////////////////////

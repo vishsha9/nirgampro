@@ -31,7 +31,7 @@
 #ifndef __NOC__
 #define __NOC__
 
-#include "BaseNWTile.h"
+#include "NWTile.h"
 #include "wires.h"
 #include "netlist_analyzer.h"
 #include "extern.h"

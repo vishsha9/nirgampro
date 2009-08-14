@@ -73,7 +73,7 @@ BaseNWTile::BaseNWTile(sc_module_name NWTile, UI id, UI nb): sc_module(NWTile){
 	//////////////////////////////////////////////////////////////////////////
 	// sensitive
 	//////////////////////////////////////////////////////////////////////////
-	SC_THREAD(read);
+	/*SC_THREAD(read);
 	sensitive << clk ;
 	for(int i=0; i<nb_num; i++){
 		sensitive << ip_port[i];
@@ -83,7 +83,7 @@ BaseNWTile::BaseNWTile(sc_module_name NWTile, UI id, UI nb): sc_module(NWTile){
 	}
 
 	SC_THREAD(write);
-	sensitive_pos<<clk;
+	sensitive_pos<<clk;*/
 } // end constructor
 
 bool BaseNWTile::connect(UI nb_id, sc_signal<flit>& sig_from, sc_signal<flit>& sig_to, sc_signal<creditLine> credit_from[NUM_VCS], sc_signal<creditLine> credit_to[NUM_VCS]){
@@ -99,54 +99,54 @@ bool BaseNWTile::connect(UI nb_id, sc_signal<flit>& sig_from, sc_signal<flit>& s
 }
 
 
-
-void BaseNWTile::read(){
-	while(true){
-		wait();
-		for(int i=0; i<nb_num; i++){
-			if (ip_port[i].event())
-			{
-			flit r = ip_port[i].read();
-			readlog << "CLK: " << sc_time_stamp() << "\ttile_" << this->tileID << " port_"<< i <<"\treadflit data:" << r.data4 << "\ttimestamp "<< r.simdata.gtime <<endl;
-
-			}
-
-			/*for(int j = 0; j< NUM_VCS; j++){
-				if(credit_in[i][j].event()){
-					creditLine c = credit_in[i][j].read();
-					readlog << "CLK: " << sc_time_stamp() << "\ttile_" << this->tileID << "\tVC_" << j <<"\treadCreditLine\ttimestamp "<< c.gtime <<endl;
-				}
-			}*/
-		}
-	}
-}
-
-
-void BaseNWTile::write(){
-	int count=0;
-	while(true){
-		wait();
-
-		if(count<nb_num){
-			flit w;
-			w.data4 = count+2;
-			w.simdata.gtime = sc_time_stamp();
-
-			op_port[(count+1)%nb_num].write(w);
-			writelog << "CLK: " << sc_time_stamp() << "\tPort "<< (count+1)%nb_num <<"\ttile_" << this->tileID << " to "<< nb_id[(count+1)%nb_num] <<"\twriteflit data:" << w.data4 << "\ttimestamp "<< w.simdata.gtime << endl;
-			count ++;
-
-		
-			/*for(int i = 0; i< NUM_VCS; i++){
-				creditLine c;
-				c.gtime = sc_time_stamp();
-				credit_out[(count+1)%nb_num][i].write(c);
-				writelog << "CLK: " << sc_time_stamp() << "\ttile_" << this->tileID <<" Port:"<< (count+1)%nb_num <<" VC_"<< i <<"\twriteCreditLine\ttimestamp "<< c.gtime << endl;
-			}
-			count ++;*/
-		}
-	}
-}
+//
+//void BaseNWTile::read(){
+//	while(true){
+//		wait();
+//		for(int i=0; i<nb_num; i++){
+//			if (ip_port[i].event())
+//			{
+//			flit r = ip_port[i].read();
+//			readlog << "CLK: " << sc_time_stamp() << "\ttile_" << this->tileID << " port_"<< i <<"\treadflit data:" << r.data4 << "\ttimestamp "<< r.simdata.gtime <<endl;
+//
+//			}
+//
+//			/*for(int j = 0; j< NUM_VCS; j++){
+//				if(credit_in[i][j].event()){
+//					creditLine c = credit_in[i][j].read();
+//					readlog << "CLK: " << sc_time_stamp() << "\ttile_" << this->tileID << "\tVC_" << j <<"\treadCreditLine\ttimestamp "<< c.gtime <<endl;
+//				}
+//			}*/
+//		}
+//	}
+//}
+//
+//
+//void BaseNWTile::write(){
+//	int count=0;
+//	while(true){
+//		wait();
+//
+//		if(count<nb_num){
+//			flit w;
+//			w.data4 = count+2;
+//			w.simdata.gtime = sc_time_stamp();
+//
+//			op_port[(count+1)%nb_num].write(w);
+//			writelog << "CLK: " << sc_time_stamp() << "\tPort "<< (count+1)%nb_num <<"\ttile_" << this->tileID << " to "<< nb_id[(count+1)%nb_num] <<"\twriteflit data:" << w.data4 << "\ttimestamp "<< w.simdata.gtime << endl;
+//			count ++;
+//
+//		
+//			/*for(int i = 0; i< NUM_VCS; i++){
+//				creditLine c;
+//				c.gtime = sc_time_stamp();
+//				credit_out[(count+1)%nb_num][i].write(c);
+//				writelog << "CLK: " << sc_time_stamp() << "\ttile_" << this->tileID <<" Port:"<< (count+1)%nb_num <<" VC_"<< i <<"\twriteCreditLine\ttimestamp "<< c.gtime << endl;
+//			}
+//			count ++;*/
+//		}
+//	}
+//}
 
 ///////////////////////////////////////////////////////////////////////////
 /// Process sensitive to clock.

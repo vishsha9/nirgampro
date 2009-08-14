@@ -38,6 +38,8 @@
 #include <math.h>
 //#include <dlfcn.h>
 
+#include "InnerSigs.h"
+
 using namespace std;
 
 //////////////////////////////////////////////////////////////////////////
@@ -49,7 +51,7 @@ struct ipcore : public sc_module {
 
 	// PORTS ////////////////////////////////////////////////////
 	sc_in_clk clock;			///< input clock port
-	sc_in<bool> resetn;			// global reset signal
+	//sc_in<bool> resetn;			// global reset signal
 	sc_in<flit> flit_inport;		///< input data/flit port
 	sc_out<flit> flit_outport;		///< ouput data/flit port
 	sc_in<creditLine> credit_in[NUM_VCS];	///<ports to recieve credit info (buffer status)
@@ -58,11 +60,17 @@ struct ipcore : public sc_module {
 	/// Constructor
 	SC_CTOR(ipcore);
 
+	void innerConnect(UI ioId,
+		sc_clock & switch_cntrl,
+		Sigs_IcIp & sigs_icIp,
+		Sigs_OcIp & sigs_ocIp
+		);
+
 	// FUNCTIONS ///////////////////////////////////////////////////
 	void entry(void);			///< process to keep track of simulation count in the module, sensitive to clock
 	virtual void recv(void) = 0;	///< abstract process to recieve flits, sensitive to clock and input flit port
-	virtual void transition(void) = 0;	///< do data exchange and state transition
-	virtual void genMoore(void) = 0;	///< change data acording to state
+//	virtual void transition(void) = 0;	///< do data exchange and state transition
+//	virtual void genMoore(void) = 0;	///< change data acording to state
 	
 	void setID(UI tileID);		///< sets tileID
 	

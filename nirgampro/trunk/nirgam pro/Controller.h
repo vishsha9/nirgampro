@@ -57,20 +57,18 @@ struct Controller : public sc_module {
 	sc_in<request_type>* rtRequest;	///< input ports to recieve route request from ICs
 	sc_in<sc_uint<ADDR_SIZE> > * destRequest;	///< input ports to recieve destination address
 	sc_in<sc_uint<ADDR_SIZE> > * sourceAddress; ///< input ports to recieve source address
-	sc_in<creditLine> (*Icredit)[NUM_VCS];	///< input ports to recieve credit info (buffer info) from ICs
+	sc_in<creditLine> (*credit_in)[NUM_VCS];	///< input ports to recieve credit info (buffer info) from ICs
 	sc_out<bool>* rtReady;		///< output ports to send ready signal to ICs
 	sc_out<port_id> * nextRt;	///< output ports to send routing decision to ICs
 	// PORTS END /////////////////////////////////////////////////////////////////////////////
 	
 
-	bool isCoreIO(UI i);
 	// PROCESSES /////////////////////////////////////////////////////////////////////////////
 	/// sets tile ID and id corresponding to port directions
 	void innerConnect(UI icId,
 					sc_clock & switch_cntrl,
 					Sigs_IcCtl & sigs_IcCtl,
-					sc_sigs_creditLine &creditIC_CS,
-					sc_in<creditLine> (*credit_in)[NUM_VCS]);
+					sc_in_creditLine &creditIC_CS);
 	void setTileID(UI tileID, UI portN, UI portS, UI portE, UI portW);
 	void allocate_route();	///< does routing
 	UI idToDir(UI);		///< returns port id for a given direction (N, S, E, W)

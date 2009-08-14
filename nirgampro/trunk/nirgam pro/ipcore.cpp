@@ -37,24 +37,26 @@ ipcore::ipcore(sc_module_name ipcore): sc_module(ipcore) {
 	ran_var = new RNG((RNG::RNGSources)2,1);
 
 	// process sensitive to clock, sends out flit
-	SC_METHOD(transition);
-	dont_initialize();
-	sensitive << clock.pos();
+//	SC_METHOD(transition);
+//	dont_initialize();
+//	sensitive << clock.pos();
 	
 	// datum will be changed @ falling edge, according to current state 
-	SC_METHOD(genMoore);
-	dont_initialize();
-	sensitive <<  clock.neg();
+//	SC_METHOD(genMoore);
+//	dont_initialize();
+//	sensitive <<  clock.neg();
 	
 	// process sensitive to clock, to keep track of simulation count
 	SC_THREAD(entry);
 	dont_initialize();
 	sensitive << clock.pos();
 	
+
+
 	// process sensitive to clock and inport event, recieves incoming flit
-	SC_METHOD(recv);
-	dont_initialize();
-	sensitive << flit_inport << clock;
+	//SC_METHOD(recv);
+	//dont_initialize();
+	//sensitive << flit_inport << clock;
 
 }
 

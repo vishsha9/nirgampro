@@ -2,7 +2,7 @@
 #define _Extern_H_
 
 #include <string>
-
+#include "typedef.h"
 //global clock and reset signal
 //extern sc_clock g_CLK;	
 //extern sc_signal<bool> g_RESETN;
@@ -12,7 +12,7 @@
 //extern int num_cols;		///< number of columns in topology
 //extern int num_tiles;		///< number of tiles in topology
 
-//extern routing_type RT_ALGO;	///< routing algorithm
+extern routing_type RT_ALGO;	///< routing algorithm
 
 extern int LOG;			///< log level (0 - 4)
 
@@ -35,5 +35,7 @@ extern double CLK_PERIOD;	///< clock period (in ns)
 extern ofstream eventlog;	///< file stream to log events
 //extern sc_trace_file* tracefile;///< file stream to generate vcd trace
 //extern ofstream results_log;	///< file stream to log results
+
+extern string* app_libname;
 
 #endif

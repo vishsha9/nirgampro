@@ -145,7 +145,7 @@ void OutputChannel ::entry() {
 			}
 
 			// if any r_vc got free, move any waiting flits from r_in to r_vc
-			for(UI i = 0; i <= io_num; i++) 
+			for(UI i = 0; i < io_num; i++) 
 			{
 				if(!r_in[i].free) 
 				{

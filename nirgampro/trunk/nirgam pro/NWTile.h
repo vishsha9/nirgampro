@@ -52,6 +52,7 @@ struct NWTile : public BaseNWTile{
 	Sigs_OcIp sigs_OcIp;
 	sc_sigs_creditLine creditIC_CS;
 	
+	bool NWTile::isCoreIO(UI i);
 	void innerConnect();
 };
 

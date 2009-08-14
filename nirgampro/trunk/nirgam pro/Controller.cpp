@@ -35,7 +35,7 @@ Controller::Controller(sc_module_name Controller, UI io_num): sc_module(Controll
 	rtRequest = new sc_in<request_type>[io_num];
 	destRequest = new sc_in<sc_uint<ADDR_SIZE> >[io_num];
 	sourceAddress = new sc_in<sc_uint<ADDR_SIZE> >[io_num];
-	Icredit = new sc_in<creditLine>[io_num][NUM_VCS];
+	credit_in = new sc_in<creditLine>[io_num][NUM_VCS];
 	rtReady = new sc_out<bool>[io_num];
 	nextRt = new sc_out<port_id>[io_num];
 
@@ -69,17 +69,12 @@ Controller::Controller(sc_module_name Controller, UI io_num): sc_module(Controll
 		sensitive << rtRequest[i];
 }
 
-bool Controller::isCoreIO(UI i){
-	return i == io_num -1 ;
-}
-
 void Controller::innerConnect
-(	UI ioId,
- sc_core::sc_clock &switch_cntrl, 
- Sigs_IcCtl &sigs_IcCtl, 
- sc_sigs_creditLine &creditIC_CS, 
- sc_core::sc_in<creditLine> (*credit_in)[NUM_VCS]
-){
+(UI ioId,
+ sc_clock & switch_cntrl,
+ Sigs_IcCtl & sigs_IcCtl,
+ sc_in_creditLine &creditIC_CS)
+{
 	this->switch_cntrl(switch_cntrl);
 	this->rtRequest[ioId](sigs_IcCtl.rtReq);
 	this->destRequest[ioId](sigs_IcCtl.destReq);
@@ -88,12 +83,8 @@ void Controller::innerConnect
 	this->nextRt[ioId](sigs_IcCtl.nextRt);
 	for (UI j=0; j<NUM_VCS; j++)
 	{
-		if (isCoreIO(ioId))
-			this->Icredit[ioId][j](creditIC_CS[j]);
-		else
-			this->Icredit[ioId][j](credit_in[ioId][j]);
+		this->credit_in[ioId][j](creditIC_CS[j]);
 	}
-
 }
 
 ///////////////////////////////////////////////////////////////////////////
