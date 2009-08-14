@@ -19,6 +19,8 @@ ofstream delaylogout;
 ofstream eventlog;
 int  LOG = 0;				///< log level
 
+routing_type RT_ALGO = XY;
+
 int NUM_BUFS = 8;	///< buffer depth (number of buffers) in input channel fifo
 //int FLITSIZE = 5;	///< size of flit in bytes
 //int HEAD_PAYLOAD = 1;	///< payload size (in bytes) in head/hdt flit
@@ -28,10 +30,34 @@ ULL WARMUP = 5;		///< warmup period (in clock cycles)
 ULL SIM_NUM = 30;	///< Simulation cycles
 ULL TG_NUM = 1000;	///< clock cycles until which traffic is generated
 
+string* app_libname;
 int num_tiles;
 
-int sc_main(int argc, char *argv[]) {
+void loadApp(int num_tiles){
+	app_libname = new string[num_tiles];
+	for(int i = 0; i < num_tiles; i++) {
+		app_libname[i] = string("NULL");
+	}
+	string app_filename = string("config/application.config");
+	ifstream app_fil;
+	app_fil.open(app_filename.c_str());
+	if(!app_fil.is_open()){
+		cout<<"Error: File application.config could not be opened." << endl;
+		exit(-1);
+	}
+	int id;
+	string libname;
+	while(app_fil >> id >> libname) {
+		app_libname[id] = libname;
+		if(app_fil.fail()){
+			cout<<"Error: Load Application Config Error." << endl;
+			exit(-1);
+		}
+	}
+	app_fil.close();
+}
 
+int sc_main(int argc, char *argv[]) {
 	sc_report_handler::set_actions("/IEEE_Std_1666/deprecated", SC_DO_NOTHING);
 	cout<<"---------------------------------------------------------------------------"<<endl;
 	cout<<"  NIRGAM: Simulator for NoC lite Interconnect RoutinG and Application Modeling\n";
@@ -63,6 +89,9 @@ int sc_main(int argc, char *argv[]) {
 
 	AdjList* a = analyze("a.nfn", cout);
 	num_tiles = a->nodeNum;
+	
+	loadApp(num_tiles);
+
 	NoC noc("noc", a);
 	noc.switch_cntrl(*nw_clock);
 	

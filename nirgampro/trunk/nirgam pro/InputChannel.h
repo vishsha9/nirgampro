@@ -59,6 +59,27 @@ struct  VC {
 ///
 /// This module defines an Input Channel in a network tile
 //////////////////////////////////////////////////////////////////////////
+
+struct ports_IC_VCA{
+	sc_out<bool> vcRequest;		///< output port for sending request to VCA
+	sc_in<bool> vcReady;		///< input port for ready signal from VCA
+	sc_in<sc_uint<VCS_BITSIZE+1>>	nextVCID;	///< input port to recieve next VCID from VCA
+	sc_out<port_id>  opRequest;	///< output port for sending OC requested to VCA
+};
+
+struct ports_IC_CTR{
+	sc_out<request_type> rtRequest;		///< output port to send request to Controller
+	sc_in<bool> rtReady;				///< input port to recieve ready signal from Controller
+	sc_out<addr> destRequest;	///< output port to send destination address to Controller
+	sc_out<addr> sourceAddress;	///< output port to send source address to Controller
+	sc_in<port_id> nextRt;		///< input port to recieve routing decision (next hop) from Controller
+};
+
+struct ports_IC_OC{
+	sc_out<flit>* outport;		///< ouput data/flit ports (one for each output channel)
+	sc_in<bool>* outReady;		///< input ports for ready signal from OCs
+};
+
 struct InputChannel : public sc_module {
 	/// Constructor
 	SC_HAS_PROCESS(InputChannel);
@@ -71,22 +92,13 @@ struct InputChannel : public sc_module {
 
 	sc_in<flit> inport;			///< input data/flit port
 	
-	sc_out<flit>* outport;		///< ouput data/flit ports (one for each output channel)
-	sc_in<bool>* outReady;		///< input ports for ready signal from OCs
-
-	sc_out<bool> vcRequest;		///< output port for sending request to VCA
-	sc_in<bool> vcReady;		///< input port for ready signal from VCA
-
 	// format 2->3
-	sc_out<port_id>  opRequest;	///< output port for sending OC requested to VCA
-	sc_in<sc_uint<VCS_BITSIZE+1>>	nextVCID;	///< input port to recieve next VCID from VCA
-	
+	ports_IC_OC ports_oc;
+	ports_IC_VCA ports_VCA;
+	ports_IC_CTR ports_ctr;
+
 	sc_out<creditLine> credit_out[NUM_VCS];		///< output ports to send credit info (buffer status) to OC, VCA and Ctr
-	sc_out<request_type> rtRequest;		///< output port to send request to Controller
-	sc_in<bool> rtReady;				///< input port to recieve ready signal from Controller
-	sc_out<addr> destRequest;	///< output port to send destination address to Controller
-	sc_out<addr> sourceAddress;	///< output port to send source address to Controller
-	sc_in<port_id> nextRt;		///< input port to recieve routing decision (next hop) from Controller
+	
 	// PORTS END //////////////////////////////////////////////////////////////////////////////
 	
 	

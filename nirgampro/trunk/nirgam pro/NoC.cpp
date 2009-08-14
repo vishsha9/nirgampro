@@ -70,7 +70,7 @@ NoC::NoC(sc_module_name NoC, AdjList* a): sc_module(NoC) {
 	for (int i=0; i<a->nodeNum; i++){
 		Node * node = a->nodes[i];
 		string name = "tile" +string(1, node->nodeId+'0');
-		BaseNWTile * tile = new BaseNWTile(name.c_str(), node->nodeId, node->adjNum);
+		BaseNWTile * tile = new NWTile(name.c_str(), node->nodeId, node->adjNum);
 		tile->clk(switch_cntrl);
 		nwtile.push_back(tile);
 	}

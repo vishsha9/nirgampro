@@ -16,7 +16,7 @@ struct Sigs_IcCtl{
 
 struct Sigs_IcVca{
 	sc_signal<bool> vcReq;
-	sc_signal<addr> opReq;
+	sc_signal<port_id> opReq;
 	sc_signal<bool> vcReady;
 	sc_signal<sc_uint<VCS_BITSIZE+1> >	nextvc;
 };

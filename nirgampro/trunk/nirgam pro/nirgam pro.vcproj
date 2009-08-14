@@ -244,12 +244,32 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="IP"
+				>
+				<File
+					RelativePath=".\App\App_test_recv.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\App\App_test_send.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Router"
+				>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Í·ÎÄ¼þ"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath=".\app_inc.h"
+				>
+			</File>
 			<Filter
 				Name="NWTile"
 				>
@@ -341,6 +361,22 @@
 					RelativePath=".\wires.h"
 					>
 				</File>
+			</Filter>
+			<Filter
+				Name="IP"
+				>
+				<File
+					RelativePath=".\App\App_test_recv.h"
+					>
+				</File>
+				<File
+					RelativePath=".\App\App_test_send.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Router"
+				>
 			</Filter>
 		</Filter>
 		<Filter
