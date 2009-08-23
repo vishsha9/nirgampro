@@ -133,10 +133,6 @@ sc_uint<VCS_BITSIZE+1> VCAllocator::getNextVCID (int dir, int dir_from) {
 ///////////////////////////////////////////////////////////////////////////
 /// Method to assign tile IDs and port IDs
 ///////////////////////////////////////////////////////////////////////////
-void VCAllocator::setTileID(UI id, UI port_N, UI port_S, UI port_E, UI port_W){
+void VCAllocator::setTileID(UI id){
 	tileID = id;
-	//portN = port_N;
-	//portS = port_S;
-	//portE = port_E;
-	//portW = port_W;
 }

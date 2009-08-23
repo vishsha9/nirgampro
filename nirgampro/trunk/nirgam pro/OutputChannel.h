@@ -85,7 +85,7 @@ struct OutputChannel : public sc_module {
 	void entry();			///< reads and processes incoming flit
 	void closeLogs();		///< closes logfiles at the end of simulation and computes performance stats
 	/// sets tile ID and id corresponding to port directions
-	void setTileID(UI tileID, UI portN, UI portS, UI portE, UI portW);
+	void setTileID(UI tileID);
 	// PROCESSES END //////////////////////////////////////////////////////////////////////////////////////////
 	
 	// VARIABLES //////////////////////////////////////////////////////////////////////////////////////////

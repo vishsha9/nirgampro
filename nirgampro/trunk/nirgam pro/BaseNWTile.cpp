@@ -62,12 +62,7 @@ BaseNWTile::BaseNWTile(sc_module_name NWTile, UI id, UI nb): sc_module(NWTile){
 	credit_in = new sc_in<creditLine>[nb_num][NUM_VCS];
 	credit_out = new sc_out<creditLine>[nb_num][NUM_VCS];
 
-	nb_id = new UI[nb_num];
-
-	for (int i=0; i<nb_num; i++)
-	{
-		nb_id[i] = -1;
-	}
+	//nb_id = new UI[nb_num];
 
 
 	//////////////////////////////////////////////////////////////////////////
@@ -93,8 +88,9 @@ bool BaseNWTile::connect(UI nb_id, sc_signal<flit>& sig_from, sc_signal<flit>& s
 		credit_out[nb_initPtr][i](credit_from[i]);
 		credit_in[nb_initPtr][i](credit_to[i]);
 	}
-	this->nb_id[nb_initPtr] = nb_id;
 	nb_initPtr++;
+
+	this->nb_id.push_back(nb_id);
 	return true;
 }
 

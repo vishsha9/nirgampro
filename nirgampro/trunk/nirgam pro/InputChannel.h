@@ -121,7 +121,7 @@ struct InputChannel : public sc_module {
 
 	void transmit_flit();		///< transmits flit at the front of fifo to output port
 	/// sets tile ID and id corresponding to port directions
-	void setTileID(UI tileID, UI portN, UI portS, UI portE, UI portW, UI portU, UI portD);
+	void setTileID(UI tileID);
 	void resetCounts();			///< resets buffer counts to zero
 	void closeLogs();			///< closes logfiles
 

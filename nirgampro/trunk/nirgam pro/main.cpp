@@ -27,11 +27,13 @@ int NUM_BUFS = 8;	///< buffer depth (number of buffers) in input channel fifo
 //int DATA_PAYLOAD = 4;	///< payload size (in bytes) in data/tail flit
 
 ULL WARMUP = 5;		///< warmup period (in clock cycles)
-ULL SIM_NUM = 30;	///< Simulation cycles
+ULL SIM_NUM = 3000;	///< Simulation cycles
 ULL TG_NUM = 1000;	///< clock cycles until which traffic is generated
 
 string* app_libname;
 int num_tiles;
+
+NoC *g_noc;
 
 void loadApp(int num_tiles){
 	app_libname = new string[num_tiles];
@@ -59,9 +61,13 @@ void loadApp(int num_tiles){
 
 int sc_main(int argc, char *argv[]) {
 	sc_report_handler::set_actions("/IEEE_Std_1666/deprecated", SC_DO_NOTHING);
+	
+
 	cout<<"---------------------------------------------------------------------------"<<endl;
 	cout<<"  NIRGAM: Simulator for NoC lite Interconnect RoutinG and Application Modeling\n";
 	cout<<"---------------------------------------------------------------------------"<<endl;
+
+	system("set SC_SIGNAL_WRITE_CHECK=\"DISABLE\"");
 
 	eventlog.open("eventlog.log");
 	if(!eventlog.is_open()){
@@ -93,12 +99,26 @@ int sc_main(int argc, char *argv[]) {
 	loadApp(num_tiles);
 
 	NoC noc("noc", a);
+	g_noc = &noc;
 	noc.switch_cntrl(*nw_clock);
 	
 	string trace_filename = string("trace");
 	tracefile = sc_create_vcd_trace_file(trace_filename.c_str());
 
 	sc_trace(tracefile, noc.switch_cntrl, "clk");
+	for (int i=0; i<noc.sigs.size(); i++)
+	{
+		string name =	string("wire_from_") +
+						string(1, noc.sigs[i]->tileID_1+'0') +
+						string("_to_") + 
+						string(1, noc.sigs[i]->tileID_2+'0');
+		sc_trace(tracefile, noc.sigs[i]->sig_from1, name);
+		name =	string("wire_from_") +
+			string(1, noc.sigs[i]->tileID_2+'0') +
+			string("_to_") + 
+			string(1, noc.sigs[i]->tileID_1+'0');
+		sc_trace(tracefile, noc.sigs[i]->sig_from2, name);
+	}
 	sc_start();	// begin simulation
 	sc_close_vcd_trace_file(tracefile); 
 

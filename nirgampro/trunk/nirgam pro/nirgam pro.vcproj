@@ -29,6 +29,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
+				CommandLine="set SC_SIGNAL_WRITE_CHECK=&quot;DISABLE&quot;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -259,6 +260,10 @@
 			<Filter
 				Name="Router"
 				>
+				<File
+					RelativePath=".\Router\router_test.cpp"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter
@@ -268,6 +273,10 @@
 			>
 			<File
 				RelativePath=".\app_inc.h"
+				>
+			</File>
+			<File
+				RelativePath=".\router_inc.h"
 				>
 			</File>
 			<Filter
@@ -377,6 +386,10 @@
 			<Filter
 				Name="Router"
 				>
+				<File
+					RelativePath=".\Router\router_test.h"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter

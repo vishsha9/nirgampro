@@ -95,7 +95,8 @@ NoC::~NoC(){
 wires* NoC::connect(sc_module_name wire_name, UI length, BaseNWTile* tile1, BaseNWTile * tile2){
 	wires* w_1to2 = new wires(wire_name, length); 
 	w_1to2->clk(switch_cntrl);
-	
+	w_1to2->setTileID(tile1->tileID, tile2->tileID);
+
 	tile1->connect(tile2->tileID, 
 					w_1to2->sig_from2,
 					w_1to2->sig_to2,
