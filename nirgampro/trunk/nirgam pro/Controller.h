@@ -49,7 +49,7 @@ using namespace std;
 struct Controller : public sc_module {
 	/// Constructor
 	SC_HAS_PROCESS(Controller);
-	Controller(sc_module_name Controller, UI io_num);
+	Controller(sc_module_name Controller, UI io_num, vector<UI> * nb_id);
 
 	UI io_num;
 	// PORTS ////////////////////////////////////////////////////////////////////////////////
@@ -65,11 +65,8 @@ struct Controller : public sc_module {
 
 	// PROCESSES /////////////////////////////////////////////////////////////////////////////
 	/// sets tile ID and id corresponding to port directions
-	void innerConnect(UI icId,
-					sc_clock & switch_cntrl,
-					Sigs_IcCtl & sigs_IcCtl,
-					sc_in_creditLine &creditIC_CS);
-	void setTileID(UI tileID, UI portN, UI portS, UI portE, UI portW);
+	vector<UI> * nb_id;
+	void setTileID(UI tileID);
 	void allocate_route();	///< does routing
 	UI idToDir(UI);		///< returns port id for a given direction (N, S, E, W)
 	UI dirToId(UI);		///< returns direction (N, S, E, W) corresponding to a given port id

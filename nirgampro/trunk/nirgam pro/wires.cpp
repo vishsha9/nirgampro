@@ -39,8 +39,14 @@ wires::wires(sc_module_name wires, UI length): sc_module(wires){
 	{
 	sensitive << e_crd_1[i] << e_crd_2[i];
 	}*/
+	tileID_1 = 0xFF;
+	tileID_2 = 0xFF;
 }
 
+void wires::setTileID(UI tileID_1, UI tileID_2){
+	this->tileID_1 = tileID_1;
+	this->tileID_2 = tileID_2;
+}
 
 void wires::doDelaySig1(){
 	flit f_1to2;

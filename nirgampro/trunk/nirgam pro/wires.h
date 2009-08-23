@@ -31,6 +31,7 @@ struct wires : public sc_module {
 	void doDelayCrd1();
 	void doDelayCrd2();
 
+	void setTileID(UI tileID_1, UI tileID_2);
 	/////
 	/*sc_event e_sig_1;
 	sc_event e_sig_2;

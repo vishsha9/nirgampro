@@ -31,6 +31,7 @@
 //#include "../config/constants.h"
 #include "flit.h"
 #include "credit.h"
+#include <vector>
 //#include "InputChannel.h"
 //#include "OutputChannel.h"
 //#include "VCAllocator.h"
@@ -64,7 +65,7 @@ struct BaseNWTile: public sc_module {
 	UI tileID;
 
 	UI nb_num;
-	UI* nb_id;
+	vector<UI> nb_id;
 
 	UI nb_initPtr;
 

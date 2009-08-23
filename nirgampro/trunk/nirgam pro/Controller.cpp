@@ -26,12 +26,14 @@
 
 #include "Controller.h"
 #include "extern.h"
+#include "router_inc.h"
 
 ////////////////////////
 /// Constructor
 ////////////////////////
-Controller::Controller(sc_module_name Controller, UI io_num): sc_module(Controller) {
+Controller::Controller(sc_module_name Controller, UI io_num, vector<UI> * nb_id): sc_module(Controller) {
 	this->io_num = io_num;
+	this->nb_id = nb_id;
 	rtRequest = new sc_in<request_type>[io_num];
 	destRequest = new sc_in<sc_uint<ADDR_SIZE> >[io_num];
 	sourceAddress = new sc_in<sc_uint<ADDR_SIZE> >[io_num];
@@ -44,6 +46,7 @@ Controller::Controller(sc_module_name Controller, UI io_num): sc_module(Controll
 
 	string libname = string("./router/lib/");
 
+	rtable = new router_test(nb_id);
 	/*switch(RT_ALGO) {
 	case OE: //tg = new BurstyTraffic("TG");
 	libname = libname + string("OE_router.so");
@@ -67,24 +70,6 @@ Controller::Controller(sc_module_name Controller, UI io_num): sc_module(Controll
 	SC_THREAD(allocate_route);
 	for(UI i = 0; i < io_num; i++)
 		sensitive << rtRequest[i];
-}
-
-void Controller::innerConnect
-(UI ioId,
- sc_clock & switch_cntrl,
- Sigs_IcCtl & sigs_IcCtl,
- sc_in_creditLine &creditIC_CS)
-{
-	this->switch_cntrl(switch_cntrl);
-	this->rtRequest[ioId](sigs_IcCtl.rtReq);
-	this->destRequest[ioId](sigs_IcCtl.destReq);
-	this->sourceAddress[ioId](sigs_IcCtl.srcAddr);
-	this->rtReady[ioId](sigs_IcCtl.rtReady);
-	this->nextRt[ioId](sigs_IcCtl.nextRt);
-	for (UI j=0; j<NUM_VCS; j++)
-	{
-		this->credit_in[ioId][j](creditIC_CS[j]);
-	}
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -122,13 +107,9 @@ void Controller::allocate_route() {
 ///////////////////////////////////////////////////////////////////////////
 /// Method to assign tile IDs and port IDs
 ///////////////////////////////////////////////////////////////////////////
-void Controller::setTileID(UI id, UI port_N, UI port_S, UI port_E, UI port_W) {
-	/*tileID = id;
-	portN = port_N;
-	portS = port_S;
-	portE = port_E;
-	portW = port_W;
-	rtable->setID(id);*/
+void Controller::setTileID(UI id) {
+	tileID = id;
+	rtable->setID(id);
 }
 
 /////////////////////////////////////////////////////////////////////

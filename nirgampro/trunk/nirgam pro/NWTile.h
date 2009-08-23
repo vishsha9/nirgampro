@@ -50,10 +50,11 @@ struct NWTile : public BaseNWTile{
 	Sigs_IcVca* sigs_IcVca;
 	Sigs_IcCtl* sigs_IcCtl;
 	Sigs_OcIp sigs_OcIp;
-	sc_sigs_creditLine creditIC_CS;
+	sc_signal<creditLine>	creditIC_CS[NUM_VCS];
 	
 	bool NWTile::isCoreIO(UI i);
 	void innerConnect();
+	void setID(UI id);
 };
 
 #endif

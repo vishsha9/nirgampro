@@ -60,7 +60,8 @@ InputChannel::InputChannel(sc_module_name InputChannel, UI io_num): sc_module(In
 		vc[i].vcQ.pntr = 0;
 		vc[i].vcQ.full = false;
 		vc[i].vcQ.empty = true;
-		vc[i].vc_route = 5;
+		//vc[i].vc_route = 5;
+		vc[i].vc_route = io_num;
 		vc[i].vc_next_id = NUM_VCS + 1;
 	}
 
@@ -127,12 +128,12 @@ void InputChannel :: route_flit()
 			sim_count++;
 
 			ULL vc_to_serve;
-			if(cntrlID == this->io_num)	// assuming only 1 VC at IchannelC
+			if( isCoreIO(cntrlID) )	// assuming only 1 VC at IchannelC
 				vc_to_serve = 0;
 			else
 				vc_to_serve = (sim_count-1) % NUM_VCS;	// serving VCs in round robin manner
 
-			if(vc[vc_to_serve].vc_route == 5) // route not set, require routing
+			if(vc[vc_to_serve].vc_route == io_num) // route not set, require routing
 			{	
 				if(vc[vc_to_serve].vcQ.empty == false) 
 				{	
@@ -164,6 +165,7 @@ void InputChannel :: route_flit()
 		}
 	}
 }
+
 bool InputChannel::isCoreIO(UI i){
 	return i == io_num -1 ;
 }
@@ -197,7 +199,7 @@ void InputChannel :: transmit_flit() {
 			else
 				vc_to_serve = (sim_count-1) % NUM_VCS;
 
-			if(vc[vc_to_serve].vc_route == 5)	// routing decision pending, before transmission
+			if(vc[vc_to_serve].vc_route == io_num)	// routing decision pending, before transmission
 				continue;
 
 			// Routing decision has been made, proceed to transmission
@@ -334,7 +336,7 @@ void InputChannel :: transmit_flit() {
 						creditLine t; t.freeVC = true; t.freeBuf = true;
 						credit_out[vc_to_serve].write(t);
 						//if(cntrlID == C)
-						vc[vc_to_serve].vc_route = 5;
+						vc[vc_to_serve].vc_route = io_num;
 					}
 					else {
 						creditLine t; t.freeVC = false; t.freeBuf = true;
@@ -355,12 +357,8 @@ void InputChannel :: transmit_flit() {
 ///////////////////////////////////////////////////////////////////////////
 /// Method to assign tile IDs and port IDs
 ///////////////////////////////////////////////////////////////////////////
-void InputChannel::setTileID(UI id, UI port_N, UI port_S, UI port_E, UI port_W, UI portU, UI portD) {
+void InputChannel::setTileID(UI id) {
 	tileID = id;
-	/*portN = port_N;
-	portS = port_S;
-	portE = port_E;
-	portW = port_W;*/
 	resetCounts();
 }
 

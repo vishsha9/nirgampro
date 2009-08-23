@@ -7,8 +7,7 @@ bool NWTile::isCoreIO(UI i){
 
 NWTile::NWTile(sc_module_name NWTile, UI tileID, UI nb_num) : BaseNWTile(NWTile, tileID, nb_num),
 vcAlloc("VA", nb_num+1),
-ctr("Controller", nb_num+1){
-	this->tileID = tileID;
+ctr("Controller", nb_num+1, &nb_id){
 	this->nb_num = nb_num;
 	this->io_num = nb_num + 1;
 
@@ -44,7 +43,9 @@ ctr("Controller", nb_num+1){
 			cout<<"error: no such APP"<<endl;
 			exit(-1);
 		}
+		ip->tileID = tileID;
 	}
+	setID(tileID);
 
 	innerConnect();
 }
@@ -139,10 +140,29 @@ void NWTile::innerConnect(){
 				Ochannel[i]->credit_in[j](credit_in[i][j]);
 		}
 	}
+	if(app_libname[tileID] != "NULL") {
+		ip->clock(*nw_clock);
+		ip->flit_inport(sigs_OcIp.flit_OC_CR);
+		ip->flit_outport(sigs_IcIp.flit_CS_IC);
+		for (UI i = 0; i < NUM_VCS; i++)
+			ip->credit_in[i](creditIC_CS[i]);
+	}
+}
 
-	ip->clock(*nw_clock);
-	ip->flit_inport(sigs_OcIp.flit_OC_CR);
-	ip->flit_outport(sigs_IcIp.flit_CS_IC);
-	for (UI i = 0; i < NUM_VCS; i++)
-		ip->credit_in[i](creditIC_CS[i]);
+
+void NWTile::setID(UI id) {
+	tileID = id;
+
+	for(int i = 0; i < io_num; i++)
+		Ichannel[i]->setTileID(id);
+
+	for(int i = 0; i < io_num; i++)
+		Ochannel[i]->setTileID(id);
+
+	vcAlloc.setTileID(id);
+
+	if(app_libname[id] != "NULL")
+		ip->setID(id);
+
+	ctr.setTileID(id);
 }

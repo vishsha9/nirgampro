@@ -71,7 +71,7 @@ struct VCAllocator : public sc_module {
 	void allocate_VC();	///< process sensitive to VC request
 	void update_credit();	///< process sensitive to credit input,  updates credit (buffer status)
 	/// sets tile ID and id corresponding to port directions
-	void setTileID(UI tileID, UI portN, UI portS, UI portE, UI portW);
+	void setTileID(UI tileID);
 	sc_uint<VCS_BITSIZE+1> getNextVCID(int,int);	///< allocates vcid in the requested channel
 	// FUNCTIONS END /////////////////////////////////////////////////////////////////////////////
 	
