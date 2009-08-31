@@ -1,7 +1,5 @@
 #include <math.h>
 #include <stdio.h>
-#include <stdlib.h>
-
 //////////////////////////////////////////////////////////////////////////
 // PTM interconnect
 // For top global layer (Coupling lines above one metal ground),
