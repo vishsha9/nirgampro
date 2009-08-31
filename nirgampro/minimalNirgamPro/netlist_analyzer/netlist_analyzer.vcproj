@@ -179,6 +179,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\main.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\netlist_analyzer.cpp"
 				>
 			</File>

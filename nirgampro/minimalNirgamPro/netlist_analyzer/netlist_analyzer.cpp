@@ -278,8 +278,3 @@ AdjList* analyze(string filename, ostream & msg){
 	
 	return a;
 } 
-
-void main(){
-	AdjList* a;
-	a = analyze("a.nfn", cout);
-}

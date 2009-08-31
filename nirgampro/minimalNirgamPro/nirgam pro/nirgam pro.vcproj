@@ -173,7 +173,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\adjList.cpp"
+				RelativePath="..\netlist_analyzer\adjList.cpp"
 				>
 			</File>
 			<File
@@ -181,7 +181,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\netlist_analyzer.cpp"
+				RelativePath="..\netlist_analyzer\netlist_analyzer.cpp"
 				>
 			</File>
 			<File
@@ -189,7 +189,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\notation.cpp"
+				RelativePath="..\Notation\notation.cpp"
 				>
 			</File>
 			<File
@@ -231,7 +231,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\netlist_analyzer.h"
+				RelativePath="..\netlist_analyzer\netlist_analyzer.h"
 				>
 			</File>
 			<File
@@ -239,7 +239,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\notation.h"
+				RelativePath="..\Notation\notation.h"
 				>
 			</File>
 			<File

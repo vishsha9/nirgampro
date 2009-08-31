@@ -29,11 +29,11 @@ AdjList::AdjList(int nodeNum){
 	this->nodeNum = nodeNum;
 }
 AdjList::~AdjList(){
-	for (int i=0; i<this->nodes.size(); i++)
+	for (unsigned int i=0; i<this->nodes.size(); i++)
 	{
 		delete nodes[i];
 	}
-	for (int i=0; i<this->edges.size(); i++)
+	for (unsigned int i=0; i<this->edges.size(); i++)
 	{
 		delete edges[i];
 	}
