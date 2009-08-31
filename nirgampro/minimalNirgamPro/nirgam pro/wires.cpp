@@ -1,15 +1,7 @@
 #include "wires.h"
 
-wires::wires(sc_module_name wires, UI length): sc_module(wires){
-	this->length = length;
-	this->delay_time = getDelay(this->length);
-
-
-	/*SC_THREAD(delay_sig);
-	for(int i=0; i< NUM_VCS ; i++){
-	sensitive << credit_from1[0] << credit_from2[0];
-	}
-	sensitive<< clk << sig_from1<< sig_from2;*/
+wires::wires(sc_module_name wires): sc_module(wires){
+	delayTime = 0;
 
 	SC_THREAD(doDelaySig1);
 	sensitive<< sig_from1;
@@ -26,6 +18,13 @@ wires::wires(sc_module_name wires, UI length): sc_module(wires){
 	for(int i=0; i< NUM_VCS ; i++){
 		sensitive << credit_from2[i];
 	}
+
+	//this->length = length;
+	/*SC_THREAD(delay_sig);
+	for(int i=0; i< NUM_VCS ; i++){
+	sensitive << credit_from1[0] << credit_from2[0];
+	}
+	sensitive<< clk << sig_from1<< sig_from2;*/
 
 	/*SC_THREAD(notify);
 	for(int i=0; i< NUM_VCS ; i++){
@@ -50,7 +49,7 @@ void wires::doDelaySig1(){
 			f_1to2 = sig_from1.read();
 			delaylogin << "CLK: " << sc_time_stamp() << "\twire readflit from 1 data:" << f_1to2.data4<< "\ttimestamp "<< f_1to2.simdata.gtime  << endl;
 		}
-		wait(delay_time, SC_PS);
+		wait(delayTime, SC_PS);
 		sig_to2.write(f_1to2);
 		delaylogout << "write\tCLK: " << sc_time_stamp() << "\twire writeflit from 1 data:" << f_1to2.data4<< "\ttimestamp "<< f_1to2.simdata.gtime  << endl;
 	}
@@ -64,7 +63,7 @@ void wires::doDelaySig2(){
 			f_2to1 = sig_from2.read();
 			delaylogin << "CLK: " << sc_time_stamp() << "\twire readflit from 2 data:" << f_2to1.data4<< "\ttimestamp "<< f_2to1.simdata.gtime  << endl;
 		}
-		wait(delay_time, SC_PS);
+		wait(delayTime, SC_PS);
 		sig_to1.write(f_2to1);
 		delaylogout << "write\tCLK: " << sc_time_stamp() << "\twire writeflit from 2 data:" << f_2to1.data4<< "\ttimestamp "<< f_2to1.simdata.gtime  << endl;
 	}
@@ -84,7 +83,7 @@ void wires::doDelayCrd1(){
 			else
 				inflag[i] = false;
 		}
-		wait(delay_time, SC_PS);
+		wait(delayTime, SC_PS);
 		for(int i=0; i<NUM_VCS; i++){
 			if(inflag[i]){
 				credit_to2[i].write(c_1to2[i]);
@@ -108,7 +107,7 @@ void wires::doDelayCrd2(){
 			else
 				inflag[i] = false;
 		}
-		wait(delay_time, SC_PS);
+		wait(delayTime, SC_PS);
 		for(int i=0; i<NUM_VCS; i++){
 			if(inflag[i]){
 				credit_to1[i].write(c_2to1[i]);
@@ -119,12 +118,7 @@ void wires::doDelayCrd2(){
 }
 
 
-UI wires::getDelay(UI length){
-	// add your code here to descript wire delay behavior
-	return length;
-}
-
-
+/*
 void wires::delay(){
 
 	//map<int, flit> map1to2;
@@ -237,11 +231,9 @@ void wires::delay(){
 		}
 	}
 }
+*/
 
 
-
-
-/////
 /*
 void wires::notify(){
 while(true)
