@@ -189,6 +189,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\notation.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\NWTile.cpp"
 				>
 			</File>
@@ -196,6 +200,18 @@
 				RelativePath=".\wires.cpp"
 				>
 			</File>
+			<Filter
+				Name="wires"
+				>
+				<File
+					RelativePath=".\ptmWire.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\simpleWire.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="头文件"
@@ -223,6 +239,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\notation.h"
+				>
+			</File>
+			<File
 				RelativePath=".\NWTile.h"
 				>
 			</File>
@@ -230,6 +250,18 @@
 				RelativePath=".\wires.h"
 				>
 			</File>
+			<Filter
+				Name="wires"
+				>
+				<File
+					RelativePath=".\ptmWire.h"
+					>
+				</File>
+				<File
+					RelativePath=".\simpleWire.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="资源文件"

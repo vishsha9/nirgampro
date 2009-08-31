@@ -48,7 +48,7 @@ AdjList* analyze(string filename, ostream & msg){
 
 	input.open(filename.c_str());
 	if(!input){
-		showError(msg, "Can't find netlist file" + filename);
+		showError(msg, "Can't find netlist file " + filename);
 		return NULL;
 	}
 	showMsg(msg, "Input file: "+filename);

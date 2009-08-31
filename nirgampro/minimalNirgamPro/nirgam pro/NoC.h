@@ -32,7 +32,7 @@
 #define __NOC__
 
 #include "NWTile.h"
-#include "wires.h"
+#include "simpleWire.h"
 #include "netlist_analyzer.h"
 //#include "../config/extern.h"
 

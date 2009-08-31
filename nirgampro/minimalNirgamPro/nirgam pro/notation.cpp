@@ -1,12 +1,4 @@
-#include <iostream>
-#include <string>
-
-using namespace std;
-
-enum DEC_NOTATION{
-	T, G, M, K, m, u, n, p, f, NF
-};
-
+#include "notation.h"
 const char * decemalNum="0123456789";
 const char * decemalChar=".0123456789e+-";
 const char * notationChar="TGMKmunpf";
@@ -117,9 +109,4 @@ double strToValue(string s){
 		ret = ret * suffix;
 	}
 	return ret;
-}
-
-void main(){
-	double a = strToValue("13m");
-	printf("%g", a);
 }
