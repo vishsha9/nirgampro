@@ -48,9 +48,9 @@
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
-				WarningLevel="3"
+				WarningLevel="1"
 				DebugInformationFormat="4"
 			/>
 			<Tool
@@ -64,6 +64,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="systemc.lib"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="1"
@@ -186,6 +187,22 @@
 				RelativePath=".\netlist_analyzer.cpp"
 				>
 			</File>
+			<File
+				RelativePath="..\nirgam pro\ptmWire.cpp"
+				>
+			</File>
+			<Filter
+				Name="dependency"
+				>
+				<File
+					RelativePath="..\Notation\notation.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\nirgam pro\wires.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="头文件"
@@ -196,6 +213,22 @@
 				RelativePath=".\netlist_analyzer.h"
 				>
 			</File>
+			<File
+				RelativePath="..\nirgam pro\ptmWire.h"
+				>
+			</File>
+			<Filter
+				Name="dependency"
+				>
+				<File
+					RelativePath="..\Notation\notation.h"
+					>
+				</File>
+				<File
+					RelativePath="..\nirgam pro\wires.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="资源文件"

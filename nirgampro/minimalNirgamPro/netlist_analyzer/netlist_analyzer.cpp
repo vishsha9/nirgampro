@@ -1,44 +1,58 @@
 #include "netlist_analyzer.h"
 
-string neta_version = "1.0";
+
+string neta_version = "1.5";
 
 enum Nest{MAIN, CONNECTION, WIRE};
 
+
+bool wireParaForName(string name, WirePara* &wirepara){
+	if( strcasecmp(name.c_str(), "ptmwire_top") == 0){
+		wirepara = new ptm_para();
+		wirepara->setFieldByName("layer", PTM_TOP);
+		return true;
+	}
+	else if( strcasecmp(name.c_str(), "ptmwire_local") == 0){
+		wirepara = new ptm_para();
+		wirepara->setFieldByName("layer", PTM_LOCAL);
+		return true;
+	}
+	//////////////////////////////////////////////////////////////////////////
+	/* template
+	else if( strcasecmp(name.c_str(), "WireModelName") == 0){
+	wirepara = new WireModelParaName();
+	return true;
+	}
+	*/
+	//////////////////////////////////////////////////////////////////////////
+	return false;
+}
+
+
 void showError(ostream & out, int line, string msg){
-	out << "- Error! Line " << line<< ": " << msg << endl;
+	out << "  - Error! Line " << line<< ": " << msg << endl;
 	out << "> Exit analysis. Plz check the netlist file" << endl;
 }
 void showError(ostream & out, string msg){
-	out << "- Error!: "<<msg << endl;
+	out << "  - Error!: "<<msg << endl;
 	out << "> Exit analysis. Plz check the netlist file" << endl;
 }
 void showWarning(ostream & out, int line, string msg){
-	out << "- Warning, Line " << line<< ": " << msg << endl;
+	out << "  - Warning, Line " << line<< ": " << msg << endl;
 }
 void showWarning(ostream & out, string msg){
-	out << "- Warning: "<< msg << endl;
+	out << "  - Warning: "<< msg << endl;
 }
 void showMsg(ostream & out, string msg){
 	out << "> " << msg << endl;
 }
 
-bool checkWirePara(WirePara* wp, ostream & out, int line){
-	bool ret = true;
-	if(wp->name.size() == 0){
-		showError(out, line, "WireType name must be defined, format: NAME [wirename]");
-		ret = false;
-	}
-	if(wp->unit.size() == 0){
-		showError(out, line, "Wire length unit name must be defined, format: UNIT [unit]");
-		ret = false;
-	}
-	return ret;
-}
 
 /* 
 * return NULL if error occured 
 *
 */
+
 AdjList* analyze(string filename, ostream & msg){
 	ifstream input;
 	AdjList* a;
@@ -57,15 +71,19 @@ AdjList* analyze(string filename, ostream & msg){
 	string fileversion;
 	int lCount = 0;
 	int nodeN = 0;
-	
+
 	int edgeId = 0;
 	int max_n = 0;
 
 	stack<Nest> st;
+
 	map<string, WirePara*> wpm;
+	map<string, vector<string>*> wpvalm;
 	map<int, Node*> nodem;
 
 	WirePara * wp;
+	string wpname;
+	vector<string> * wpval;
 
 	showMsg(msg, "Start analysis ...");
 
@@ -74,12 +92,13 @@ AdjList* analyze(string filename, ostream & msg){
 	getline(input, line);
 	lCount++;
 	istringstream stream(line);
+
 	stream >> word >> fileversion;
 	if(stream.fail()){
 		showError(msg, lCount, "the first line of .nfn must contain analyzer version info: VERISON [version]");
 		return NULL;
 	}
-	if(_stricmp(word.c_str(),"VERSION") != 0){
+	if(strcasecmp(word.c_str(),"VERSION") != 0){
 		showError(msg, lCount, "the first line of .nfn must contain analyzer version info: VERISON [version]");
 		return NULL;
 	}
@@ -90,117 +109,175 @@ AdjList* analyze(string filename, ostream & msg){
 	while(getline(input, line)){
 		lCount++;
 		istringstream stream(line);
-		
+
 		while(stream >> word){
-			const char* cfd = word.c_str();
+			//const char* cfd = word.c_str();
 			// COMMENT
-			if(cfd[0] == '#'){							
+			if(word.c_str()[0] == '#'){							
 				break;
 			}
-			// TILENUM
-			if(_stricmp(cfd,"TILENUM") == 0){
-				int wordn;
-				stream >> wordn;
-				if(stream.fail()){
-					showError(msg, lCount, "A number must be behind 'TILENUM'");
+
+			if (st.top() == MAIN)
+			{
+				// TILENUM
+				if(strcasecmp(word.c_str(),"TILENUM") == 0){
+					int wordn;
+					stream >> wordn;
+					if(stream.fail()){
+						showError(msg, lCount, "A number must be behind 'TILENUM'");
+						return NULL;
+					}
+					a = new AdjList();
+					a->nodeNum = wordn;
+				}
+				//
+				else if(strcasecmp(word.c_str(),"NODE") == 0){
+					int nodeid; 
+					stream >> nodeid ;
+					if(stream.fail()){
+						showError(msg, lCount, "node definition format error: NODE [id]");
+						return NULL;
+					}
+					map<int, Node*>::iterator iter_n1 = nodem.find(nodeid);
+					Node * node;
+					if(iter_n1 == nodem.end()){
+						node = new Node(nodeid);
+						nodem.insert(pair<int, Node*>(nodeid, node));
+						nodeN ++;
+						if(nodeid > max_n)
+							max_n = nodeid;
+					}
+					else{
+						showError(msg, lCount, "node with this id has been defined");
+						return NULL;
+					}
+				}
+				// WIRE
+				else if(strcasecmp( word.c_str(), "WIRE") == 0){
+					st.push(WIRE);
+					string type;
+					stream >> type;
+					if(stream.fail()){
+						showError(msg, lCount, "wirePara definition format error: WIRE [typeName]");
+						return NULL;
+					}
+
+					if (wireParaForName(type, wp) == false){
+						showError(msg, lCount, "Wire Type: "+ type + " was not defined");
+						return NULL;
+					}
+					wpval = new vector<string>();
+					//wp = new WirePara();
+				}
+
+				// CONNECTION
+				else if(strcasecmp( word.c_str(), "CONNECTION") == 0){
+					if(st.top() != MAIN){
+						showError(msg, lCount, "the block before was not closed");
+						return NULL;
+					}
+					st.push(CONNECTION);
+				}
+
+				else{
+					showError(msg, lCount, "Syntax Error");
 					return NULL;
 				}
-				a = new AdjList();
-				a->nodeNum = wordn;
 			}
-			//
-			else if(_stricmp(cfd,"NODE") == 0){
-				int nodeid; 
-				stream >> nodeid ;
-				if(stream.fail()){
-					showError(msg, lCount, "node definition format error: NODE [id] [name]");
-					return NULL;
+
+			else if (st.top() == WIRE){
+				if(strcasecmp( word.c_str(), "NAME") == 0){
+					stream >> word;
+					if(stream.fail()){
+						showError(msg, lCount, "value of 'NAME' is not specified");
+						return NULL;
+					}
+					wpname = word;
 				}
-				map<int, Node*>::iterator iter_n1 = nodem.find(nodeid);
-				Node * node;
-				if(iter_n1 == nodem.end()){
-					node = new Node(nodeid);
-					nodem.insert(pair<int, Node*>(nodeid, node));
-					nodeN ++;
-					if(nodeid > max_n)
-						max_n = nodeid;
+				// WIREEND
+				else if(strcasecmp( word.c_str(), "WIREEND") == 0){
+					if(st.top() != WIRE){
+						showError(msg, lCount, "'WIREEND' occurred without block start keyword 'WIRE'");
+						return NULL;
+					}
+					if(wpname.size() != 0){
+						wpm.insert(pair<string, WirePara *>(wpname, wp));
+						st.pop();
+					}
+					else{
+						showError(msg, lCount, "WireType name must be defined, format: NAME [wirename]");
+						return NULL;
+					}
+					wpvalm.insert(pair<string, vector<string>*>(wpname, wpval));
+					wpname = "";
 				}
 				else{
-					showError(msg, lCount, "node with this id has been defined");
-					return NULL;
+					string valstr;
+					stream >> valstr;
+					if(stream.fail()){
+						showError(msg, lCount, "value of '"+ word + "' is not specified");
+						return NULL;
+					}
+					if (strcasecmp(valstr.c_str(), "var") == 0){
+						wpval->push_back(word);
+					}
+					else{
+						double val = strToValue(valstr);
+						if (wp->setFieldByName(word, val) == false){
+							showError(msg, lCount, "Error occurred in parameter setting. Parameter is not existed or value is not correct");
+							return NULL;
+						}
+					}
 				}
 			}
-			// WIRE
-			else if(_stricmp(cfd,"WIRE") == 0){
-				if(st.top() != MAIN){
-					showError(msg, lCount, "the block before was not closed");
-					return NULL;
-				}
-				st.push(WIRE);
-				wp = new WirePara();
-			}
-			// WIREEND
-			else if(_stricmp(cfd,"WIREEND") == 0){
-				if(st.top() != WIRE){
-					showError(msg, lCount, "'WIREEND' occured without block start keyword 'WIRE'");
-					return NULL;
-				}
-				if(checkWirePara(wp, msg, lCount)){
-					wpm.insert(pair<string, WirePara *>(wp->name, wp));
+
+			else if(st.top() == CONNECTION){
+				// CONNECTIONEND
+				if(strcasecmp( word.c_str(), "CONNECTIONEND") == 0){
+					if(st.top() != CONNECTION){
+						showError(msg, lCount, "'CONNECTIONEND' occurred without block start keyword 'CONNECTION'");
+						return NULL;
+					}
 					st.pop();
 				}
-				else
-					return NULL;
-			}
-			// CONNECTION
-			else if(_stricmp(cfd,"CONNECTION") == 0){
-				if(st.top() != MAIN){
-					showError(msg, lCount, "the block before was not closed");
-					return NULL;
-				}
-				st.push(CONNECTION);
-			}
-			// CONNECTIONEND
-			else if(_stricmp(cfd,"CONNECTIONEND") == 0){
-				if(st.top() != CONNECTION){
-					showError(msg, lCount, "'CONNECTIONEND' occured without block start keyword 'CONNECTION'");
-					return NULL;
-				}
-				st.pop();
-			}
-			else if(_stricmp(cfd,"NAME") == 0){
-				stream >> word;
-				if(stream.fail()){
-					showError(msg, lCount, "A string must be behind 'NAME'");
-					return NULL;
-				}
-				if(st.top() == WIRE)
-					wp->name = word;
-			}
-			else if(_stricmp(cfd,"LENGTHUNIT") == 0){
-				stream >> word;
-				if(stream.fail()){
-					showError(msg, lCount, "A string must be behind 'LENGTHUNIT'");
-					return NULL;
-				}
-				if(st.top() == WIRE)
-					wp->unit = word;
-			}
-			else{
-				if(st.top() == CONNECTION){
-					map<string, WirePara*>::iterator iter = wpm.find(string(cfd));
+				else{
+					map<string, WirePara*>::iterator iter = wpm.find(word);
 					if(iter == wpm.end()){
 						showError(msg, lCount, "No such WireType definition");
 						return NULL;
 					}
-					wp = (*iter).second;
+					wp = (*iter).second->clone();
 
-					int n1, n2, wlgth;
-					stream >> n1 >> n2 >> wlgth;
+					int n1, n2;
+					stream >> n1 >> n2;
 					if(stream.fail()){
 						showError(msg, lCount, "Nodes connect format error: [WireType][node1][node2][length]");
 						return NULL;
 					}
+
+					//
+					map<string, vector<string>*>::iterator varIter = wpvalm.find(word);
+					if(varIter == wpvalm.end()){
+						showError(msg, lCount, "This WireType definition has no variable parameter");
+						return NULL;
+					}
+					vector<string>* vars = varIter->second;
+					string valstr;
+					for(int i=0; i<vars->size(); i++){
+						string field = (*vars)[i];
+						stream >> valstr;
+						if(stream.fail()){
+							showError(msg, lCount, "value of '"+ field + "' is not specified");
+							return NULL;
+						}
+						double val = strToValue(valstr);
+						if (wp->setFieldByName(field, val) == false){
+							showError(msg, lCount, "Error occurred in parameter setting. Parameter is not existed or value is not correct");
+							return NULL;
+						}
+					}
+					
+					//
 					Node * node1, * node2;
 					Edge * edge;
 					map<int, Node*>::iterator iter_n1 = nodem.find(n1);
@@ -224,14 +301,13 @@ AdjList* analyze(string filename, ostream & msg){
 					}
 					else
 						node2 = (*iter_n2).second;
-					
+
 					edge = new Edge();
 					edge->wp = wp;
 					edge->edgeId = edgeId;
 					edgeId ++;
 					edge->node1 = node1;
 					edge->node2 = node2;
-					edge->length = wlgth;
 
 					node1->adjNum++;
 					node1->adjs.push_back(node2);
@@ -243,17 +319,17 @@ AdjList* analyze(string filename, ostream & msg){
 
 					a->edges.push_back(edge);
 				}
-				else{
-					showError(msg, lCount, "Not defined KeyWord");
-					return NULL;
-				}
+			}
+			else{
+				showError(msg, lCount, "Syntax Error");
+				return NULL;
 			}
 		} //@ end of while(stream >> word)
 	}//@ end of while(getline(input, line))
 	a->edgeNum = a->edges.size();
 	if(a->nodeNum != nodeN){
 		a->nodeNum = nodeN;
-		showWarning(msg, "TILENUM is not equal with the number of nodes appeared in CONNECT block");
+		showWarning(msg, "TILENUM is not equal with the number of nodes you defined");
 	}
 	for (int i=0; i<= max_n; i++)
 	{
@@ -276,5 +352,11 @@ AdjList* analyze(string filename, ostream & msg){
 	*/
 	showMsg(msg, "Analysis complete\n");
 	
+	map<string, vector<string>*>::reverse_iterator riter = wpvalm.rbegin();
+	while(riter!=wpvalm.rend()){
+		delete riter->second;
+		riter++;
+	}
+
 	return a;
 } 

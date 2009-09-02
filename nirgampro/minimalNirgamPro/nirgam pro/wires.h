@@ -8,15 +8,26 @@
 #include <map>
 //#include "systemc.h"
 
+struct wire;
+
+class WirePara{
+public:
+	virtual bool setFieldByName(string name, double val)=0;
+	virtual wire* getWire(string wirename)=0;
+	virtual WirePara* clone()=0;
+};
+
 ///////////////////////////////////////////////
 /// \brief signals to connect neighboring tiles
 ///////////////////////////////////////////////
-struct wires : public sc_module {
+struct wire : public sc_module {
 	sc_in<bool> clk;	///< Clock input port
 
 	/// Constructor
-	SC_HAS_PROCESS(wires);
-	wires(sc_module_name wires);	
+	SC_HAS_PROCESS(wire);
+	wire(sc_module_name wire);	
+
+	WirePara* para;
 
 	void entry();
 	

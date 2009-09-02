@@ -1,22 +1,31 @@
-VERSION 1.0
-TILENUM 7    #  ddd
+VERSION 1.5
+TILENUM 3    #  ddd
 
-WIRE
+WIRE ptmwire_top
 # name length must be less than 8
-	NAME WIRE1
-	LENGTHUNIT UM
+	NAME WIRE1 width 1 
+	space 2
+	thick 3
+	height 4
+	K 5
+	length var
+	rou var
 WIREEND
 
-NODE 5
+WIRE ptmwire_top
+# name length must be less than 8
+	NAME WIRE2
+	width 10
+	space 20
+	thick 30
+	height 40
+	K 50
+	length var
+	rou 60
+WIREEND
 
 CONNECTION
-	WIRE1 0 1 2000
-	WIRE1 1 2 2000
-	WIRE1 2 0 2000
-
-	WIRE1 3 4 2000
-	WIRE1 4 6 2000
-	WIRE1 3 6 2000
-	
-	WIRE1 0 3 2000
+	WIRE1 0 1 100K 1.1
+	WIRE1 1 2 200m 2.3
+	WIRE2 2 0 300K
 CONNECTIONEND
