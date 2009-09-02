@@ -3,9 +3,11 @@
 
 #include "wires.h"
 #include <math.h>
+#include <string>
+
+#include "../netlist_analyzer/netlist_analyzer.h"
 #include "../Notation/notation.h"
 
- 
 
 //////////////////////////////////////////////////////////////////////////
 // PTM interconnect
@@ -52,46 +54,65 @@
 //
 //////////////////////////////////////////////////////////////////////////
 
-typedef struct ptm_para{
-	double w;
-	double s;
+
+//////////////////////////////////////////////////////////////////////////
+//
+//////////////////////////////////////////////////////////////////////////
+enum PTM_LAYER{PTM_TOP, PTM_LOCAL};
+
+struct ptmWire;
+
+struct ptm_para: public WirePara{
+	PTM_LAYER layer;
+	double w;//
+	double s;//
 	double length;
-	double t;
-	double h;
-	double K;
+	double t;//
+	double h;//
+	double K;//
 	double rou;
-}ptm_para;
+	bool setFieldByName(string name, double val);
+	ptm_para* clone();
+	wire* getWire(string wirename);
+};
 
-
-struct ptmWire: public wires{
+//////////////////////////////////////////////////////////////////////////
+//
+//////////////////////////////////////////////////////////////////////////
+struct ptmWire: public wire{
 	SC_HAS_PROCESS(ptmWire);
 	ptmWire(sc_module_name wires);
 
-	ptm_para para;
 protected:
 	double Cg;
 	double Cc;
 	double R;
-	virtual double getCg(ptm_para para)=0;
-	virtual double getCc(ptm_para para)=0;
-	double getR(ptm_para para);
+	virtual double getCg(ptm_para* para)=0;
+	virtual double getCc(ptm_para* para)=0;
+	double getR(ptm_para *para);
 	UI getDelayTime();
 };
 
+//////////////////////////////////////////////////////////////////////////
+//
+//////////////////////////////////////////////////////////////////////////
 struct ptmTopWire: public ptmWire{
 	SC_HAS_PROCESS(ptmTopWire);
-	ptmTopWire(sc_module_name wires, ptm_para para);
+	ptmTopWire(sc_module_name wires, ptm_para* para);
 protected:
-	double getCg(ptm_para para);
-	double getCc(ptm_para para);
+	double getCg(ptm_para *para);
+	double getCc(ptm_para *para);
 };
 
+//////////////////////////////////////////////////////////////////////////
+//
+//////////////////////////////////////////////////////////////////////////
 struct ptmLocalWire: public ptmWire{
 	SC_HAS_PROCESS(ptmLocalWire);
-	ptmLocalWire(sc_module_name wires, ptm_para para);
+	ptmLocalWire(sc_module_name wires, ptm_para* para);
 protected:
-	double getCg(ptm_para para);
-	double getCc(ptm_para para);
+	double getCg(ptm_para *para);
+	double getCc(ptm_para *para);
 };
 
 

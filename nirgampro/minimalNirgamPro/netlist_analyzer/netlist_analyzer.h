@@ -13,7 +13,16 @@
 #include <map>
 #include <vector>
 
+#include "../Notation/notation.h"
+#include "../nirgam pro/wires.h"
+#include "../nirgam pro/ptmWire.h"
+
 using namespace std;
+
+#ifdef WIN32
+#define strcasecmp(a, b) _stricmp(a, b)
+#else
+#endif
 
 class Edge;
 
@@ -29,18 +38,11 @@ public:
 };
 
 
-class WirePara{
-public:
-	string name;
-	string unit;
-	WirePara();
-	WirePara(string name, string unit);
-};
+
 
 class Edge{
 public:
 	int edgeId;
-	int length;
 	WirePara * wp;
 	Node * node1;
 	Node * node2;

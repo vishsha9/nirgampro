@@ -1,6 +1,6 @@
 #include "wires.h"
 
-wires::wires(sc_module_name wires): sc_module(wires){
+wire::wire(sc_module_name wires): sc_module(wires){
 	delayTime = 0;
 
 	SC_THREAD(doDelaySig1);
@@ -41,7 +41,7 @@ wires::wires(sc_module_name wires): sc_module(wires){
 }
 
 
-void wires::doDelaySig1(){
+void wire::doDelaySig1(){
 	flit f_1to2;
 	while(true){
 		wait();
@@ -55,7 +55,7 @@ void wires::doDelaySig1(){
 	}
 }
 
-void wires::doDelaySig2(){
+void wire::doDelaySig2(){
 	flit f_2to1;
 	while(true){
 		wait();
@@ -69,7 +69,7 @@ void wires::doDelaySig2(){
 	}
 }
 
-void wires::doDelayCrd1(){
+void wire::doDelayCrd1(){
 	creditLine c_1to2[NUM_VCS];
 	bool inflag[NUM_VCS];
 	while(true){
@@ -93,7 +93,7 @@ void wires::doDelayCrd1(){
 	}
 }
 
-void wires::doDelayCrd2(){
+void wire::doDelayCrd2(){
 	creditLine c_2to1[NUM_VCS];
 	bool inflag[NUM_VCS];
 	while(true){
