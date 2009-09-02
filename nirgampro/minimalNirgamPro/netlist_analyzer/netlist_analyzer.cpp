@@ -6,28 +6,6 @@ string neta_version = "1.5";
 enum Nest{MAIN, CONNECTION, WIRE};
 
 
-bool wireParaForName(string name, WirePara* &wirepara){
-	if( strcasecmp(name.c_str(), "ptmwire_top") == 0){
-		wirepara = new ptm_para();
-		wirepara->setFieldByName("layer", PTM_TOP);
-		return true;
-	}
-	else if( strcasecmp(name.c_str(), "ptmwire_local") == 0){
-		wirepara = new ptm_para();
-		wirepara->setFieldByName("layer", PTM_LOCAL);
-		return true;
-	}
-	//////////////////////////////////////////////////////////////////////////
-	/* template
-	else if( strcasecmp(name.c_str(), "WireModelName") == 0){
-	wirepara = new WireModelParaName();
-	return true;
-	}
-	*/
-	//////////////////////////////////////////////////////////////////////////
-	return false;
-}
-
 
 void showError(ostream & out, int line, string msg){
 	out << "  - Error! Line " << line<< ": " << msg << endl;

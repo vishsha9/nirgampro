@@ -33,7 +33,7 @@
 
 #include "NWTile.h"
 #include "simpleWire.h"
-#include "netlist_analyzer.h"
+#include "../netlist_analyzer/netlist_analyzer.h"
 //#include "../config/extern.h"
 
 
@@ -60,9 +60,9 @@ struct NoC : public sc_module {
 	UI tileNum;
 
 	vector<NWTile *> nwtile;	///< A 2-d array of network tiles
-	vector<wires *>sigs;	///< Signals to interconnect network tiles
+	vector<wire *>sigs;	///< Signals to interconnect network tiles
 
-	wires * connect(sc_module_name wire_name, UI length, NWTile * tile1, NWTile * tile2);
+	wire * connect(sc_module_name wire_name, WirePara* wp, NWTile * tile1, NWTile * tile2);
 		
 	void entry();	///< Keeps count of number of simulation cycles
 };

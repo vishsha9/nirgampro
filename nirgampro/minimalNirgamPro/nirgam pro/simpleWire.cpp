@@ -1,10 +1,13 @@
 #include "simpleWire.h"
 
-simpleWire::simpleWire(sc_module_name wires, UI length): wires(wires){
-	this->length = length;
-	this->delayTime = getDelayTime();
+bool simpleWire::setFieldByName(string name, double val){
+	return true;
 }
 
-UI simpleWire::getDelayTime(){	
-	return length;
+simpleWire* simpleWire::clone(){
+	return new simpleWire(*this);
+}
+
+UI simpleWire::getDelayTime(){
+	return 33;
 }

@@ -181,10 +181,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\netlist_analyzer\netlist_analyzer.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\NoC.cpp"
 				>
 			</File>
@@ -212,6 +208,18 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="netlist"
+				>
+				<File
+					RelativePath="..\netlist_analyzer\netlist_analyzer.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\netlist_analyzer\wireParaForName.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="头文件"
@@ -228,10 +236,6 @@
 			</File>
 			<File
 				RelativePath=".\flit.h"
-				>
-			</File>
-			<File
-				RelativePath="..\netlist_analyzer\netlist_analyzer.h"
 				>
 			</File>
 			<File
@@ -262,6 +266,14 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="netlist"
+				>
+				<File
+					RelativePath="..\netlist_analyzer\netlist_analyzer.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="资源文件"
@@ -269,6 +281,10 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 		</Filter>
+		<File
+			RelativePath=".\a.nfn"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

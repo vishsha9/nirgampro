@@ -13,8 +13,9 @@ struct wire;
 class WirePara{
 public:
 	virtual bool setFieldByName(string name, double val)=0;
-	virtual wire* getWire(string wirename)=0;
+	//virtual wire* getWire(string wirename)=0;
 	virtual WirePara* clone()=0;
+	virtual UI getDelayTime()=0;
 };
 
 ///////////////////////////////////////////////
@@ -25,7 +26,7 @@ struct wire : public sc_module {
 
 	/// Constructor
 	SC_HAS_PROCESS(wire);
-	wire(sc_module_name wire);	
+	wire(sc_module_name wire, WirePara* para);	
 
 	WirePara* para;
 
@@ -38,7 +39,7 @@ struct wire : public sc_module {
 	void doDelayCrd1();
 	void doDelayCrd2();
 
-	virtual UI getDelayTime()=0;
+	//virtual UI getDelayTime()=0;
 
 	UI delayTime;
 	// ps

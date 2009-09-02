@@ -1,7 +1,8 @@
 #include "wires.h"
 
-wire::wire(sc_module_name wires): sc_module(wires){
-	delayTime = 0;
+wire::wire(sc_module_name wires, WirePara* para): sc_module(wires){
+	this->para = para;
+	this->delayTime = para->getDelayTime();
 
 	SC_THREAD(doDelaySig1);
 	sensitive<< sig_from1;

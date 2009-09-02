@@ -188,7 +188,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\nirgam pro\ptmWire.cpp"
+				RelativePath=".\wireParaForName.cpp"
 				>
 			</File>
 			<Filter
@@ -203,6 +203,18 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="wire"
+				>
+				<File
+					RelativePath="..\nirgam pro\ptmWire.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\nirgam pro\simpleWire.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Í·ÎÄ¼þ"
@@ -211,10 +223,6 @@
 			>
 			<File
 				RelativePath=".\netlist_analyzer.h"
-				>
-			</File>
-			<File
-				RelativePath="..\nirgam pro\ptmWire.h"
 				>
 			</File>
 			<Filter
@@ -226,6 +234,18 @@
 				</File>
 				<File
 					RelativePath="..\nirgam pro\wires.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="wire"
+				>
+				<File
+					RelativePath="..\nirgam pro\ptmWire.h"
+					>
+				</File>
+				<File
+					RelativePath="..\nirgam pro\simpleWire.h"
 					>
 				</File>
 			</Filter>

@@ -64,4 +64,11 @@ extern ofstream writelog;
 extern ofstream delaylogin;
 extern ofstream delaylogout;
 
+
+#ifdef WIN32
+#define strcasecmp(a, b) _stricmp(a, b)
+#else
+#endif
+
+
 #endif
