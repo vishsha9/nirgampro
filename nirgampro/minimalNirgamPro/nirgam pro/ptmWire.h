@@ -1,11 +1,10 @@
 #ifndef __PTM_WIRE__
 #define  __PTM_WIRE__
 
-#include "wires.h"
 #include <math.h>
 #include <string>
 
-#include "../netlist_analyzer/netlist_analyzer.h"
+#include "wires.h"
 #include "../Notation/notation.h"
 
 
@@ -60,8 +59,6 @@
 //////////////////////////////////////////////////////////////////////////
 enum PTM_LAYER{PTM_TOP, PTM_LOCAL};
 
-struct ptmWire;
-
 struct ptm_para: public WirePara{
 	PTM_LAYER layer;
 	double w;//
@@ -73,47 +70,56 @@ struct ptm_para: public WirePara{
 	double rou;
 	bool setFieldByName(string name, double val);
 	ptm_para* clone();
-	wire* getWire(string wirename);
-};
-
-//////////////////////////////////////////////////////////////////////////
-//
-//////////////////////////////////////////////////////////////////////////
-struct ptmWire: public wire{
-	SC_HAS_PROCESS(ptmWire);
-	ptmWire(sc_module_name wires);
-
-protected:
-	double Cg;
-	double Cc;
-	double R;
-	virtual double getCg(ptm_para* para)=0;
-	virtual double getCc(ptm_para* para)=0;
-	double getR(ptm_para *para);
 	UI getDelayTime();
+
+	double getR(ptm_para *para);
+
+	double getCgTop(ptm_para *para);
+	double getCcTop(ptm_para *para);
+
+	double getCgLocal(ptm_para *para);
+	double getCcLocal(ptm_para *para);
+	//wire* getWire(string wirename);
 };
 
 //////////////////////////////////////////////////////////////////////////
 //
 //////////////////////////////////////////////////////////////////////////
-struct ptmTopWire: public ptmWire{
-	SC_HAS_PROCESS(ptmTopWire);
-	ptmTopWire(sc_module_name wires, ptm_para* para);
-protected:
-	double getCg(ptm_para *para);
-	double getCc(ptm_para *para);
-};
-
-//////////////////////////////////////////////////////////////////////////
+//struct ptmWire: public wire{
+//	SC_HAS_PROCESS(ptmWire);
+//	ptmWire(sc_module_name wires);
 //
-//////////////////////////////////////////////////////////////////////////
-struct ptmLocalWire: public ptmWire{
-	SC_HAS_PROCESS(ptmLocalWire);
-	ptmLocalWire(sc_module_name wires, ptm_para* para);
-protected:
-	double getCg(ptm_para *para);
-	double getCc(ptm_para *para);
-};
+//protected:
+//	double Cg;
+//	double Cc;
+//	double R;
+//	virtual double getCg(ptm_para* para)=0;
+//	virtual double getCc(ptm_para* para)=0;
+//	double getR(ptm_para *para);
+//	UI getDelayTime();
+//};
+//
+////////////////////////////////////////////////////////////////////////////
+////
+////////////////////////////////////////////////////////////////////////////
+//struct ptmTopWire: public ptmWire{
+//	SC_HAS_PROCESS(ptmTopWire);
+//	ptmTopWire(sc_module_name wires, ptm_para* para);
+//protected:
+//	double getCg(ptm_para *para);
+//	double getCc(ptm_para *para);
+//};
+//
+////////////////////////////////////////////////////////////////////////////
+////
+////////////////////////////////////////////////////////////////////////////
+//struct ptmLocalWire: public ptmWire{
+//	SC_HAS_PROCESS(ptmLocalWire);
+//	ptmLocalWire(sc_module_name wires, ptm_para* para);
+//protected:
+//	double getCg(ptm_para *para);
+//	double getCc(ptm_para *para);
+//};
 
 
 #endif

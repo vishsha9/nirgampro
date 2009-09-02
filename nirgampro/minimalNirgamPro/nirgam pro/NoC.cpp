@@ -81,7 +81,7 @@ NoC::NoC(sc_module_name NoC, AdjList* a): sc_module(NoC) {
 	{
 		Edge * edge = a->edges[i];
 		string name = "wire" + string(1, edge->edgeId+'0');
-		sigs.push_back(connect(name.c_str(), edge->length, nwtile[edge->node1->nodeId], nwtile[edge->node2->nodeId]));
+		sigs.push_back(connect(name.c_str(), edge->wp, nwtile[edge->node1->nodeId], nwtile[edge->node2->nodeId]));
 	}
 	
 
@@ -93,8 +93,8 @@ NoC::~NoC(){
 	
 }
 
-wires* NoC::connect(sc_module_name wire_name, UI length, NWTile* tile1, NWTile * tile2){
-	wires* w_1to2 = new simpleWire(wire_name, length); 
+wire* NoC::connect(sc_module_name wire_name, WirePara* para, NWTile* tile1, NWTile * tile2){
+	wire* w_1to2 = new wire(wire_name, para); 
 	w_1to2->clk(switch_cntrl);
 	
 	tile1->connect(tile2->tileID, 

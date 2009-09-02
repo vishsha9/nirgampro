@@ -15,14 +15,10 @@
 
 #include "../Notation/notation.h"
 #include "../nirgam pro/wires.h"
-#include "../nirgam pro/ptmWire.h"
+
 
 using namespace std;
 
-#ifdef WIN32
-#define strcasecmp(a, b) _stricmp(a, b)
-#else
-#endif
 
 class Edge;
 
@@ -36,8 +32,6 @@ public:
 	Node();
 	Node(int nodeId);
 };
-
-
 
 
 class Edge{
@@ -59,6 +53,9 @@ public:
 	AdjList(int nodeNum);
 	~AdjList();
 };
+
+
+bool wireParaForName(string name, WirePara* &wirepara);
 
 AdjList* analyze(string filename, ostream & msg);
 
