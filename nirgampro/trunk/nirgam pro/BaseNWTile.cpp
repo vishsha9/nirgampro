@@ -62,7 +62,7 @@ BaseNWTile::BaseNWTile(sc_module_name NWTile, UI id, UI nb): sc_module(NWTile){
 	credit_in = new sc_in<creditLine>[nb_num][NUM_VCS];
 	credit_out = new sc_out<creditLine>[nb_num][NUM_VCS];
 
-	//nb_id = new UI[nb_num];
+	//nb_id = new UI[nb_num]; 
 
 
 	//////////////////////////////////////////////////////////////////////////
