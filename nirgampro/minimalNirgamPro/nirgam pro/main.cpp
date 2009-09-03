@@ -42,7 +42,13 @@ int sc_main(int argc, char *argv[]) {
 
 	nw_clock = new sc_clock("NW_CLOCK",CLK_PERIOD,SC_NS);	// create global clock
 
-	AdjList* a = analyze("a.nfn", cout);
+	AdjList* a;
+
+	if(argc > 1){
+		a = analyze(string(argv[argc-1]), cout);
+	}else
+		a = analyze("a.nfn", cout);
+
 	if(a == NULL){
 		cout << "Error occurred. Exit Simulation" << endl;
 		exit(0);
