@@ -41,6 +41,10 @@ wire::wire(sc_module_name wires, WirePara* para): sc_module(wires){
 	}*/
 }
 
+void wire::setTileID(UI tile1, UI tile2){
+	this->tileID_1 = tile1;
+	this->tileID_2 = tile2;
+}
 
 void wire::doDelaySig1(){
 	flit f_1to2;
