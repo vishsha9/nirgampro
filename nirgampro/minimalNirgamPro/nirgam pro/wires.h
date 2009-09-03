@@ -32,6 +32,8 @@ struct wire : public sc_module {
 
 	void entry();
 	
+	void setTileID(UI tile1, UI tile2);
+
 	void delay();
 
 	void doDelaySig1();

@@ -24,7 +24,6 @@ class Edge;
 
 class Node{
 public:
-	string name;
 	int nodeId;
 	int adjNum;
 	vector<Node*> adjs;
