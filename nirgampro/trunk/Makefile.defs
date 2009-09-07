@@ -1,0 +1,35 @@
+# Variable that points to SystemC installation path
+#SYSTEMC = ../../..
+SYSTEMC = /opt/systemc-2.1.v1
+
+INCDIR = -I. -I.. -I$(SYSTEMC)/include
+LIBDIR = -L. -L.. -L$(SYSTEMC)/lib-$(TARGET_ARCH)
+
+LIBS   =  -lsystemc -lm -ldl $(EXTRA_LIBS)
+
+
+EXE    = $(MODULE)
+
+.SUFFIXES: .cc .cpp .o .x .so
+
+$(EXE): $(CORE_OBJS) $(APP_OBJS) $(ROUTER_OBJS) $(MAIN_OBJS) ${WIRE_OBJS} $(SYSTEMC)/lib-$(TARGET_ARCH)/libsystemc.a
+	$(CC) $(CFLAGS) $(INCDIR) $(LIBDIR) -o $@ $(CORE_OBJS) $(APP_OBJS) ${WIRE_OBJS} $(ROUTER_OBJS) $(MAIN_OBJS) $(LIBS) 2>&1 | c++filt	
+	
+.cpp.o:
+	$(CC) $(CFLAGS) $(INCDIR) -o $@ -c $<
+
+.cc.o:
+	$(CC) $(CFLAGS) $(INCDIR) -o $@ -c $<
+
+
+ultraclean : clean cleanlogs cleanresults
+
+clean:
+	rm -f $(CORE_OBJS) $(APP_OBJS) $(ROUTER_OBJS) $(EXE) $(APP_LIB) $(ROUTER_LIB) $(MAIN_OBJS) ${WIRE_OBJS}
+	rm -f `find -name "*~"`
+
+cleanlogs:
+	rm -rf log/*/*
+
+cleanresults:
+	rm -rf results/*
