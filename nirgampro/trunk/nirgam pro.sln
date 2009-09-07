@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nirgam pro", "nirgam pro\nirgam pro.vcproj", "{ECCCAD75-9AB1-4602-9F76-DA995142D316}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nirgam", "src\nirgam pro.vcproj", "{ECCCAD75-9AB1-4602-9F76-DA995142D316}"
 EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
