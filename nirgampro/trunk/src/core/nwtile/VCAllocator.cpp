@@ -37,7 +37,13 @@ VCAllocator::VCAllocator(sc_module_name VCAllocator, UI io_num): sc_module(VCAll
 	nextVCID = new sc_out<sc_uint<VCS_BITSIZE+1> >[io_num];
 	vcReady = new sc_out<bool>[io_num];
 	credit_in = new sc_in<creditLine>[io_num][NUM_VCS];
-	vcFree = new bool[io_num][NUM_VCS];
+	//vcFree = new bool[io_num][NUM_VCS];
+	vcFree.resize(io_num);
+	for (int i=0; i<io_num; i++)
+	{
+		vcFree[i].resize(NUM_VCS);
+	}
+	
 
 	// process sensitive to VC request, calls VC allocation
 	SC_THREAD(allocate_VC);
@@ -91,7 +97,7 @@ void VCAllocator::allocate_VC() {
 		for(UI i = 0; i < io_num; i++) {
 			if(vcRequest[i].event() && vcRequest[i].read() == true) {
 				// read output direction in which VC is requested
-				sc_uint<2> dir = opRequest[i].read();
+				port_id dir = opRequest[i].read();
 				sc_uint<VCS_BITSIZE+1> nextvc = NUM_VCS+1;
 				// get next VC, parameters: o/p direction requested, i/p direction from which request recieved
 				nextvc = getNextVCID(dir,i);

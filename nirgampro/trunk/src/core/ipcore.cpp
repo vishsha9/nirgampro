@@ -32,8 +32,6 @@
 /// Constructor
 ////////////////////////
 ipcore::ipcore(sc_module_name ipcore): sc_module(ipcore) {
-
-	sim_count = 0;
 	ran_var = new RNG((RNG::RNGSources)2,1);
 
 	// process sensitive to clock, sends out flit
@@ -72,20 +70,16 @@ void ipcore::setID(UI id){
 /// Keeps track of clock cycles in the module
 ///////////////////////////////////////////////////////////////////////////
 void ipcore::entry(void) {
-	sim_count = 0;
-	while(true) {
-		wait();
-		sim_count++;
-	}
+
 }
 
 ///////////////////////////////////////////////////////////////////////////
 /// Method to return a random destination
 ///////////////////////////////////////////////////////////////////////////
 int ipcore::get_random_dest() {
-	int dest = ran_var->uniform(num_tiles);
+	int dest = ran_var->uniform(g_tileNum);
 	while(dest == tileID)
-		dest = ran_var->uniform(num_tiles);
+		dest = ran_var->uniform(g_tileNum);
 	return dest;
 }
 
@@ -132,18 +126,12 @@ void ipcore::write_reg_hdt(UI pkt_id, UI flit_id, UI route,
 	flit_reg.flitid = flit_id;
 	flit_reg.type = HDT;
 
-	flit_reg.data1 = route;
-	flit_reg.data2 = ctrl;
-	flit_reg.data3 = addr;
-	flit_reg.data4 = data;
+	flit_reg.field1 = route;
+	flit_reg.field2 = ctrl;
+	flit_reg.field3 = addr;
+	flit_reg.field4 = data;
 
-	flit_reg.simdata.gtime = sc_time_stamp();
-	flit_reg.simdata.ctime = sc_time_stamp();
-	flit_reg.simdata.atime = SC_ZERO_TIME;
-	flit_reg.simdata.atimestamp = 0;
-	flit_reg.simdata.num_waits = 0;
-	flit_reg.simdata.num_sw = 0;
-	flit_reg.simdata.gtimestamp = sim_count;
+	g_tracker->processFlitWhenBorn(flit_reg);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -165,18 +153,12 @@ void ipcore::write_reg_head(UI pkt_id, UI flit_id, UI route,
 	flit_reg.flitid = flit_id;
 	flit_reg.type = HEAD;
 
-	flit_reg.data1 = route;
-	flit_reg.data2 = ctrl;
-	flit_reg.data3 = addr;
-	flit_reg.data4 = data;
+	flit_reg.field1 = route;
+	flit_reg.field2 = ctrl;
+	flit_reg.field3 = addr;
+	flit_reg.field4 = data;
 
-	flit_reg.simdata.gtime = sc_time_stamp();
-	flit_reg.simdata.ctime = sc_time_stamp();
-	flit_reg.simdata.atime = SC_ZERO_TIME;
-	flit_reg.simdata.atimestamp = 0;
-	flit_reg.simdata.num_waits = 0;
-	flit_reg.simdata.num_sw = 0;
-	flit_reg.simdata.gtimestamp = sim_count;
+	g_tracker->processFlitWhenBorn(flit_reg);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -196,18 +178,12 @@ void ipcore::write_reg_data(UI pkt_id, UI flit_id, UI opt,
 	flit_reg.flitid = flit_id;
 	flit_reg.type = DATA;
 
-	flit_reg.data1 = opt;
-	flit_reg.data2 = ctrl;
-	flit_reg.data3 = addr;
-	flit_reg.data4 = data;
+	flit_reg.field1 = opt;
+	flit_reg.field2 = ctrl;
+	flit_reg.field3 = addr;
+	flit_reg.field4 = data;
 
-	flit_reg.simdata.gtime = sc_time_stamp();
-	flit_reg.simdata.ctime = sc_time_stamp();
-	flit_reg.simdata.atime = SC_ZERO_TIME;
-	flit_reg.simdata.atimestamp = 0;
-	flit_reg.simdata.num_waits = 0;
-	flit_reg.simdata.num_sw = 0;
-	flit_reg.simdata.gtimestamp = sim_count;
+	g_tracker->processFlitWhenBorn(flit_reg);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -227,17 +203,11 @@ void ipcore::write_reg_tail(UI pkt_id, UI flit_id, UI opt,
 	flit_reg.flitid = flit_id;
 	flit_reg.type = TAIL;
 
-	flit_reg.data1 = opt;
-	flit_reg.data2 = ctrl;
-	flit_reg.data3 = addr;
-	flit_reg.data4 = data;
+	flit_reg.field1 = opt;
+	flit_reg.field2 = ctrl;
+	flit_reg.field3 = addr;
+	flit_reg.field4 = data;
 
-	flit_reg.simdata.gtime = sc_time_stamp();
-	flit_reg.simdata.ctime = sc_time_stamp();
-	flit_reg.simdata.atime = SC_ZERO_TIME;
-	flit_reg.simdata.atimestamp = 0;
-	flit_reg.simdata.num_waits = 0;
-	flit_reg.simdata.num_sw = 0;
-	flit_reg.simdata.gtimestamp = sim_count;
+	g_tracker->processFlitWhenBorn(flit_reg);
 }
 

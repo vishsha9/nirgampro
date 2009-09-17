@@ -87,7 +87,7 @@ bool BaseNWTile::connect(UI nb_id, sc_signal<flit>& sig_from, sc_signal<flit>& s
 	}
 	nb_initPtr++;
 
-	this->nb_id.push_back(nb_id);
+	this->indexTable.push_back(nb_id);
 	return true;
 }
 
@@ -100,7 +100,7 @@ bool BaseNWTile::connect(UI nb_id, sc_signal<flit>& sig_from, sc_signal<flit>& s
 //			if (ip_port[i].event())
 //			{
 //			flit r = ip_port[i].read();
-//			readlog << "CLK: " << sc_time_stamp() << "\ttile_" << this->tileID << " port_"<< i <<"\treadflit data:" << r.data4 << "\ttimestamp "<< r.simdata.gtime <<endl;
+//			readlog << "CLK: " << sc_time_stamp() << "\ttile_" << this->tileID << " port_"<< i <<"\treadflit data:" << r.field4 << "\ttimestamp "<< r.simdata.gtime <<endl;
 //
 //			}
 //
@@ -122,11 +122,11 @@ bool BaseNWTile::connect(UI nb_id, sc_signal<flit>& sig_from, sc_signal<flit>& s
 //
 //		if(count<nb_num){
 //			flit w;
-//			w.data4 = count+2;
+//			w.field4 = count+2;
 //			w.simdata.gtime = sc_time_stamp();
 //
 //			op_port[(count+1)%nb_num].write(w);
-//			writelog << "CLK: " << sc_time_stamp() << "\tPort "<< (count+1)%nb_num <<"\ttile_" << this->tileID << " to "<< nb_id[(count+1)%nb_num] <<"\twriteflit data:" << w.data4 << "\ttimestamp "<< w.simdata.gtime << endl;
+//			writelog << "CLK: " << sc_time_stamp() << "\tPort "<< (count+1)%nb_num <<"\ttile_" << this->tileID << " to "<< nb_id[(count+1)%nb_num] <<"\twriteflit data:" << w.field4 << "\ttimestamp "<< w.simdata.gtime << endl;
 //			count ++;
 //
 //		

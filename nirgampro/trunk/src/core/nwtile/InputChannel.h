@@ -40,6 +40,7 @@
 #include "../../extern.h"
 #include "InnerSigs.h"
 
+
 /// required for stl
 using namespace std;
 
@@ -121,8 +122,9 @@ struct InputChannel : public sc_module {
 	// FUNCTIONS END /////////////////////////////////////////////////////////////////////////
 	
 	// VARIABLES /////////////////////////////////////////////////////////////////////////////
-	VC	vc[NUM_VCS];	///< Virtual channels
-	
+	//VC	vc[NUM_VCS];	///< Virtual channels
+	vector<VC> vc;
+
 	int	cntrlID;		///< Control ID to identify channel direction
 	// if cntrlId == num_op then this InputChannel connect to IP
 

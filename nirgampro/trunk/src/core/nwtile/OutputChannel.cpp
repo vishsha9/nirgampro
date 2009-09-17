@@ -26,6 +26,7 @@
 
 #include "OutputChannel.h"
 
+#include "../tracker/tracker.h"
 
 ////////////////////////
 /// Constructor
@@ -34,7 +35,10 @@ OutputChannel ::OutputChannel(sc_module_name OutputChannel, UI io_num): sc_modul
 	this->io_num = io_num;
 	inport = new sc_in<flit>[io_num];
 	inReady = new sc_out<bool>[io_num];
-	r_in = new switch_reg[io_num];
+	//r_in = new switch_reg[io_num];
+
+	r_in.resize(io_num);
+	r_vc.resize(NUM_VCS);
 
 	// process to read and process incoming flits
 	SC_THREAD(entry);
@@ -74,9 +78,9 @@ bool OutputChannel::isCoreIO(UI i){
 ///   .
 /// .
 ///////////////////////////////////////////////////////////////////////////
-void OutputChannel ::entry() {
+void OutputChannel::entry() {
 	ULL sim_count = 0;	// keep track of clock cycles
-	while(sim_count < SIM_NUM) 
+	while(true) 
 	{
 		wait();
 		if(switch_cntrl.event()) 	// clock event
@@ -92,6 +96,8 @@ void OutputChannel ::entry() {
 					r_vc[(sim_count+NUM_VCS)%NUM_VCS].val.simdata.ctime = sc_time_stamp();
 					outport.write(r_vc[(sim_count+NUM_VCS)%NUM_VCS].val);
 					r_vc[(sim_count+NUM_VCS)%NUM_VCS].free = true;
+
+					g_tracker->exitOutputChannel(tileID, cntrlID, r_vc[(sim_count+NUM_VCS)%NUM_VCS].val);
 
 					if(r_vc[(sim_count+NUM_VCS)%NUM_VCS].val.type == TAIL 
 						|| r_vc[(sim_count+NUM_VCS)%NUM_VCS].val.type == HDT) 
@@ -113,6 +119,8 @@ void OutputChannel ::entry() {
 					{
 						r_vc[(sim_count+NUM_VCS)%NUM_VCS].val.simdata.ctime = sc_time_stamp();
 						outport.write(r_vc[(sim_count+NUM_VCS)%NUM_VCS].val);
+			
+						g_tracker->exitOutputChannel(tileID, cntrlID, r_vc[(sim_count+NUM_VCS)%NUM_VCS].val);
 
 						if(r_vc[(sim_count+NUM_VCS)%NUM_VCS].val.type == TAIL 
 							|| r_vc[(sim_count+NUM_VCS)%NUM_VCS].val.type == HDT) 
@@ -171,6 +179,8 @@ void OutputChannel ::entry() {
 			{
 				r_in[i].val = inport[i].read();
 				r_in[i].free = false;
+
+				g_tracker->enterOutputChannel(tileID, cntrlID, r_in[i].val);
 				//if(r_in[i].val.pkthdr.nochdr.flittype == HDT || r_in[i].val.pkthdr.nochdr.flittype == HEAD)
 				//	input_time = r_in[i].val.simdata.ICtimestamp;
 				if(beg_cycle == 0)
@@ -218,22 +228,21 @@ void OutputChannel ::setTileID(UI id){
 /// - dump results
 ///////////////////////////////////////////////////////////////////////////
 void OutputChannel ::closeLogs(){
-	//if(num_pkts != 0)
-	//	avg_latency = (float)latency/num_pkts;
-	//if(num_flits != 0)
-	//	avg_latency_flit = (float)latency/num_flits;
-	//total_cycles = end_cycle - beg_cycle;
-	//if(total_cycles != 0)
-	//	avg_throughput = (float)(num_flits * FLITSIZE * 8) / (total_cycles * CLK_PERIOD);	// Gbps
-	////eventlog<<"\nTime: "<<sc_time_stamp()<<" name: "<<this->name()<<" tile: "<<tileID<<" cntrlID: "<<cntrlID<<" latency: "<<latency<<" num_pkts: "<<num_pkts<<" num_flits: "<<num_flits<<" avg per pkt: "<<avg_latency<<" avg per flit: "<<avg_latency_flit<<" cycles: "<<total_cycles;
-	//if(cntrlID != C) {
-	//	results_log<<tileID<<"\t";
-	//	switch(cntrlID) {
-	//		case N: results_log<<"North\t\t"; break;
-	//		case S: results_log<<"South\t\t"; break;
-	//		case E: results_log<<"East\t\t"; break;
-	//		case W: results_log<<"West\t\t"; break;
-	//	}
-	//	results_log<<num_pkts<<"\t\t"<<num_flits<<"\t\t"<<avg_latency<<"\t\t"<<avg_latency_flit<<"\t\t"<<avg_throughput<<endl;
-	//}
+	if(num_pkts != 0)
+		avg_latency = (float)latency/num_pkts;
+	if(num_flits != 0)
+		avg_latency_flit = (float)latency/num_flits;
+	total_cycles = end_cycle - beg_cycle;
+	if(total_cycles != 0)
+		avg_throughput = (float)(num_flits * FLITSIZE * 8) / (total_cycles * g_clkPeriod);	// Gbps
+	//eventlog<<"\nTime: "<<sc_time_stamp()<<" name: "<<this->name()<<" tile: "<<tileID<<" cntrlID: "<<cntrlID<<" latency: "<<latency<<" num_pkts: "<<num_pkts<<" num_flits: "<<num_flits<<" avg per pkt: "<<avg_latency<<" avg per flit: "<<avg_latency_flit<<" cycles: "<<total_cycles;
+	if (isCoreIO(cntrlID))
+	{
+		g_resultsLog<<tileID<<"\ttoIP\t\t";
+		g_resultsLog<<num_pkts<<"\t\t"<<num_flits<<"\t\t"<<avg_latency<<"\t\t"<<avg_latency_flit<<"\t\t"<<avg_throughput<<endl;
+	}
+	else{
+		g_resultsLog<<tileID<<"\t"<<cntrlID<<"\t\t";
+		g_resultsLog<<num_pkts<<"\t\t"<<num_flits<<"\t\t"<<avg_latency<<"\t\t"<<avg_latency_flit<<"\t\t"<<avg_throughput<<endl;
+	}
 }

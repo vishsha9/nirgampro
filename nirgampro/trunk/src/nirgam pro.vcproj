@@ -197,6 +197,18 @@
 					RelativePath=".\app\App_test_send.cpp"
 					>
 				</File>
+				<File
+					RelativePath=".\app\CBR.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\app\Sink.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\app\TG.cpp"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="core"
@@ -269,6 +281,18 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="soclibTile"
+					>
+				</Filter>
+				<Filter
+					Name="tracker"
+					>
+					<File
+						RelativePath=".\core\tracker\tracker.cpp"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="wire"
@@ -337,6 +361,18 @@
 				</File>
 				<File
 					RelativePath=".\app\App_test_send.h"
+					>
+				</File>
+				<File
+					RelativePath=".\app\CBR.h"
+					>
+				</File>
+				<File
+					RelativePath=".\app\Sink.h"
+					>
+				</File>
+				<File
+					RelativePath=".\app\TG.h"
 					>
 				</File>
 			</Filter>
@@ -424,6 +460,18 @@
 					</File>
 					<File
 						RelativePath=".\core\nwtile\VCAllocator.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="soclibTile"
+					>
+				</Filter>
+				<Filter
+					Name="tracker"
+					>
+					<File
+						RelativePath=".\core\tracker\tracker.h"
 						>
 					</File>
 				</Filter>

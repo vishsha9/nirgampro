@@ -49,6 +49,7 @@ struct sim_hdr {
 	ULL	ICtimestamp;	///< input channel time stamp (in clock cycles)
 	ULL	num_waits;	///< no. of clock cycles spent waiting in buffer
 	ULL	num_sw;		///< no. of switches traversed
+	ULL sequence;
 };
 
 ////////////////////////////////////////////////
@@ -66,10 +67,23 @@ struct flit
 	
 	//128 bit wire
 
-	UI	data1;		// for HDT/HEAD flit, it is route information
-	UI	data2;		// control information
-	UI	data3;		// ADDRESS
-	UI	data4;		// WDATA or RDATA
+	union{
+		UI	field1;		// for HDT/HEAD flit, it is route information
+		UI	dest;
+	};
+	union{
+		UI	field2;		// control information
+	};
+
+	union{
+		UI	field3;		// ADDRESS
+	};
+	
+	union{
+		UI	field4;		// WDATA or RDATA
+		UI	data;
+	};
+
 	
 	///<simulation data
 	
@@ -100,8 +114,8 @@ operator << ( ostream& os, const flit& temp )
 		case HDT: os<<"HDT flit, "; break;
 	}
 	os<<"src: "<<temp.src<<" pktid: "<<temp.pktid<<" flitid: "<<temp.flitid;
-	os << temp.data1 << "\t" << temp.data2 << "\t" 
-		<< temp.data3 << "\t" << temp.data4;
+	os << temp.field1 << "\t" << temp.field2 << "\t" 
+		<< temp.field3 << "\t" << temp.field4;
 	os<<endl;
 	return os;
 }

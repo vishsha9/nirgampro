@@ -21,7 +21,7 @@ void App_test_send::send()
 		else
 			write_reg_data(0, 0, 2, ctrl, 10, 10);
 
-		flit_reg.data4 = sc_time_stamp().value();
+		flit_reg.field4 = sc_time_stamp().value();
 		flit_reg.src = tileID;
 		if (credit_in[0].read().freeBuf){
 			flit_outport.write(flit_reg);
