@@ -160,7 +160,7 @@ void readSimulationConfig(){
 			else if(name=="RT_ALGO"){
 				fil1 >> name;
 				if(name == "XY")
-					RT_ALGO = XY;
+					RT_ALGO = XY; 
 				else if(name == "OE")
 					RT_ALGO = OE;
 				else if(name == "SOURCE")
