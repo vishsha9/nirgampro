@@ -21,18 +21,18 @@ void selfCheck::send()
 	while (true)
 	{	
 		wait();
-		if((sim_count-tileID)%num_tiles == 0){
-			if (g_ckTable[tileID*num_tiles + dest] == -1)
+		if((g_simCount-tileID)%g_tileNum == 0){
+			if (g_ckTable[tileID*g_tileNum + dest] == -1)
 			{
 				//cout << "sim_count "<< sim_count << " "  << tileID << " send to "<< dest << endl;
 				write_reg_hdt(0, 0, dest, ctrl, 10, 10);
-				flit_reg.data4 = sc_time_stamp().value();
+				flit_reg.field4 = sc_time_stamp().value();
 				flit_reg.src = tileID;
 				if (credit_in[0].read().freeBuf){
 					flit_outport.write(flit_reg);
 				}
 				dest++;
-				dest = dest % num_tiles;
+				dest = dest % g_tileNum;
 			}
 		}
 	}
@@ -48,7 +48,7 @@ void selfCheck::recv()
 			flit flit_recvd = flit_inport.read();
 			UI src = flit_recvd.src;
 			//cout << "sim_count "<< sim_count << " "  << tileID << " recv from "<< src << endl;
-			g_ckTable[src*num_tiles + tileID] = sc_time_stamp().value() - flit_recvd.data4;
+			g_ckTable[src*g_tileNum + tileID] = sc_time_stamp().value() - flit_recvd.field4;
 		}
 	}
 }

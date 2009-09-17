@@ -3,6 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////
 //  Dijkstra Algorithm for Single Source Shortest Path
 //////////////////////////////////////////////////////////////////////////
+
 int extract_min(map<int, double>& Q, set<int> & sQ){
 	set<int>::const_iterator map_it = sQ.begin();
 	int index = -1;
@@ -89,4 +90,39 @@ void sssp_router::setID(UI tileid){
 	// initialize() above is not be called
 	// format :: all constructions completed in NWTile, then set ID. It's weird. if some work in initialization need id, it could be placed in construction function. The function more than its name will bewilder successive coders.
 	this->opTable = dijkstra(this->id, g_a);
+	printTable();
+}
+
+void sssp_router::printTable(){
+	if (tfileFlag == false)
+	{
+		sssp_router::newRouterTableFile();
+	}
+	ofstream fff;
+	string filename = "routerTable";
+	filename = g_resultDir + filename;
+	fff.open(filename.c_str(), ostream::app);
+	if (!fff.is_open())
+		cout<<"cannot open routerTable"<<endl;
+	fff << "Tile_" << this->id <<  endl;
+	map<int, int>::iterator iter = opTable->begin();
+	while(iter != opTable->end()){
+		fff << iter->first << "\t" << iter->second << endl;
+		iter ++;
+	}
+	fff.close();
+}
+
+bool sssp_router::tfileFlag = false;
+
+void sssp_router::newRouterTableFile(){
+	ofstream fff;
+	string filename = "routerTable";
+	filename = g_resultDir + filename;
+	fff.open(filename.c_str(), ostream::out);
+	if (!fff.is_open())
+		cout<<"cannot open routerTable"<<endl;
+	fff << "sssp_router router table" << endl;
+	fff.close();
+	tfileFlag = true;
 }

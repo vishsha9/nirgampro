@@ -48,29 +48,41 @@ void wireModule::setTileID(UI tile1, UI tile2){
 
 void wireModule::doDelaySig1(){
 	flit f_1to2;
+	
+	for(int i=0; i < NUM_VCS ; i++){
+		creditLine t; t.freeVC = true; t.freeBuf = true;
+		credit_to2[i].write(t);
+	}
+
 	while(true){
 		wait();
 		if(sig_from1.event()){
 			f_1to2 = sig_from1.read();
-			delaylogin << "CLK: " << sc_time_stamp() << "\twire readflit from 1 data:" << f_1to2.data4<< "\ttimestamp "<< f_1to2.simdata.gtime  << endl;
+			delaylogin << "CLK: " << sc_time_stamp() << "\twire readflit from 1 data:" << f_1to2.field4<< "\ttimestamp "<< f_1to2.simdata.gtime  << endl;
 		}
 		wait(delayTime, SC_PS);
 		sig_to2.write(f_1to2);
-		delaylogout << "write\tCLK: " << sc_time_stamp() << "\twire writeflit from 1 data:" << f_1to2.data4<< "\ttimestamp "<< f_1to2.simdata.gtime  << endl;
+		delaylogout << "write\tCLK: " << sc_time_stamp() << "\twire writeflit from 1 data:" << f_1to2.field4<< "\ttimestamp "<< f_1to2.simdata.gtime  << endl;
 	}
 }
 
 void wireModule::doDelaySig2(){
 	flit f_2to1;
+
+	for(int i=0; i < NUM_VCS ; i++){
+		creditLine t; t.freeVC = true; t.freeBuf = true;
+		credit_to1[i].write(t);
+	}
+
 	while(true){
 		wait();
 		if(sig_from2.event()){
 			f_2to1 = sig_from2.read();
-			delaylogin << "CLK: " << sc_time_stamp() << "\twire readflit from 2 data:" << f_2to1.data4<< "\ttimestamp "<< f_2to1.simdata.gtime  << endl;
+			delaylogin << "CLK: " << sc_time_stamp() << "\twire readflit from 2 data:" << f_2to1.field4<< "\ttimestamp "<< f_2to1.simdata.gtime  << endl;
 		}
 		wait(delayTime, SC_PS);
 		sig_to1.write(f_2to1);
-		delaylogout << "write\tCLK: " << sc_time_stamp() << "\twire writeflit from 2 data:" << f_2to1.data4<< "\ttimestamp "<< f_2to1.simdata.gtime  << endl;
+		delaylogout << "write\tCLK: " << sc_time_stamp() << "\twire writeflit from 2 data:" << f_2to1.field4<< "\ttimestamp "<< f_2to1.simdata.gtime  << endl;
 	}
 }
 
@@ -142,7 +154,7 @@ void wires::delay(){
 		if(sig_from1.event()){
 			f_1to2 = sig_from1.read();
 			map_sig_1to2.insert(pair<int, flit>(cur_time.value(), f_1to2));
-			delaylogin << "CLK: " << sc_time_stamp() << "\twire readflit from 1 " << f_1to2.data4<< "\ttimestamp "<< f_1to2.simdata.gtime  << endl;
+			delaylogin << "CLK: " << sc_time_stamp() << "\twire readflit from 1 " << f_1to2.field4<< "\ttimestamp "<< f_1to2.simdata.gtime  << endl;
 		}
 		//////////////////////////////////////////////////////////////////////////
 		// flit from 2 to 1 event
@@ -150,7 +162,7 @@ void wires::delay(){
 		if(sig_from2.event()){
 			f_2to1 = sig_from2.read();
 			map_sig_2to1.insert(pair<int, flit>(cur_time.value(), f_2to1));
-			delaylogin << "CLK: " << sc_time_stamp() << "\twire readflit from 2 " << f_2to1.data4<< "\ttimestamp "<< f_2to1.simdata.gtime  << endl;
+			delaylogin << "CLK: " << sc_time_stamp() << "\twire readflit from 2 " << f_2to1.field4<< "\ttimestamp "<< f_2to1.simdata.gtime  << endl;
 		}
 
 		for(int i= 0; i < NUM_VCS; i++){
@@ -184,7 +196,7 @@ void wires::delay(){
 			for(iter = map_sig_1to2.begin(); iter!=iend; iter++){
 				if( cur_time.value() - (*iter).first >= delay_time){
 					sig_to2.write((*iter).second);
-					delaylogout << "write\tCLK: " << sc_time_stamp() << "\twire writeflit from 1 " << (*iter).second.data4<< "\ttimestamp "<< (*iter).second.simdata.gtime  << endl;
+					delaylogout << "write\tCLK: " << sc_time_stamp() << "\twire writeflit from 1 " << (*iter).second.field4<< "\ttimestamp "<< (*iter).second.simdata.gtime  << endl;
 					del = (*iter).first;
 					break;
 				}
@@ -197,7 +209,7 @@ void wires::delay(){
 			for(iter = map_sig_2to1.begin(); iter!=iend; iter++){
 				if( cur_time.value() - (*iter).first >= delay_time){
 					sig_to1.write((*iter).second);
-					delaylogout << "write\tCLK: " << sc_time_stamp() << "\twire writeflit from 2 " << (*iter).second.data4<< "\ttimestamp "<< (*iter).second.simdata.gtime  << endl;
+					delaylogout << "write\tCLK: " << sc_time_stamp() << "\twire writeflit from 2 " << (*iter).second.field4<< "\ttimestamp "<< (*iter).second.simdata.gtime  << endl;
 					del = (*iter).first;
 					break;
 				}
@@ -247,12 +259,12 @@ wait();
 if(sig_from1.event()){
 b_s1to2 = sig_from1.read();
 e_sig_1.notify(delay_time, SC_PS);
-delaylogin << "CLK: " << sc_time_stamp() << "\twire readflit from 1 " << b_s1to2.data4<< "\ttimestamp "<< b_s1to2.simdata.gtime  << endl;
+delaylogin << "CLK: " << sc_time_stamp() << "\twire readflit from 1 " << b_s1to2.field4<< "\ttimestamp "<< b_s1to2.simdata.gtime  << endl;
 }
 if(sig_from2.event()){
 b_s2to1 = sig_from2.read();
 e_sig_2.notify(delay_time, SC_PS);
-delaylogin << "CLK: " << sc_time_stamp() << "\twire readflit from 2 " << b_s2to1.data4<< "\ttimestamp "<< b_s2to1.simdata.gtime  << endl;
+delaylogin << "CLK: " << sc_time_stamp() << "\twire readflit from 2 " << b_s2to1.field4<< "\ttimestamp "<< b_s2to1.simdata.gtime  << endl;
 }
 for(int i= 0; i < NUM_VCS; i++){
 if(credit_from1[i].event()){
@@ -272,11 +284,11 @@ while(true)
 {
 wait();
 if(e_sig_1){
-delaylogout << "write\tCLK: " << sc_time_stamp() << "\twire writeflit from 1 " << b_s2to1.data4<< "\ttimestamp "<< b_s2to1.simdata.gtime  << endl;
+delaylogout << "write\tCLK: " << sc_time_stamp() << "\twire writeflit from 1 " << b_s2to1.field4<< "\ttimestamp "<< b_s2to1.simdata.gtime  << endl;
 sig_to2.write(b_s1to2);
 }
 if(e_sig_2){
-delaylogout << "write\tCLK: " << sc_time_stamp() << "\twire writeflit from 2 " << b_s2to1.data4<< "\ttimestamp "<< b_s2to1.simdata.gtime  << endl;
+delaylogout << "write\tCLK: " << sc_time_stamp() << "\twire writeflit from 2 " << b_s2to1.field4<< "\ttimestamp "<< b_s2to1.simdata.gtime  << endl;
 sig_to1.write(b_s2to1);
 b_s2to1 = sig_from2.read();
 }

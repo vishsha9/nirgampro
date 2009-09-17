@@ -33,6 +33,7 @@
 #include "credit.h"
 #include "rng.h"
 #include "../extern.h"
+#include "tracker/tracker.h"
 
 #include <fstream>
 #include <string>
@@ -90,7 +91,6 @@ struct ipcore : public sc_module {
 	
 	// VARIABLES ////////////////////////////////////////////////
 	UI tileID;	///< unique tile id
-	ULL sim_count;	///< number of clock cycles
 	RNG *ran_var;	///< random variable
 
 	flit flit_reg;	//data write here is sent to flit_outport.

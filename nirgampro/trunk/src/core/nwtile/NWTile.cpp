@@ -7,7 +7,7 @@ bool NWTile::isCoreIO(UI i){
 
 NWTile::NWTile(sc_module_name NWTile, UI tileID, UI nb_num) : BaseNWTile(NWTile, tileID, nb_num),
 vcAlloc("VA", nb_num+1),
-ctr("Controller", nb_num+1, &nb_id){
+ctr("Controller", nb_num+1, &indexTable){
 	this->nb_num = nb_num;
 	this->io_num = nb_num + 1;
 
@@ -42,6 +42,8 @@ ctr("Controller", nb_num+1, &nb_id){
 			ip = new App_test_send(name.c_str());
 		else if(g_appLibName[tileID].compare("selfCheck.so") == 0)
 			ip = new selfCheck(name.c_str());
+		else if(g_appLibName[tileID].compare("CBR.so") == 0)
+			ip = new CBRTraffic(name.c_str());
 		else{
 			cout<<"error: no such APP"<<endl;
 			exit(-1);
@@ -89,6 +91,7 @@ void NWTile::innerConnect(){
 
 	for (UI i = 0; i < io_num; i++)
 	{
+		Ichannel[i]->cntrlID = i;
 		Ichannel[i]->switch_cntrl(*nw_clock);
 		if(isCoreIO(i))
 			Ichannel[i]->inport(sigs_IcIp.flit_CS_IC);
@@ -123,6 +126,7 @@ void NWTile::innerConnect(){
 
 	for (UI i = 0; i < io_num; i++)
 	{
+		Ochannel[i]->cntrlID = i;
 		Ochannel[i]->switch_cntrl(*nw_clock);
 		if (isCoreIO(i))
 			Ochannel[i]->outport(sigs_OcIp.flit_OC_CR);
@@ -168,4 +172,15 @@ void NWTile::setID(UI id) {
 		ip->setID(id);
 
 	ctr.setTileID(id);
+}
+
+void NWTile::closeLogs() {
+	/*cout << "Tile_" << tileID << " adjNodeNUm:" << nb_num << endl;
+	for (int i=0; i< nb_id.size(); i++)
+	{
+		cout << "\tport_" << i << " to " << nb_id.at(i) << endl;
+	}
+	cout << "tileId: " << tileID << " ionum: " << io_num << endl;*/
+	for(int i = 0; i < io_num; i++)
+		Ochannel[i]->closeLogs();
 }

@@ -38,6 +38,7 @@
 #include "../../extern.h"
 #include "InnerSigs.h"
 
+
 using namespace std;
 
 ///////////////////////////////////////////////////////////////
@@ -93,8 +94,10 @@ struct OutputChannel : public sc_module {
 	UI tileID;	///< unique tile ID
 	UI cntrlID;	///< control ID to identify channel direction (N, S, E, W, C)
 		
-	switch_reg*	r_in;	///< registers to store flit from inport, one for each inport
-	switch_reg	r_vc[NUM_VCS];	///< registers, one for each next VCID
+	//switch_reg*	r_in;	///< registers to store flit from inport, one for each inport
+	vector<switch_reg> r_in;
+	//switch_reg	r_vc[NUM_VCS];	///< registers, one for each next VCID
+	vector<switch_reg> r_vc;
 
 	ULL latency;			///< total latency
 	ULL num_pkts;			///< total number of packets

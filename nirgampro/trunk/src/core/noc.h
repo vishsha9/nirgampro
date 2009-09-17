@@ -67,6 +67,8 @@ struct NoC : public sc_module {
 
 	wireModule * connect(sc_module_name wire_name, baseWireModel* para, BaseNWTile * tile1, BaseNWTile * tile2);
 		
+	void closeLogs();
+
 	void entry();	///< Keeps count of number of simulation cycles
 };
 

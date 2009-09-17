@@ -69,7 +69,7 @@ struct BaseNWTile: public sc_module {
 	UI tileID;
 
 	UI nb_num;
-	vector<UI> nb_id;
+	vector<UI> indexTable;
 
 	UI nb_initPtr;
 
@@ -95,6 +95,8 @@ struct BaseNWTile: public sc_module {
 	void entry();		///< Writes buffer utilization information at the tile, at each clock cycle
 	void setID(UI);		///< sets unique tile id and associates ports with directions
 	
+	virtual void closeLogs(){};
+
 	//////////////////////////////////////////////////////////////////////////
 	// for test
 	//void read();

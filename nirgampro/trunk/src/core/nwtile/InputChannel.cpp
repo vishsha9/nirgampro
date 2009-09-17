@@ -26,6 +26,8 @@
 
 #include "InputChannel.h"
 
+#include "../tracker/tracker.h"
+
 ////////////////////////
 /// Constructor
 ////////////////////////
@@ -33,6 +35,8 @@ InputChannel::InputChannel(sc_module_name InputChannel, UI io_num): sc_module(In
 	this->io_num = io_num;
 	ports_oc.outport = new sc_out<flit>[io_num];
 	ports_oc.outReady = new sc_in<bool>[io_num];
+	
+	vc.resize(NUM_VCS);
 
 	// process sensitive to inport event, reads in flit and stores in buffer
 	SC_THREAD(read_flit);
@@ -79,7 +83,7 @@ InputChannel::InputChannel(sc_module_name InputChannel, UI io_num): sc_module(In
 /// Process sensitive to inport event
 /// Reads flit from input port and calls function to store in buffer
 ///////////////////////////////////////////////////////////////////////////
-void InputChannel :: read_flit() 
+void InputChannel::read_flit() 
 {
 	//flit that is read into the input channel
 	flit flit_in;
@@ -93,6 +97,8 @@ void InputChannel :: read_flit()
 
 			// set input timestamp (required for per channel latency stats)
 			flit_in.simdata.ICtimestamp = sim_count - 1;	
+
+			g_tracker->enterInputChannel(tileID, cntrlID, flit_in);
 
 			if(LOG >= 2)
 				eventlog<<"\ntime: "<<sc_time_stamp()<<" name: "
@@ -116,10 +122,11 @@ void InputChannel :: read_flit()
 /// Process sensitive to clock
 /// Calls routing functions if head/hdt flit at the front of fifo
 ///////////////////////////////////////////////////////////////////////////
-void InputChannel :: route_flit() 
+void InputChannel::route_flit() 
 {
 	sim_count = 0;
-	while(sim_count < SIM_NUM) 
+	//while(sim_count < g_simNum) 
+	while (true)
 	{
 		wait();		// wait for next clock cycle
 		flit flit_out;
@@ -145,7 +152,7 @@ void InputChannel :: route_flit()
 					// call routing function depending on type of routing algorithm
 					if(flit_out.type == HEAD || flit_out.type == HDT) 
 					{
-						routing_type rt = static_cast<routing_type> (flit_out.data2 & 0xFF);
+						routing_type rt = static_cast<routing_type> (flit_out.field2 & 0xFF);
 
 						if(rt == SOURCE) 
 							routing_src(&flit_out);
@@ -176,9 +183,10 @@ bool InputChannel::isCoreIO(UI i){
 /// - If head/hdt flit, send VC request
 /// - write flit to output port if ready signal from OC
 ///////////////////////////////////////////////////////////////////////////
-void InputChannel :: transmit_flit() {
+void InputChannel::transmit_flit() {
 	ULL sim_count = 0;
-	while(sim_count < SIM_NUM) 
+	//while(sim_count < g_simNum) 
+	while (true)
 	{
 		wait();		// wait for next clock cycle
 		flit flit_out;
@@ -316,6 +324,8 @@ void InputChannel :: transmit_flit() {
 					flit_out.simdata.ctime = sc_time_stamp();
 					ports_oc.outport[i].write(flit_out);
 
+					g_tracker->exitInputChannel(tileID, cntrlID, flit_out);
+
 					if(LOG >= 2)
 						eventlog<<"\ntime: "<<sc_time_stamp()<<" name: "
 						<<this->name()<<" tile: "<<tileID<<" cntrl: "<<cntrlID
@@ -410,8 +420,8 @@ void InputChannel::routing_src(flit *flit_in) {
 	int vc_id = flit_in->vcid;
 	ports_ctr.rtRequest.write(ROUTE);
 	ports_ctr.sourceAddress.write(flit_in->src);
-	ports_ctr.destRequest.write(flit_in->data1);
-	flit_in->data1 = flit_in->data1 >> 3; //Right shift
+	ports_ctr.destRequest.write(flit_in->field1);
+	flit_in->field1 = flit_in->field1 >> 3; //Right shift
 	if(LOG >= 4)
 		eventlog<<"\ntime: "<<sc_time_stamp()<<" name: "
 		<<this->name()<<" IC: rtRequest sent!"<<endl;
@@ -441,7 +451,7 @@ void InputChannel::routing_dst(flit *flit_in) {
 	int vc_id = flit_in->vcid;
 	ports_ctr.rtRequest.write(ROUTE);
 	ports_ctr.sourceAddress.write(flit_in->src);
-	ports_ctr.destRequest.write(flit_in->data1);
+	ports_ctr.destRequest.write(flit_in->field1);
 	if(LOG >= 4)
 		eventlog<<"\ntime: "<<sc_time_stamp()<<" name: "
 		<<this->name()<<" IC: rtRequest sent!"<<endl;

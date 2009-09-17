@@ -69,8 +69,9 @@ NoC::NoC(sc_module_name NoC, AdjList* a): sc_module(NoC) {
 	
 	for (int i=0; i<a->nodeNum; i++){
 		Node * node = a->nodes[i];
-		string name = "tile" +string(1, node->nodeId+'0');
-		BaseNWTile * tile = new NWTile(name.c_str(), node->nodeId, node->adjNum);
+		char name[50];
+		sprintf(name, "tile%d", node->nodeId);
+		BaseNWTile * tile = new NWTile(name, node->nodeId, node->adjNum);
 		tile->clk(switch_cntrl);
 		nwtile.push_back(tile);
 	}
@@ -79,8 +80,9 @@ NoC::NoC(sc_module_name NoC, AdjList* a): sc_module(NoC) {
 	for (int i=0; i<a->edgeNum; i++)
 	{
 		Edge * edge = a->edges[i];
-		string name = "wire" + string(1, edge->edgeId+'0');
-		sigs.push_back(connect(name.c_str(), edge->wp, nwtile[edge->node1->nodeId], nwtile[edge->node2->nodeId]));
+		char name[50];
+		sprintf(name, "wire%d", edge->edgeId);
+		sigs.push_back(connect(name, edge->wp, nwtile[edge->node1->nodeId], nwtile[edge->node2->nodeId]));
 	}
 	
 
@@ -139,14 +141,30 @@ wireModule* NoC::connect(sc_module_name wire_name, baseWireModel * para, BaseNWT
 /// It also closes logfiles upon completion of simulation.
 ////////////////////////////////////////////////////////////
 void NoC::entry() {
+	g_simCount = 0;
 	while(true) {
-		ULL sim_count = 0;
-		while(sim_count < SIM_NUM) {
+		while(true) {
+			if (g_isStepMode == false)
+				if (g_simCount == g_simNum)
+					break;
 			wait();
-			sim_count++;
+			g_simCount++;
+			//if(g_simNum!=0 && (g_simNum - g_simCount) % (g_stepSimNum/10) == 0)
+			if(g_simNum%500 == 0)
+				cerr <<"\r" << g_simCount << " of " << g_simNum << " cycles";
 		}
 
-		sc_stop();
+		if(g_isStepMode == false){
+			sc_stop();
+			wait();
+		}
 	}//end while
 }//end entry
 
+void NoC::closeLogs(){
+	g_resultsLog<<"Tile\t"<<"Output\t\t"<<"Total no.\t"<<"Total no.\t"<<"avg. latency\t"<<"avg. latency\t"<<"average\n";
+	g_resultsLog<<"ID\t"<<"channel\t\t"<<"of packets\t"<<"of flits\t"<<"per packet\t"<<"per flit\t"<<"throughput\n";
+	g_resultsLog<<"\t\t\t\t\t\t\t(clock cycles)\t(clock cycles)\t(Gbps)\n";
+	for (int i =0; i < g_tileNum; i++)
+		nwtile[i]->closeLogs();
+}

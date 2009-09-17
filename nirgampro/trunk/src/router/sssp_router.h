@@ -9,6 +9,7 @@
 #include "../core/router.h"
 #include "../core/topoAnalyzer.h"
 
+#include <fstream>
 //////////////////////////////////////////////////////////////////////
 /// \brief Class to implement XY routing algorithm
 ///
@@ -24,9 +25,14 @@ public:
 
 	void initialize();	///< any initializations to be done
 	void setID(UI tileid);	///< set unique id
-
+	
 protected:
 	map<int, int> * opTable;
+
+private:
+	static void newRouterTableFile();
+	static bool tfileFlag;
+	void printTable();
 };
 
 #endif

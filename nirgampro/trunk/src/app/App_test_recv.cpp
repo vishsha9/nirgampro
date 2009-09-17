@@ -18,7 +18,7 @@ void App_test_recv::recv()
 		if (flit_inport.event())
 		{
 			flit flit_recvd = flit_inport.read();
-			cout << "Time:" << sc_time_stamp().value() << " flit received. timestamp:" << flit_recvd.data4 << endl;
+			cout << "Time:" << sc_time_stamp().value() << " flit received. timestamp:" << flit_recvd.field4 << endl;
 		}
 	}
 }
