@@ -72,7 +72,7 @@ sssp_router::sssp_router(){
 UI sssp_router::calc_next(UI ip_dir, ULL source_id, ULL dest_id){
 	UI nextTile = opTable->find(dest_id)->second;
 	if (nextTile == id)
-		return indexTable->size();
+		return portTable->size();
 	UI dir = -1;
 	idToDir(nextTile, &dir);
 	return dir;

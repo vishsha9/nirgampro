@@ -53,7 +53,7 @@ using namespace std;
 struct Controller : public sc_module {
 	/// Constructor
 	SC_HAS_PROCESS(Controller);
-	Controller(sc_module_name Controller, UI io_num, vector<UI> * indexTable);
+	Controller(sc_module_name Controller, UI io_num, vector<UI> * portTable);
 
 	UI io_num;
 	// PORTS ////////////////////////////////////////////////////////////////////////////////

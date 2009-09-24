@@ -79,66 +79,72 @@ bool OutputChannel::isCoreIO(UI i){
 /// .
 ///////////////////////////////////////////////////////////////////////////
 void OutputChannel::entry() {
-	ULL sim_count = 0;	// keep track of clock cycles
+	//ULL sim_count = 0;	// keep track of clock cycles
 	while(true) 
 	{
 		wait();
 		if(switch_cntrl.event()) 	// clock event
 		{
-			sim_count++;
+			//sim_count++;
 
-			if(!r_vc[(sim_count+NUM_VCS)%NUM_VCS].free) {	// flit in register r_vc
+			UI vc_to_serve = (g_simCount+NUM_VCS)%NUM_VCS;
+
+			if(!r_vc[vc_to_serve].free) {	// flit in register r_vc
 
 				// local channel, send flit from r_vc to outport, no need to check credit info
 				if(isCoreIO(cntrlID))
 				{
 
-					r_vc[(sim_count+NUM_VCS)%NUM_VCS].val.simdata.ctime = sc_time_stamp();
-					outport.write(r_vc[(sim_count+NUM_VCS)%NUM_VCS].val);
-					r_vc[(sim_count+NUM_VCS)%NUM_VCS].free = true;
+					// r_vc[vc_to_serve].val.simdata.ctime = sc_time_stamp(); moved to exitOutputChannel
+					g_tracker->exitOutputChannel(tileID, cntrlID, r_vc[vc_to_serve].val);
+					outport.write(r_vc[vc_to_serve].val);
+					r_vc[vc_to_serve].free = true;
 
-					g_tracker->exitOutputChannel(tileID, cntrlID, r_vc[(sim_count+NUM_VCS)%NUM_VCS].val);
+					
 
-					if(r_vc[(sim_count+NUM_VCS)%NUM_VCS].val.type == TAIL 
-						|| r_vc[(sim_count+NUM_VCS)%NUM_VCS].val.type == HDT) 
+					// moved to exitOutputChannel
+					/*if(r_vc[vc_to_serve].val.type == TAIL 
+						|| r_vc[vc_to_serve].val.type == HDT) 
 					{
-						latency += sim_count -1 - input_time[(sim_count+NUM_VCS)%NUM_VCS];
+						latency += sim_count -1 - input_time[vc_to_serve];
 						num_pkts++;
 						end_cycle = sim_count - 1;
 					}
-					num_flits++;
+					num_flits++;*/
 
 					if(LOG >= 2)
 						eventlog<<"\nTime: "<<sc_time_stamp()<<" name: "
 						<<this->name()<<" tile: "<<tileID<<" cntrlID: "<<cntrlID
-						<<" Sending out flit from OC "<<r_vc[(sim_count+NUM_VCS)%NUM_VCS].val;
+						<<" Sending out flit from OC "<<r_vc[vc_to_serve].val;
 				}
 				else // send flit to outport basis of credit info, if free space in buf at IC of next tile
 				{	
-					if(credit_in[r_vc[(sim_count+NUM_VCS)%NUM_VCS].val.vcid].read().freeBuf) 
+					if(credit_in[r_vc[vc_to_serve].val.vcid].read().freeBuf) 
 					{
-						r_vc[(sim_count+NUM_VCS)%NUM_VCS].val.simdata.ctime = sc_time_stamp();
-						outport.write(r_vc[(sim_count+NUM_VCS)%NUM_VCS].val);
+						//r_vc[vc_to_serve].val.simdata.ctime = sc_time_stamp(); moved to exitOutputChannel
+						g_tracker->exitOutputChannel(tileID, cntrlID, r_vc[vc_to_serve].val);
+						outport.write(r_vc[vc_to_serve].val);
 			
-						g_tracker->exitOutputChannel(tileID, cntrlID, r_vc[(sim_count+NUM_VCS)%NUM_VCS].val);
+						
 
-						if(r_vc[(sim_count+NUM_VCS)%NUM_VCS].val.type == TAIL 
-							|| r_vc[(sim_count+NUM_VCS)%NUM_VCS].val.type == HDT) 
+						// moved to exit OutputChannel
+						/*if(r_vc[vc_to_serve].val.type == TAIL 
+							|| r_vc[vc_to_serve].val.type == HDT) 
 						{
-							latency += sim_count -1 - input_time[(sim_count+NUM_VCS)%NUM_VCS];
+							latency += sim_count -1 - input_time[vc_to_serve];
 							num_pkts++;
 							end_cycle = sim_count - 1;
 						}
-						num_flits++;
+						num_flits++;*/
 
 						if(LOG >= 2)
 							eventlog<<"\nTime: "<<sc_time_stamp()<<" name: "
 							<<this->name()<<" tile: "<<tileID
 							<<" cntrlID: "<<cntrlID
 							<<" Buf at next tile is free, Sending out flit from OC "
-							<<r_vc[(sim_count+NUM_VCS)%NUM_VCS].val;
+							<<r_vc[vc_to_serve].val;
 
-						r_vc[(sim_count+NUM_VCS)%NUM_VCS].free = true;
+						r_vc[vc_to_serve].free = true;
 					}
 					else 
 					{
@@ -147,7 +153,7 @@ void OutputChannel::entry() {
 							<<this->name()<<" tile: "<<tileID
 							<<" cntrlID: "<<cntrlID
 							<<" Buf at next tile is not free for VC "
-							<<(sim_count+NUM_VCS)%NUM_VCS<<endl;
+							<<vc_to_serve<<endl;
 					}
 				}
 			}
@@ -160,8 +166,10 @@ void OutputChannel::entry() {
 					if(r_vc[r_in[i].val.vcid].free) 
 					{
 						r_vc[r_in[i].val.vcid].val = r_in[i].val;
-						if(r_in[i].val.type == HDT || r_in[i].val.type == HEAD)
-							input_time[r_in[i].val.vcid] = r_in[i].val.simdata.ICtimestamp;
+
+						g_tracker->getVcAtOutputChannel(tileID, cntrlID, r_in[i].val);
+						/*if(r_in[i].val.type == HDT || r_in[i].val.type == HEAD)
+							input_time[r_in[i].val.vcid] = r_in[i].val.simdata.ICtimestamp;*/
 
 						r_vc[r_in[i].val.vcid].free = false;
 						//int vc_id = r_in[i].val.vcid;
@@ -181,11 +189,13 @@ void OutputChannel::entry() {
 				r_in[i].free = false;
 
 				g_tracker->enterOutputChannel(tileID, cntrlID, r_in[i].val);
-				//if(r_in[i].val.pkthdr.nochdr.flittype == HDT || r_in[i].val.pkthdr.nochdr.flittype == HEAD)
-				//	input_time = r_in[i].val.simdata.ICtimestamp;
-				if(beg_cycle == 0)
-					//beg_cycle = input_time;
-					beg_cycle = r_in[i].val.simdata.ICtimestamp;
+
+				////if(r_in[i].val.pkthdr.nochdr.flittype == HDT || r_in[i].val.pkthdr.nochdr.flittype == HEAD)
+				////	input_time = r_in[i].val.simdata.ICtimestamp;
+				//if(beg_cycle == 0)
+				//	//beg_cycle = input_time;
+				//	beg_cycle = r_in[i].val.simdata.ICtimestamp;
+
 				if(LOG >= 4)
 					eventlog<<"\nTime: "<<sc_time_stamp()
 					<<" name: "<<this->name()<<" tile: "<<tileID
@@ -197,8 +207,9 @@ void OutputChannel::entry() {
 				else 
 				{
 					r_vc[r_in[i].val.vcid].val = r_in[i].val;
-					if(r_in[i].val.type == HDT || r_in[i].val.type == HEAD)
-						input_time[r_in[i].val.vcid] = r_in[i].val.simdata.ICtimestamp;
+					g_tracker->getVcAtOutputChannel(tileID, cntrlID, r_in[i].val);
+					/*if(r_in[i].val.type == HDT || r_in[i].val.type == HEAD)
+						input_time[r_in[i].val.vcid] = r_in[i].val.simdata.ICtimestamp;*/
 
 					r_vc[r_in[i].val.vcid].free = false;
 					r_in[i].free = true;
@@ -227,22 +238,22 @@ void OutputChannel ::setTileID(UI id){
 /// - compute preformance stats (latency and throughput)
 /// - dump results
 ///////////////////////////////////////////////////////////////////////////
-void OutputChannel ::closeLogs(){
-	if(num_pkts != 0)
-		avg_latency = (float)latency/num_pkts;
-	if(num_flits != 0)
-		avg_latency_flit = (float)latency/num_flits;
-	total_cycles = end_cycle - beg_cycle;
-	if(total_cycles != 0)
-		avg_throughput = (float)(num_flits * FLITSIZE * 8) / (total_cycles * g_clkPeriod);	// Gbps
-	//eventlog<<"\nTime: "<<sc_time_stamp()<<" name: "<<this->name()<<" tile: "<<tileID<<" cntrlID: "<<cntrlID<<" latency: "<<latency<<" num_pkts: "<<num_pkts<<" num_flits: "<<num_flits<<" avg per pkt: "<<avg_latency<<" avg per flit: "<<avg_latency_flit<<" cycles: "<<total_cycles;
-	if (isCoreIO(cntrlID))
-	{
-		g_resultsLog<<tileID<<"\ttoIP\t\t";
-		g_resultsLog<<num_pkts<<"\t\t"<<num_flits<<"\t\t"<<avg_latency<<"\t\t"<<avg_latency_flit<<"\t\t"<<avg_throughput<<endl;
-	}
-	else{
-		g_resultsLog<<tileID<<"\t"<<cntrlID<<"\t\t";
-		g_resultsLog<<num_pkts<<"\t\t"<<num_flits<<"\t\t"<<avg_latency<<"\t\t"<<avg_latency_flit<<"\t\t"<<avg_throughput<<endl;
-	}
-}
+//void OutputChannel ::closeLogs(){
+//	if(num_pkts != 0)
+//		avg_latency = (float)latency/num_pkts;
+//	if(num_flits != 0)
+//		avg_latency_flit = (float)latency/num_flits;
+//	total_cycles = end_cycle - beg_cycle;
+//	if(total_cycles != 0)
+//		avg_throughput = (float)(num_flits * FLITSIZE * 8) / (total_cycles * g_clkPeriod);	// Gbps
+//	//eventlog<<"\nTime: "<<sc_time_stamp()<<" name: "<<this->name()<<" tile: "<<tileID<<" cntrlID: "<<cntrlID<<" latency: "<<latency<<" num_pkts: "<<num_pkts<<" num_flits: "<<num_flits<<" avg per pkt: "<<avg_latency<<" avg per flit: "<<avg_latency_flit<<" cycles: "<<total_cycles;
+//	if (isCoreIO(cntrlID))
+//	{
+//		g_resultsLog<<tileID<<"\ttoIP\t\t";
+//		g_resultsLog<<num_pkts<<"\t\t"<<num_flits<<"\t\t"<<avg_latency<<"\t\t"<<avg_latency_flit<<"\t\t"<<avg_throughput<<endl;
+//	}
+//	else{
+//		g_resultsLog<<tileID<<"\t"<<cntrlID<<"\t\t";
+//		g_resultsLog<<num_pkts<<"\t\t"<<num_flits<<"\t\t"<<avg_latency<<"\t\t"<<avg_latency_flit<<"\t\t"<<avg_throughput<<endl;
+//	}
+//}

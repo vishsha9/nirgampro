@@ -42,11 +42,11 @@
 class router {
 	protected:	
 		UI id;	///< Unique tile identifier
-		vector<UI>* indexTable;
+		vector<UI>* portTable;
 
 	public:
 		/// Constructor
-		bool setIndexTable(vector<UI>*);
+		bool setPortTable(vector<UI>*);
 		int idToDir(UI id, UI* dir);
 		int dirToId(UI dir, UI* id);
 

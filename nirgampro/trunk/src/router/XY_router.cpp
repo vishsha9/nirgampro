@@ -61,7 +61,7 @@ UI XY_router::calc_next(UI ip_dir, ULL source_id, ULL dest_id) {
 		else if(dest_xco > xco)
 			x_to++;
 		else if(dest_xco == xco)
-			return indexTable->size(); // self directory
+			return portTable->size(); // self directory
 	}
 	UI rel;
 	idToDir(x_to*3+y_to, &rel);

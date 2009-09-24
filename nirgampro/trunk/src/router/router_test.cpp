@@ -6,13 +6,13 @@ router_test::router_test(){
 UI router_test::calc_next(UI ip_dir, ULL source_id, ULL dest_id){
 	if(id == 0)
 	{
-		for (int i =0 ;i< indexTable->size(); i++)
-			if((*indexTable)[i] == 1)
+		for (int i =0 ;i< portTable->size(); i++)
+			if((*portTable)[i] == 1)
 				return i;
 	}
 	else
-		for (int i =0 ;i< indexTable->size(); i++)
-			if((*indexTable)[i] == 2)
+		for (int i =0 ;i< portTable->size(); i++)
+			if((*portTable)[i] == 2)
 				return i;
 }
 

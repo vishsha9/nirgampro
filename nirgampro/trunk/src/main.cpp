@@ -412,12 +412,14 @@ int sc_main(int argc, char *argv[]) {
 	else
 		loadApp(g_tileNum);
 		
-	g_tracker = new Tracker();
+	
 
 	showConfig();
 	
 	NoC noc("noc", g_a);
 
+	g_tracker = new Tracker();
+	g_tracker->addProbes(noc);
 
 	//g_noc = &noc;
 	noc.switch_cntrl(*nw_clock);
@@ -496,6 +498,8 @@ int sc_main(int argc, char *argv[]) {
 					strcasecmp(timestr.c_str(), "q") == 0 ||
 					strcasecmp(timestr.c_str(), "exit") == 0 )
 					break;
+				else if(strcasecmp(timestr.c_str(), "d") == 0)
+					g_tracker->enterDebuger();
 				else
 					cout << "Input Error. Please input cycle number or duration of simultion. Enter quit to quit." << endl;
 			}
@@ -506,7 +510,8 @@ int sc_main(int argc, char *argv[]) {
 		cout << "Not simulated, No result generated" << endl;
 		return 0;
 	}
-	noc.closeLogs();
+	//noc.closeLogs();
+	g_tracker->printOcOverviewAll(g_resultsLog);
 
 	if(g_isCheckMode){
 		if(doSelfCheck())

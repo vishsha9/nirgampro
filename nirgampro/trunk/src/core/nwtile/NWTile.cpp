@@ -7,7 +7,7 @@ bool NWTile::isCoreIO(UI i){
 
 NWTile::NWTile(sc_module_name NWTile, UI tileID, UI nb_num) : BaseNWTile(NWTile, tileID, nb_num),
 vcAlloc("VA", nb_num+1),
-ctr("Controller", nb_num+1, &indexTable){
+ctr("Controller", nb_num+1, &portTable){
 	this->nb_num = nb_num;
 	this->io_num = nb_num + 1;
 
@@ -174,13 +174,13 @@ void NWTile::setID(UI id) {
 	ctr.setTileID(id);
 }
 
-void NWTile::closeLogs() {
-	/*cout << "Tile_" << tileID << " adjNodeNUm:" << nb_num << endl;
-	for (int i=0; i< nb_id.size(); i++)
-	{
-		cout << "\tport_" << i << " to " << nb_id.at(i) << endl;
-	}
-	cout << "tileId: " << tileID << " ionum: " << io_num << endl;*/
-	for(int i = 0; i < io_num; i++)
-		Ochannel[i]->closeLogs();
-}
+//void NWTile::closeLogs() {
+//	/*cout << "Tile_" << tileID << " adjNodeNUm:" << nb_num << endl;
+//	for (int i=0; i< nb_id.size(); i++)
+//	{
+//		cout << "\tport_" << i << " to " << nb_id.at(i) << endl;
+//	}
+//	cout << "tileId: " << tileID << " ionum: " << io_num << endl;*/
+//	for(int i = 0; i < io_num; i++)
+//		Ochannel[i]->closeLogs();
+//}

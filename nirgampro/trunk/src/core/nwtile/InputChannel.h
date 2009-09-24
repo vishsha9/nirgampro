@@ -50,7 +50,7 @@ using namespace std;
 struct  VC {
 	sc_uint<VCS_BITSIZE>	id;		///< unique identifier
 	sc_uint<VCS_BITSIZE+1>	vc_next_id;	///< virtual channel id on next tile to which flit is supposed to go
-	sc_uint<BUF_BITSIZE>	num_buf;	///< number of buffers in this VC
+	//sc_uint<BUF_BITSIZE>	num_buf;	///< number of buffers in this VC
 	//sc_uint<3>		vc_route;	
 	port_id			vc_route;	///< routing decision (next hop) for the flits stored in this VC
 	fifo			vcQ;		///< buffer (fifo queue)
