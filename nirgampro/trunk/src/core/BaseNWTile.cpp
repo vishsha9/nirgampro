@@ -87,7 +87,7 @@ bool BaseNWTile::connect(UI nb_id, sc_signal<flit>& sig_from, sc_signal<flit>& s
 	}
 	nb_initPtr++;
 
-	this->indexTable.push_back(nb_id);
+	this->portTable.push_back(nb_id);
 	return true;
 }
 

@@ -29,7 +29,7 @@
 ////////////////////////
 /// Constructor
 ////////////////////////
-Controller::Controller(sc_module_name Controller, UI io_num, vector<UI> * indexTable): sc_module(Controller) {
+Controller::Controller(sc_module_name Controller, UI io_num, vector<UI> * portTable): sc_module(Controller) {
 	this->io_num = io_num;
 	rtRequest = new sc_in<request_type>[io_num];
 	destRequest = new sc_in<sc_uint<ADDR_SIZE> >[io_num];
@@ -44,7 +44,7 @@ Controller::Controller(sc_module_name Controller, UI io_num, vector<UI> * indexT
 	string libname = string("./router/lib/");
 
 	rtable = new sssp_router();
-	rtable->setIndexTable(indexTable);
+	rtable->setPortTable(portTable);
 	/*switch(RT_ALGO) {
 	case OE: //tg = new BurstyTraffic("TG");
 	libname = libname + string("OE_router.so");

@@ -150,7 +150,7 @@ void NoC::entry() {
 			wait();
 			g_simCount++;
 			//if(g_simNum!=0 && (g_simNum - g_simCount) % (g_stepSimNum/10) == 0)
-			if(g_simNum%500 == 0)
+			if(g_simNum!=0 && g_simNum%500 == 0)
 				cerr <<"\r" << g_simCount << " of " << g_simNum << " cycles";
 		}
 
@@ -161,10 +161,10 @@ void NoC::entry() {
 	}//end while
 }//end entry
 
-void NoC::closeLogs(){
-	g_resultsLog<<"Tile\t"<<"Output\t\t"<<"Total no.\t"<<"Total no.\t"<<"avg. latency\t"<<"avg. latency\t"<<"average\n";
-	g_resultsLog<<"ID\t"<<"channel\t\t"<<"of packets\t"<<"of flits\t"<<"per packet\t"<<"per flit\t"<<"throughput\n";
-	g_resultsLog<<"\t\t\t\t\t\t\t(clock cycles)\t(clock cycles)\t(Gbps)\n";
-	for (int i =0; i < g_tileNum; i++)
-		nwtile[i]->closeLogs();
-}
+//void NoC::closeLogs(){
+//	g_resultsLog<<"Tile\t"<<"Output\t\t"<<"Total no.\t"<<"Total no.\t"<<"avg. latency\t"<<"avg. latency\t"<<"average\n";
+//	g_resultsLog<<"ID\t"<<"channel\t\t"<<"of packets\t"<<"of flits\t"<<"per packet\t"<<"per flit\t"<<"throughput\n";
+//	g_resultsLog<<"\t\t\t\t\t\t\t(clock cycles)\t(clock cycles)\t(Gbps)\n";
+//	for (int i =0; i < g_tileNum; i++)
+//		nwtile[i]->closeLogs();
+//}

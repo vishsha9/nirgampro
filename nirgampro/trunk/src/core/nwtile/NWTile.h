@@ -56,7 +56,7 @@ struct NWTile : public BaseNWTile{
 	bool isCoreIO(UI i);
 	void innerConnect();
 	void setID(UI id);
-	void closeLogs();
+	//void closeLogs();
 };
 
 #endif

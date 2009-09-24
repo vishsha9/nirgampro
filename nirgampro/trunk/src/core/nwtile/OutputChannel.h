@@ -85,7 +85,7 @@ struct OutputChannel : public sc_module {
 					sc_out<flit>& op_port
 					);
 	void entry();			///< reads and processes incoming flit
-	void closeLogs();		///< closes logfiles at the end of simulation and computes performance stats
+	//void closeLogs();		///< closes logfiles at the end of simulation and computes performance stats
 	/// sets tile ID and id corresponding to port directions
 	void setTileID(UI tileID);
 	// PROCESSES END //////////////////////////////////////////////////////////////////////////////////////////
@@ -103,6 +103,7 @@ struct OutputChannel : public sc_module {
 	ULL num_pkts;			///< total number of packets
 	ULL num_flits;			///< total number of flits
 	ULL input_time[NUM_VCS];			///< generation timestamp of head flit of a packet
+
 	float avg_latency;		///< average latency (in clock cycles) per packet
 	float avg_latency_flit;		///< average latency (in clock cycles) per flit
 	float avg_throughput;		///< average throughput (in Gbps)

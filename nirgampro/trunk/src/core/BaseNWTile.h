@@ -69,7 +69,7 @@ struct BaseNWTile: public sc_module {
 	UI tileID;
 
 	UI nb_num;
-	vector<UI> indexTable;
+	vector<UI> portTable;
 
 	UI nb_initPtr;
 

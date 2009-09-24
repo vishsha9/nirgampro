@@ -1,13 +1,13 @@
 #include "router.h"
 
-bool router::setIndexTable(vector<UI> * indexTable){
-	this->indexTable = indexTable;
+bool router::setPortTable(vector<UI> * portTable){
+	this->portTable = portTable;
 	return true;
 }
 
 int router::dirToId(UI dir, UI* id){
-	if(dir < indexTable->size()){
-		*id = indexTable->at(dir);
+	if(dir < portTable->size()){
+		*id = portTable->at(dir);
 		return 0;
 	}
 	else
@@ -15,9 +15,9 @@ int router::dirToId(UI dir, UI* id){
 }
 
 int router::idToDir(UI id, UI* dir){
-	for (int i=0; i<indexTable->size(); i++)
+	for (int i=0; i<portTable->size(); i++)
 	{
-		if(indexTable->at(i) == id){
+		if(portTable->at(i) == id){
 			*dir = i;
 			return 0;
 		}

@@ -65,6 +65,10 @@ InputChannel::InputChannel(sc_module_name InputChannel, UI io_num): sc_module(In
 		vc[i].vcQ.full = false;
 		vc[i].vcQ.empty = true;
 		//vc[i].vc_route = 5;
+
+		// add format 2009.9.18
+		vc[i].id = i;
+
 		vc[i].vc_route = io_num;
 		vc[i].vc_next_id = NUM_VCS + 1;
 	}
@@ -96,8 +100,8 @@ void InputChannel::read_flit()
 			flit_in = inport.read();	// read flit
 
 			// set input timestamp (required for per channel latency stats)
-			flit_in.simdata.ICtimestamp = sim_count - 1;	
-
+			
+			//flit_in.simdata.ICtimestamp = sim_count - 1;	moved to enterInputChannel
 			g_tracker->enterInputChannel(tileID, cntrlID, flit_in);
 
 			if(LOG >= 2)
@@ -320,12 +324,13 @@ void InputChannel::transmit_flit() {
 						flit_out.vcid = vc[vc_to_serve].vc_next_id;
 					}
 					// write flit to output port
-					flit_out.simdata.num_sw++;
-					flit_out.simdata.ctime = sc_time_stamp();
-					ports_oc.outport[i].write(flit_out);
-
+					//flit_out.simdata.num_sw++;	moved to exitInputChannel
+					//flit_out.simdata.ctime = sc_time_stamp();
 					g_tracker->exitInputChannel(tileID, cntrlID, flit_out);
 
+					ports_oc.outport[i].write(flit_out);
+
+					
 					if(LOG >= 2)
 						eventlog<<"\ntime: "<<sc_time_stamp()<<" name: "
 						<<this->name()<<" tile: "<<tileID<<" cntrl: "<<cntrlID
