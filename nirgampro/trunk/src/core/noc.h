@@ -35,7 +35,6 @@
 #include "nwtile/NWTile.h"
 #include "wireModule.h"
 #include "topoAnalyzer.h"
-#include "../extern.h"
 //#include "../config/extern.h"
 
 

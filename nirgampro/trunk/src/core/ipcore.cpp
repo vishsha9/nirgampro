@@ -26,7 +26,7 @@
 
 #include "ipcore.h"
 
-
+#include "../global.h"
 
 ////////////////////////
 /// Constructor

@@ -37,7 +37,7 @@
 #include "../credit.h"
 #include "../../typedef.h"
 #include "../flit.h"
-#include "../../extern.h"
+#include "../../global.h"
 #include "InnerSigs.h"
 
 

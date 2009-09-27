@@ -4,6 +4,8 @@
 #include <string>
 #include "../typedef.h"
 
+using namespace std;
+
 class baseWireModel{
 public:
 	virtual bool setFieldByName(string name, double val)=0;

@@ -5,7 +5,6 @@
 #include <map>
 #include <set>
 
-#include "../extern.h"
 #include "../core/router.h"
 #include "../core/topoAnalyzer.h"
 

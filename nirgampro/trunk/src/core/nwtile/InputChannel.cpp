@@ -60,7 +60,7 @@ InputChannel::InputChannel(sc_module_name InputChannel, UI io_num): sc_module(In
 
 	// initialize virtual channels and buffers
 	for(UI i=0; i < NUM_VCS ; i++) {
-		vc[i].vcQ.num_bufs = NUM_BUFS;
+		vc[i].vcQ.num_bufs = gc_VC_BUFS;
 		vc[i].vcQ.pntr = 0;
 		vc[i].vcQ.full = false;
 		vc[i].vcQ.empty = true;
@@ -129,7 +129,7 @@ void InputChannel::read_flit()
 void InputChannel::route_flit() 
 {
 	sim_count = 0;
-	//while(sim_count < g_simNum) 
+	//while(sim_count < gc_simNum) 
 	while (true)
 	{
 		wait();		// wait for next clock cycle
@@ -189,7 +189,7 @@ bool InputChannel::isCoreIO(UI i){
 ///////////////////////////////////////////////////////////////////////////
 void InputChannel::transmit_flit() {
 	ULL sim_count = 0;
-	//while(sim_count < g_simNum) 
+	//while(sim_count < gc_simNum) 
 	while (true)
 	{
 		wait();		// wait for next clock cycle
