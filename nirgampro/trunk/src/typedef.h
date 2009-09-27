@@ -2,10 +2,8 @@
 #define __TYPE_DEF_H__
 
 #include "systemc.h"
-#include "constants.h"
 #include "core/credit.h"
-
-
+#include "constants.h"
 /////////////////////////////////////////
 /// types of request to controller
 ////////////////////////////////////////
@@ -24,11 +22,16 @@ enum routing_type {
 	OE
 };
 
+enum flit_type{
+	HEAD,
+	DATA,
+	TAIL,
+	HDT
+};
 
 #define UI  unsigned int
 #define UL  unsigned long
 #define ULL unsigned long long
-
 
 
 typedef sc_uint<ADDR_SIZE> addr;

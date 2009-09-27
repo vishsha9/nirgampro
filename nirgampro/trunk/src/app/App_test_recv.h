@@ -2,7 +2,7 @@
 #define _APP_TEST_RECV_H_
 
 #include "../core/ipcore.h"
-#include "../extern.h"
+
 #include <fstream>
 #include <math.h>
 

@@ -8,13 +8,13 @@
 #include "../nwtile/OutputChannel.h"
 
 Tracker::Tracker(){
-	string outname = g_resultDir + "trackerOut";
+	string outname = gc_resultHome + "trackerOut";
 	trackerOut.open(outname.c_str(), ostream::out);
 	if(!trackerOut.is_open()){
 		cout << "Can't open trackOut file" << endl;
 	}
 
-	outname = g_resultDir + "flitSeqOut";
+	outname = gc_resultHome + "flitSeqOut";
 	flitSeqOut.open(outname.c_str(), ostream::out);
 	if(!flitSeqOut.is_open()){
 		cout << "Can't open flitSeqOut file" << endl;
@@ -350,11 +350,11 @@ void Tracker::enterDebuger(){
 					{
 						ofstream fout;
 						if(mode == (char)ofstream::app)
-							fout.open((g_resultDir + fileName).c_str(), ofstream::app);
+							fout.open((gc_resultHome + fileName).c_str(), ofstream::app);
 						else
-							fout.open((g_resultDir + fileName).c_str(), ofstream::out);
+							fout.open((gc_resultHome + fileName).c_str(), ofstream::out);
 						if (!fout.is_open())
-							cout<<"Cannot open "<< (g_resultDir + fileName) << "__" <<endl;
+							cout<<"Cannot open "<< (gc_resultHome + fileName) << "__" <<endl;
 						else{
 							commandView(cmd[1], hier, fout);
 							fout.close();
@@ -695,7 +695,7 @@ IcProbe::IcProbe(){
 void IcProbe::updateInfo(){
 	total_cycles = end_cycle - beg_cycle;
 	if( total_cycles != 0)
-		avg_inputRate = (float)(num_flits * FLITSIZE * 8) / (total_cycles * g_clkPeriod);
+		avg_inputRate = (float)(num_flits * gc_FLITSIZE * 8) / (total_cycles * g_clkPeriod);
 }
 //////////////////////////////////////////////////////////////////////////
 
@@ -724,7 +724,7 @@ void OcProbe::updateInfo(){
 		avg_latency_flit = (float)latency/num_flits;
 	total_cycles = end_cycle - beg_cycle;
 	if(total_cycles != 0)
-		avg_throughput = (float)(num_flits * FLITSIZE * 8) / (total_cycles * g_clkPeriod);	// Gbps
+		avg_throughput = (float)(num_flits * gc_FLITSIZE * 8) / (total_cycles * g_clkPeriod);	// Gbps
 }
 
 //////////////////////////////////////////////////////////////////////////

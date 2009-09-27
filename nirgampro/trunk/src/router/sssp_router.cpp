@@ -1,5 +1,6 @@
 #include "sssp_router.h"
 
+#include "../global.h"
 ///////////////////////////////////////////////////////////////////////////
 //  Dijkstra Algorithm for Single Source Shortest Path
 //////////////////////////////////////////////////////////////////////////
@@ -100,7 +101,7 @@ void sssp_router::printTable(){
 	}
 	ofstream fff;
 	string filename = "routerTable";
-	filename = g_resultDir + filename;
+	filename = gc_resultHome + filename;
 	fff.open(filename.c_str(), ostream::app);
 	if (!fff.is_open())
 		cout<<"cannot open routerTable"<<endl;
@@ -118,7 +119,7 @@ bool sssp_router::tfileFlag = false;
 void sssp_router::newRouterTableFile(){
 	ofstream fff;
 	string filename = "routerTable";
-	filename = g_resultDir + filename;
+	filename = gc_resultHome + filename;
 	fff.open(filename.c_str(), ostream::out);
 	if (!fff.is_open())
 		cout<<"cannot open routerTable"<<endl;

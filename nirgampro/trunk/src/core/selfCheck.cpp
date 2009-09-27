@@ -17,7 +17,7 @@ selfCheck::selfCheck(sc_module_name App_test_recv): ipcore(App_test_recv)
 void selfCheck::send()
 {
 	int dest = tileID;
-	int ctrl = cluster_ctrl(RT_ALGO, 0, 0, 0, 0);
+	int ctrl = cluster_ctrl(0, 0, 0, 0, 0);
 	while (true)
 	{	
 		wait();

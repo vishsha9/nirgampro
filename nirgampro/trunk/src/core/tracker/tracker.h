@@ -2,7 +2,7 @@
 #define __TRACKER_H__
 
 #include "../flit.h"
-#include "../../extern.h"
+#include "../../global.h"
 
 #include "systemc.h"
 #include <fstream>

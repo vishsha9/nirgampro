@@ -56,7 +56,7 @@ ctr("Controller", nb_num+1, &portTable){
 }
 
 void NWTile::innerConnect(){
-	vcAlloc.switch_cntrl(*nw_clock);
+	vcAlloc.switch_cntrl(*g_clock);
 	for (UI i = 0; i < io_num; i++)
 	{
 		vcAlloc.vcRequest[i](sigs_IcVca[i].vcReq);
@@ -72,7 +72,7 @@ void NWTile::innerConnect(){
 		}
 	}
 
-	ctr.switch_cntrl(*nw_clock);
+	ctr.switch_cntrl(*g_clock);
 	for (UI i = 0; i < io_num; i++)
 	{
 		ctr.rtRequest[i](sigs_IcCtl[i].rtReq);
@@ -92,7 +92,7 @@ void NWTile::innerConnect(){
 	for (UI i = 0; i < io_num; i++)
 	{
 		Ichannel[i]->cntrlID = i;
-		Ichannel[i]->switch_cntrl(*nw_clock);
+		Ichannel[i]->switch_cntrl(*g_clock);
 		if(isCoreIO(i))
 			Ichannel[i]->inport(sigs_IcIp.flit_CS_IC);
 		else
@@ -127,7 +127,7 @@ void NWTile::innerConnect(){
 	for (UI i = 0; i < io_num; i++)
 	{
 		Ochannel[i]->cntrlID = i;
-		Ochannel[i]->switch_cntrl(*nw_clock);
+		Ochannel[i]->switch_cntrl(*g_clock);
 		if (isCoreIO(i))
 			Ochannel[i]->outport(sigs_OcIp.flit_OC_CR);
 		else
@@ -148,7 +148,7 @@ void NWTile::innerConnect(){
 		}
 	}
 	if(g_appLibName[tileID] != "NULL") {
-		ip->clock(*nw_clock);
+		ip->clock(*g_clock);
 		ip->flit_inport(sigs_OcIp.flit_OC_CR);
 		ip->flit_outport(sigs_IcIp.flit_CS_IC);
 		for (UI i = 0; i < NUM_VCS; i++)
@@ -173,14 +173,3 @@ void NWTile::setID(UI id) {
 
 	ctr.setTileID(id);
 }
-
-//void NWTile::closeLogs() {
-//	/*cout << "Tile_" << tileID << " adjNodeNUm:" << nb_num << endl;
-//	for (int i=0; i< nb_id.size(); i++)
-//	{
-//		cout << "\tport_" << i << " to " << nb_id.at(i) << endl;
-//	}
-//	cout << "tileId: " << tileID << " ionum: " << io_num << endl;*/
-//	for(int i = 0; i < io_num; i++)
-//		Ochannel[i]->closeLogs();
-//}

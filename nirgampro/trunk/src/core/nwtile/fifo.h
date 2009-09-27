@@ -27,7 +27,7 @@
 #ifndef _FIFO_
 #define _FIFO_
 #include "../flit.h"
-#include "../../extern.h"
+#include "../../global.h"
 
 /////////////////////////////////////////
 /// \brief fifo data structure
@@ -44,7 +44,7 @@ struct fifo {
 		full = false;	// initialize full status to false
 		empty = true;	// initialize empty status to true
 		pntr = 0;	// no registers are occupied
-		num_bufs = NUM_BUFS;	// initialize depth of buffer as read from user
+		num_bufs = gc_VC_BUFS;	// initialize depth of buffer as read from user
     	};
 
 	// FUNCTIONS /////////////////////////////////////////////////////////////////////////////

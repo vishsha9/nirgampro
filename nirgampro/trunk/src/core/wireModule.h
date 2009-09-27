@@ -2,7 +2,6 @@
 #define __WIRES__
 
 #include "../constants.h"
-#include "../extern.h"
 #include "flit.h"
 #include "baseWireModel.h"
 #include "credit.h"
@@ -10,6 +9,7 @@
 #include <map>
 //#include "systemc.h"
 
+using namespace std;
 
 ///////////////////////////////////////////////
 /// \brief signals to connect neighboring tiles

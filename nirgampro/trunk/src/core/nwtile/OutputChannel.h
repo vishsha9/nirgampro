@@ -35,7 +35,8 @@
 //#include "switch_reg.h"
 #include "../flit.h"
 #include "../credit.h"
-#include "../../extern.h"
+#include "../../config.h"
+#include "../../global.h"
 #include "InnerSigs.h"
 
 

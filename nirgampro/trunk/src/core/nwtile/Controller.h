@@ -36,7 +36,6 @@
 #include "../../constants.h"
 #include "../../core/router.h"
 #include "../../typedef.h"
-#include "../../extern.h"
 #include "../../router_inc.h"
 #include "InnerSigs.h"
 

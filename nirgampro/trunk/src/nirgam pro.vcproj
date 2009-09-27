@@ -179,7 +179,19 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\default.cpp"
+				RelativePath=".\cfgLoader.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\config.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\dirtool.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\global.cpp"
 				>
 			</File>
 			<File
@@ -333,11 +345,23 @@
 				>
 			</File>
 			<File
+				RelativePath=".\cfgLoader.h"
+				>
+			</File>
+			<File
+				RelativePath=".\config.h"
+				>
+			</File>
+			<File
 				RelativePath=".\constants.h"
 				>
 			</File>
 			<File
-				RelativePath=".\extern.h"
+				RelativePath=".\dirtool.h"
+				>
+			</File>
+			<File
+				RelativePath=".\global.h"
 				>
 			</File>
 			<File

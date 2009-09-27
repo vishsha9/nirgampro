@@ -9,7 +9,8 @@ App_test_send::App_test_send(sc_module_name App_test_send):ipcore(App_test_send)
 
 void App_test_send::send()
 {
-	int ctrl = cluster_ctrl(RT_ALGO, 0, 0, 0, 0);
+	//int ctrl = cluster_ctrl(RT_ALGO, 0, 0, 0, 0);
+	int ctrl = cluster_ctrl(0, 0, 0, 0, 0);
 	int i =0;
 	while (i<6)
 	{

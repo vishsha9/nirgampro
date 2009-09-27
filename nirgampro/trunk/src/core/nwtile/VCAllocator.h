@@ -32,12 +32,13 @@
 #include <fstream>
 #include <iostream>
 
-#include "../credit.h"
-#include "../../constants.h"
-#include "../flit.h"
-#include "../../typedef.h"
-#include "../../extern.h"
 #include "InnerSigs.h"
+#include "../flit.h"
+#include "../credit.h"
+
+#include "../../constants.h"
+#include "../../typedef.h"
+#include "../../global.h"
 /// required for stl
 using namespace std;
 

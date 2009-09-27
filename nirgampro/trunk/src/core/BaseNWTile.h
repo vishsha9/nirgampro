@@ -35,6 +35,9 @@
 #include "flit.h"
 #include "credit.h"
 #include "../typedef.h"
+
+using namespace std;
+
 //#include "../config/constants.h"
 //#include "InputChannel.h"
 //#include "OutputChannel.h"

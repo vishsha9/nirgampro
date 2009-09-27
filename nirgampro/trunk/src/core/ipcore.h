@@ -32,7 +32,7 @@
 #include "flit.h"
 #include "credit.h"
 #include "rng.h"
-#include "../extern.h"
+#include "../global.h"
 #include "tracker/tracker.h"
 
 #include <fstream>
