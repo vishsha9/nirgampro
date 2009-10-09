@@ -5,5 +5,6 @@
 #include "app/App_test_send.h"
 #include "app/CBR.h"
 #include "app/Sink.h"
+#include "app/Trace_traffic.h"
 
 #endif

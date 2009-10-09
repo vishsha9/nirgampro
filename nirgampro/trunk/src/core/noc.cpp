@@ -140,14 +140,13 @@ wireModule* NoC::connect(sc_module_name wire_name, baseWireModel * para, BaseNWT
 ////////////////////////////////////////////////////////////
 void NoC::entry() {
 	g_simCount = 0;
+	cout <<"\r" << 0 << " of " << gc_simNum << " cycles";
 	while(true) {
-		while(true) {
-			wait();
-			g_simCount++;
-			if(gc_simNum % 500 == 0){
-				cout <<"\r" << g_simCount << " of " << gc_simNum << " cycles";
-				cout.flush();
-			}
-		}
+		wait();
+		g_simCount++;
+		//f(gc_simNum % 500 == 0){
+			cout <<"\r" << g_simCount << " of " << gc_simNum << " cycles";
+		//	cout.flush();
+		//}
 	}//end while
 }//end entry

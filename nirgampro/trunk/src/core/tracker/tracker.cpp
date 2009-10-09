@@ -208,6 +208,7 @@ view port
 	}
 	// remove absolute path flag
 	hier.erase(hier.begin());
+
 	if (strcasecmp(content.c_str(), "ic") == 0)
 	{
 		if (hier.size() == 2)
@@ -218,7 +219,7 @@ view port
 	else if (strcasecmp(content.c_str(), "oc") == 0)
 	{
 		if (hier.size() == 0)
-			printOcOverviewAll(xout);
+			printOCsOverviewTitled(xout);
 		else if (hier.size() == 1)
 			printOCsOverviewTitled(hier[0], xout);
 		else if (hier.size() == 2)
@@ -249,7 +250,9 @@ view port
 	}
 	else if (strcasecmp(content.c_str(), "vc") == 0)
 	{
-		if (hier.size() == 3)
+		if (hier.size() == 0)
+			printIcVcs(xout);
+		else if (hier.size() == 3)
 			printIcVc(hier[0], hier[1], hier[2], xout);
 		else 
 			cerr << "Can't recognize location you input" << endl;
@@ -269,9 +272,14 @@ void Tracker::printDebugerHelp(UI pos, ostream & xout){
 	if (pos == 0) // top level
 	{
 		xout << "Commands:" << endl
-			<<	"help\t" <<endl
-			<<	"set\t" << endl
-			<<	"quit\t" << endl;
+			<<	"help\tPrint these info" <<endl
+			<<	"set\tPlease do not use this command. It's experimental" << endl
+			<<	"dl\tCheck whether DEADLOCK exsit and Print info."	<< endl
+				<<"\tdl [>|a> filename]"	<< endl
+			<< 	"view\tView information" << endl
+				<<"\tview ic|oc|flit|regin|regvc|vc|port location [>|a> filename]"	<< endl
+				<<"\tLocation: TILE_1.IC_3.VC_0 expressed as 1.3.0 or .1.3.0" << endl
+			<<	"quit\tQuit debuger" << endl;
 	}
 	else if (pos == 1)
 	{
@@ -282,7 +290,7 @@ void Tracker::printDebugerHelp(UI pos, ostream & xout){
 			
 	}
 	else
-	{xout << "Options:"<< endl 
+	{/*xout << "Options:"<< endl 
 		<< "0. Print this menu" <<  endl
 		<< "1. view Oc overview" << endl 
 		<< "2. view VC" << endl 
@@ -290,12 +298,12 @@ void Tracker::printDebugerHelp(UI pos, ostream & xout){
 		<< "4. view Oc Regvc" << endl
 		<< "5. search and view flit" << endl
 		<< "6. Port Table" << endl
-		<< "7. QUIT" << endl;}
+		<< "7. QUIT" << endl;*/}
 }
 
 void Tracker::enterDebuger(){
 	string cmd;
-	cin.ignore( std::numeric_limits<std::streamsize>::max(), '\n' );
+	//cin.ignore( std::numeric_limits<std::streamsize>::max(), '\n' );
 	while (true)
 	{
 		cout << "NoC"<<">";
@@ -307,6 +315,32 @@ void Tracker::enterDebuger(){
 			break;
 		else if (strcasecmp(cmd[0].c_str(), "help")==0)
 			printDebugerHelp(0, cout);
+		else if (strcasecmp(cmd[0].c_str(), "dl") == 0){
+			char mode=0; string fileName="";
+			int ff = isfout(cmd, fileName, mode);
+			if (ff == 1)
+			{
+				ofstream fout;
+				if(mode == (char)ofstream::app)
+					fout.open((gc_resultHome + fileName).c_str(), ofstream::app);
+				else
+					fout.open((gc_resultHome + fileName).c_str(), ofstream::out);
+				if (!fout.is_open())
+					cout<<"Cannot open "<< (gc_resultHome + fileName) << "__" <<endl;
+				else{
+					printDeadlock(fout);
+					fout.close();
+				}
+			}
+			else if(ff == -1){
+				cout << "Miss output file name" << endl;
+				// error, filename not input
+			}
+			else if (ff == 0)
+				printDeadlock(cout);
+			else;
+			
+		}
 		else if (strcasecmp(cmd[0].c_str(), "set")==0){
 			bool noerr = true;
 			if (cmd.size() == 3){
@@ -377,7 +411,28 @@ void Tracker::enterDebuger(){
 	}
 }
 
-void Tracker::printOcOverviewAll(ostream & xout){
+void Tracker::updateStat(){
+	if(flit_recved != 0 )
+		avg_latency = total_latency / flit_recved;
+	if (g_simCount >= gc_statEd)
+		if ( (gc_statEd - gc_statOp) *g_tileNum !=0 )
+			avg_throughput = (double)flit_recved * gc_FLITSIZE * 8.0/( (gc_statEd - gc_statOp) *g_tileNum);
+	else 
+		if ( (g_simCount - gc_statOp) *g_tileNum !=0 )
+			avg_throughput = (double)flit_recved * gc_FLITSIZE * 8.0/( (g_simCount - gc_statOp) *g_tileNum);
+}
+
+void Tracker::printStat(ostream & xout){
+	printOCsOverviewTitled(xout);
+	updateStat();
+	xout<<"\nOverall caled flit num = "<< flit_recved << endl;
+	xout<<"\nOverall total flit latency = "<< total_latency << endl;
+	xout <<"\nOverall average flit latency (in clock cycles per flit) = "<< avg_latency << endl;
+
+	xout <<"\nOverall average flit throughput (Gbps) = "<< avg_throughput << endl;
+}
+
+void Tracker::printOCsOverviewTitled(ostream & xout){
 	printTitleForOcOverview(xout);
 	for(int i =0; i<tileProbes.size(); i++)
 		printOCsOverview(tileProbes[i].tileId, xout);
@@ -386,9 +441,9 @@ void Tracker::printOcOverviewAll(ostream & xout){
 //////////////////////////////////////////////////////////////////////////
 
 void Tracker::printTitleForOcOverview(ostream & xout){
-	xout<<"Tile\t"<<"Output\t\t"<<"Total no.\t"<<"Total no.\t"<<"avg. latency\t"<<"avg. latency\t"<<"average\n";
-	xout<<"ID\t"<<"channel\t\t"<<"of packets\t"<<"of flits\t"<<"per packet\t"<<"per flit\t"<<"throughput\n";
-	xout<<"\t\t\t\t\t\t\t(clock cycles)\t(clock cycles)\t(Gbps)\n";
+	xout<<"Tile\t"<<"Output\t\t"<<"Total no.\t"<<"Total no.\t"<<"Clock cycle\t"<<"avg. latency\t"<<"avg. latency\t"<<"average\n";
+	xout<<"ID\t"<<"channel\t\t"<<"of packets\t"<<"of flits\t"<<"last leave\t"<<"per packet\t"<<"per flit\t"<<"throughput\n";
+	xout<<"\t\t\t\t\t\t\t\t\t(clock cycles)\t(clock cycles)\t(Gbps)\n";
 }
 
 void Tracker::printOCsOverview(UI tileId, ostream & xout){
@@ -422,6 +477,7 @@ void Tracker::printOcOverview(UI tileId, UI portId, ostream & xout){
 		xout	<<tileId<<"\t"<<portId<<"(IP)\t\t";
 		xout	<<ocprobe->num_pkts<<"\t\t"
 			<<ocprobe->num_flits<<"\t\t"
+			<<ocprobe->end_cycle<<"\t\t"
 			<<ocprobe->avg_latency<<"\t\t"
 			<<ocprobe->avg_latency_flit<<"\t\t"
 			<<ocprobe->avg_throughput<<endl;
@@ -430,6 +486,7 @@ void Tracker::printOcOverview(UI tileId, UI portId, ostream & xout){
 		xout	<<tileId<<"\t"<<portId<<"\t\t";
 		xout	<<ocprobe->num_pkts<<"\t\t"
 			<<ocprobe->num_flits<<"\t\t"
+			<<ocprobe->end_cycle<<"\t\t"
 			<<ocprobe->avg_latency<<"\t\t"
 			<<ocprobe->avg_latency_flit<<"\t\t"
 			<<ocprobe->avg_throughput<<endl;
@@ -502,6 +559,22 @@ void Tracker::printPortTable(UI tileId, ostream & xcout){
 		xcout << "\t" << i << "\t" << tileProbe->portTable->at(i) << endl;
 }
 
+void Tracker::printIcVcs(ostream & xcout){
+	for(int i=0; i<tileProbes.size(); i++)
+		printIcVcs(i, xcout);
+}
+
+void Tracker::printIcVcs(UI tileId, ostream & xcout){
+	NwtileProbe* tileProbe = getNwtileProbe(tileId);
+	for(int i=0; i<tileProbe->io_num; i++)
+		printIcVcs(tileId, i, xcout);
+}
+
+void Tracker::printIcVcs(UI tileId, UI portId, ostream & xcout){
+	for(int i =0; i<NUM_VCS; i++)
+		printIcVc(tileId, portId, i, xcout);
+}
+
 void Tracker::printIcVc(UI tileId, UI portId, UI vcId, ostream & xcout){
 	IcProbe * icprobe = getIcProbe(tileId, portId);
 	if (icprobe == NULL)
@@ -512,14 +585,33 @@ void Tracker::printIcVc(UI tileId, UI portId, UI vcId, ostream & xcout){
 		return ;
 	}
 	VC* vc = &(icprobe->vc->at(vcId));
-	xcout << "Tile_" << tileId << ".IC_"<<portId<<".VC_" << vc->id << ":\tVC_nextId: " << vc->vc_next_id << "\tBufSize: " << vc->vcQ.pntr << "/" << vc->vcQ.num_bufs << "\tRoutePort: " << vc->vc_route << endl;
+	NwtileProbe * tileprobe = getNwtileProbe(tileId);
+	xcout << "Tile_" << tileId << ".IC_"<<portId<<".VC_" << vc->id 
+		<< "\tFrom_Tile: " ;
+	if(portId == tileprobe->portTable->size())
+		xcout << "IP";
+	else if(portId > tileprobe->portTable->size())
+		xcout << "UD";
+	else
+		xcout << tileprobe->portTable->at(portId);
+	xcout	<< "\tVC_nextId: " << vc->vc_next_id 
+		<< "\tBufSize: " << vc->vcQ.pntr 
+		<< "/" << vc->vcQ.num_bufs 
+		<< "\tRoutePort: " << vc->vc_route;
+	if(vc->vc_route == tileprobe->portTable->size())
+		xcout << "(IP)";
+	else if(vc->vc_route > tileprobe->portTable->size())
+		xcout << "(UD)";
+	else
+		xcout << "(" << tileprobe->portTable->at(vc->vc_route) << ")";
+	xcout << endl;
 	if(vc->vcQ.full)
 		xcout <<  "\tfull\t->";
 	else if (vc->vcQ.empty)
 		xcout <<  "\tempty\t->";
 	else
 		xcout << "\tnorm\t->";
-	for (int i = 0; i <vc->vcQ.pntr; i++)
+	for (int i = vc->vcQ.pntr-1; i>=0; i--)
 	{
 		xcout << " | " << vc->vcQ.regs[i].simdata.sequence ;
 	}
@@ -573,8 +665,13 @@ void Tracker::processFlitWhenBorn(flit & f){
 	f.simdata.num_sw = 0;
 	f.simdata.gtimestamp = g_simCount;
 	f.simdata.sequence = sequence;
+	
+	if(g_simCount >= gc_statOp && g_simCount <= gc_statEd)
+		flitPool.insert(sequence);
+	
 	sequence++;
 	flitSeqOut	<< "SQ " << f.simdata.sequence
+		<< "\tTI "<< sc_time_stamp().value() 
 		<< "\tPK " << f.pktid
 		<< "\tFL " << f.flitid
 		<< "\tSR " << f.src 
@@ -641,6 +738,15 @@ void Tracker::exitOutputChannel(UI tileId, UI portId, flit & f){
 		ocprobe->end_cycle = g_simCount - 1;
 	}
 	ocprobe->num_flits++;
+	
+	if(portId == ocprobe->ocPtr->io_num-1){
+	// to IP
+		if(flitPool.count(f.simdata.sequence) >0){
+			flitPool.erase(f.simdata.sequence);
+			total_latency += g_simCount - f.simdata.gtimestamp;
+			flit_recved ++;
+		}
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -730,18 +836,6 @@ void OcProbe::updateInfo(){
 //////////////////////////////////////////////////////////////////////////
 
 
-
-bool Tracker::checkDeadLock(UI sTileId, UI sPortId, UI sVcId, ostream & xcout){
-	VC svc = getIcProbe(sTileId, sPortId)->vc->at(sVcId);
-	UI outPort = svc.vc_route;
-	UI vc_next_id =  svc.vc_next_id;
-	if (vc_next_id == NUM_VCS + 1)
-	{
-	}
-	return true;
-}
-
-
 //////////////////////////////////////////////////////////////////////////
 // 
 
@@ -756,52 +850,58 @@ void Tracker::printFlit(flit & f, ostream & xout){
 		xout << "TAIL";
 	else
 		xout << "UNKN";
-	xout	<< "\t" << f.pktid 
-		<< "\t" << f.flitid 
-		<< "\t" << f.vcid 
-		<< "\t" << f.src 
-		<< "\t" << f.field1 
-		<< "\t" << f.field2 
-		<< "\t" << f.field3 
-		<< "\t" << f.field4 << endl;
-	xout << "Simdata: " << f.simdata.gtime << "\t"
-		<< f.simdata.ctime << "\t"
-		<< f.simdata.atime << "\t"
-		<< f.simdata.gtimestamp << "\t"
-		<< f.simdata.ICtimestamp << "\t"
-		<< f.simdata.atimestamp << "\t"
-		<< f.simdata.num_sw << "\t"
-		<< f.simdata.num_waits << "\t"
-		<< f.simdata.sequence << "\t" << endl;
+	xout	<< "\tpkId: " << f.pktid 
+		<< "\t\tftId: " << f.flitid 
+		<< "\t\tvcId: " << f.vcid 
+		<< "\t\tsrc: " << f.src  << endl
+		<< "\tdest: " << f.field1 
+		<< "\t\tfld2: " << f.field2 
+		<< "\t\tfld3: " << f.field3 
+		<< "\t\tdata: " << f.field4 << endl;
+	xout << "Sim " 
+		<< "\tgt: " << f.simdata.gtime 
+		<< "\t\tct: " << f.simdata.ctime 
+		<< "\t\tat: " << f.simdata.atime 
+		<< "\t\tgts: " << f.simdata.gtimestamp << endl
+		<< "\ticts: " << f.simdata.ICtimestamp
+		<< "\t\tats: " << f.simdata.atimestamp 
+		<< "\t\tnsw: " << f.simdata.num_sw 
+		<< "\t\tnwt: " << f.simdata.num_waits 
+		<< "\t\tseq: " << f.simdata.sequence << endl;
 }
 
 bool Tracker::searchAndPrintFlit(ULL sequence, ostream & xout){
-	bool ret = false;
+	flit* ftemp = NULL;
 	for (int i = 0; i < tileProbes.size(); i++)
 	{
-		if (ret) break;
-		ret =  searchAndPrintFlitInTile(tileProbes.at(i).tileId, sequence, xout );
+		ftemp =  searchFlitInTile(tileProbes.at(i).tileId, sequence, xout );
+		if (ftemp!=NULL) break;
 	}
-	if(ret ==  false)
+	if(ftemp ==  NULL){
 		xout << "Can't find flit $" << sequence << endl;
-	return ret;
+		return false;
+	}
+	else{
+		printFlit(*ftemp, xout);
+		return true;
+	}
 }
 
-bool Tracker::searchAndPrintFlitInTile(UI tileId, ULL sequence, ostream & xout){
+flit* Tracker::searchFlitInTile(UI tileId, ULL sequence, ostream & xout){
 	NwtileProbe * tileprobe = getNwtileProbe(tileId);
-	bool ret = false;
+	flit* ret = NULL;
 	for (int i=0; i<tileprobe->io_num; i++){
-		if (ret) break;
-		ret = searchAndPrintFlitInIc(tileId, tileprobe->icProbes.at(i).portId, sequence, xout);
+		ret = searchFlitInIc(tileId, tileprobe->icProbes.at(i).portId, sequence, xout);
+		if (ret!=NULL) return ret;
 	}
 	for (int i=0; i<tileprobe->io_num; i++){
-		if (ret) break;
-		ret = searchAndPrintFlitInOc(tileId, tileprobe->ocProbes.at(i).portId, sequence, xout);
+		ret = searchFlitInOc(tileId, tileprobe->ocProbes.at(i).portId, sequence, xout);
+		if (ret!=NULL) return ret;
 	}
-	return ret;
+	return NULL;
 }
 
-bool Tracker::searchAndPrintFlitInIc(UI tileId, UI portId, ULL sequence, ostream & xout){
+flit* Tracker::searchFlitInIc(UI tileId, UI portId, ULL sequence, ostream & xout){
 	IcProbe* icprobe = getIcProbe(tileId, portId);
 	for (int i=0; i<NUM_VCS; i++)
 	{
@@ -810,23 +910,23 @@ bool Tracker::searchAndPrintFlitInIc(UI tileId, UI portId, ULL sequence, ostream
 		{
 			if(f->regs[j].simdata.sequence == sequence){
 				xout << "Flit $" << sequence << " in the Buffer of Tile_" << tileId <<".IC_" << portId << ".VC_" << i << endl;
-				printFlit(f->regs[i], xout);
-				return true;
+				//printFlit(f->regs[i], xout);
+				return &(f->regs[i]);
 			}
 		}
 	}
-	return false;
+	return NULL;
 }
 
-bool Tracker::searchAndPrintFlitInOc(UI tileId, UI portId, ULL sequence, ostream & xout){
+flit* Tracker::searchFlitInOc(UI tileId, UI portId, ULL sequence, ostream & xout){
 	OcProbe* ocprobe = getOcProbe(tileId, portId);
 	for (int i=0; i<ocprobe->r_in->size(); i++)
 	{
 		if (ocprobe->r_in->at(i).free == false && ocprobe->r_in->at(i).val.simdata.sequence == sequence)
 		{
 			xout << "Flit $" << sequence << " in Tile_" << tileId <<".OC_" << portId << ".RegIn_" << i << endl;
-			printFlit(ocprobe->r_in->at(i).val, xout);
-			return true;
+			//printFlit(ocprobe->r_in->at(i).val, xout);
+			return &(ocprobe->r_in->at(i).val);
 		}
 	}
 	for (int i=0; i<ocprobe->r_vc->size(); i++)
@@ -834,11 +934,77 @@ bool Tracker::searchAndPrintFlitInOc(UI tileId, UI portId, ULL sequence, ostream
 		if (ocprobe->r_vc->at(i).free == false && ocprobe->r_vc->at(i).val.simdata.sequence == sequence)
 		{
 			xout << "Flit $" << sequence << "in Tile_" << tileId <<".OC_" << portId << "RegVc_" << i << endl;
-			printFlit(ocprobe->r_vc->at(i).val, xout);
-			return true;
+			//printFlit(ocprobe->r_vc->at(i).val, xout);
+			return &(ocprobe->r_vc->at(i).val);
 		}
 	}
-	return false;
+	return NULL;
 }
 
 //////////////////////////////////////////////////////////////////////////
+void Tracker::printDeadlock(ostream & xout){
+	vector<vector<string> > rings = checkDeadlock();
+	if(rings.size()==0)
+		cout << "Cong! No Deadlock exsit" << endl;
+	else{
+		for(int i =0; i<rings.size(); i++){
+			vector<string> ring = rings.at(i);
+			for(int j=0; j<ring.size(); j++){
+				xout << ring.at(j) << "\t";
+			}
+			xout << endl;
+		}
+	}
+}
+
+vector<vector<string> > Tracker::checkDeadlock(){
+	vector<vector<string> > rings;
+	for(int i = 0; i < tileProbes.size(); i++){
+		int j = getNwtileProbe(i)->io_num-1; // IP core is the start
+		//for(int j = 0; j < getNwtileProbe(i)->io_num; j++){
+		for(int k =0; k < NUM_VCS; k++){
+			vector<string> ring;
+			UI tl = i,
+				ic = j,
+				vi = k;
+			while(true){
+				char buf[20];
+				sprintf(buf, "%d.%d.%d", tl, ic, vi);
+				string str(buf);
+				ring.push_back(str);
+				int l;
+				for(l=0; l<ring.size(); l++)
+					if(ring.at(l).compare(str) == 0)	break;
+				if(l!=ring.size()-1)
+					break;
+				
+				VC* vc = &(getIcProbe(tl, ic)->vc->at(vi));
+				// find next hop tile
+				int ttl = tl;
+				int port = vc->vc_route;
+				if(port == getNwtileProbe(tl)->io_num){ // route undetermined
+					ring.clear();
+					break;
+				}
+				else if(port == getNwtileProbe(tl)->io_num-1){ // route to IP
+					ring.clear();
+					break;
+				}
+				else 
+					tl = getNwtileProbe(tl)->portTable->at(port);
+					
+				getNwtileProbe(tl)->tilePtr->idToDir(ttl, &ic);
+				if (vc->vcQ.empty == false)	// fifo no empty
+					vi = vc->vcQ.flit_read().vcid;
+				else{					// fifo empty
+					ring.clear();
+					break;
+				}
+			}
+			if(ring.size()!=0)
+				rings.push_back(ring);
+		}
+		//}
+	}
+	return rings;
+}

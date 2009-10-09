@@ -9,6 +9,7 @@
 #include <vector>
 #include <iostream>
 
+
 struct VC;
 struct switch_reg;
 struct NoC;
@@ -82,7 +83,7 @@ public:
 	// probe functions
 	void addProbes(NoC & noc);
 	void enterDebuger();
-	void printOcOverviewAll(ostream & xout);
+	void printStat(ostream & xout);
 	//////////////////////////////////////////////////////////////////////////
 
 	//////////////////////////////////////////////////////////////////////////
@@ -109,11 +110,17 @@ protected:
 	ofstream trackerOut;
 	ofstream flitSeqOut;
 
-	bool checkDeadLock(UI sTileId, UI sPortId, UI sVcId, ostream & xout);
+	set<ULL> flitPool;
+	ULL total_latency;
+	ULL flit_recved;
+	double avg_latency;
+	double avg_throughput;
 	
-	//////////////////////////////////////////////////////////////////////////
+	void updateStat();
+//////////////////////////////////////////////////////////////////////////
 	//
 	//
+	void printOCsOverviewTitled(ostream & xout);
 	void printTitleForOcOverview(ostream & xout);
 	void printOcOverview(UI tileId, UI portId, ostream & xout);
 	void printOcOverviewTitled(UI tileId, UI portId, ostream & xout);
@@ -128,6 +135,9 @@ protected:
 
 	void printPortTable(UI tileId, ostream & xout);
 
+	void printIcVcs(ostream & xout);
+	void printIcVcs(UI tileId, ostream & xout);
+	void printIcVcs(UI tileId, UI portId, ostream & xout);
 	void printIcVc(UI tileId, UI portId, UI vcId, ostream & xout);
 	
 	void printOcRegin(UI tileId, UI portId, ostream & xout);
@@ -140,9 +150,9 @@ protected:
 	//
 	void printFlit(flit & f, ostream & xout);
 	bool searchAndPrintFlit(ULL sequence, ostream & xout);
-	bool searchAndPrintFlitInTile(UI tileId, ULL sequence, ostream & xout);
-	bool searchAndPrintFlitInIc(UI tileId, UI portId, ULL sequence, ostream & xout);
-	bool searchAndPrintFlitInOc(UI tileId, UI portId, ULL sequence, ostream & xout);
+	flit* searchFlitInTile(UI tileId, ULL sequence, ostream & xout);
+	flit* searchFlitInIc(UI tileId, UI portId, ULL sequence, ostream & xout);
+	flit* searchFlitInOc(UI tileId, UI portId, ULL sequence, ostream & xout);
 
 	//////////////////////////////////////////////////////////////////////////
 
@@ -160,6 +170,9 @@ protected:
 	OcProbe* getOcProbe(UI tileId, UI portId);
 	IcProbe* getIcProbe(UI tileId, UI portId);
 	NwtileProbe* getNwtileProbe(UI tileId);
+	
+	vector<vector<string> > checkDeadlock();
+	void printDeadlock(ostream & xout);
 	//////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////
