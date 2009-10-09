@@ -72,12 +72,8 @@ void printCheckTable(ostream & xout){
 }
 //////////////////////////////////////////////////////////////////////////
 
-bool initOverviewMode(){
+bool initStandardMode(){
 	loadApp(g_tileNum);
-}
-
-bool initStepMode(){
-
 }
 
 bool initDebugMode(){
@@ -97,14 +93,11 @@ bool initSelfcheckMode(){
 
 //////////////////////////////////////////////////////////////////////////
 
-bool doOverviewMode(){
+bool doStandardMode(){
 	sc_start(g_simPeriod, SC_NS);
 	cout << endl;
 }
 
-bool doStepMode(){
-
-}
 
 bool isEnterInCin(){
 	char firstc;
@@ -129,8 +122,12 @@ bool doDebugMode(){
 		while(!isEnterInCin()){
 			cin >> timestr;
 		}
-		cin.ignore( std::numeric_limits<std::streamsize>::max(), '\n' );
+		if(cin.fail()){
+			cin.ignore( std::numeric_limits<std::streamsize>::max(), '\n' );
+			continue;
+		}
 		int val = atoi(timestr.c_str());
+		cin.ignore( std::numeric_limits<std::streamsize>::max(), '\n' );
 		int index = strspn(timestr.c_str(), "0123456789");
 		if(index == timestr.size()){
 			cout << "Simulation continue for " << val << " Cycle" << endl;
@@ -198,16 +195,22 @@ bool doSelfcheckMode(){
 }
 //////////////////////////////////////////////////////////////////////////
 
-bool finaOverviewMode(){
-
-}
-
-bool finaStepMode(){
-
+bool finaStandardMode(){
+	ofstream fff;
+	string filename = "sim_results";
+	filename = gc_resultHome + filename;
+	fff.open(filename.c_str());
+	g_tracker->printStat(fff);
+	fff.close();
 }
 
 bool finaDebugMode(){
-	
+	ofstream fff;
+	string filename = "sim_results";
+	filename = gc_resultHome + filename;
+	fff.open(filename.c_str());
+	g_tracker->printStat(fff);
+	fff.close();
 }
 
 bool finaSelfcheckMode(){
@@ -227,7 +230,7 @@ bool finaSelfcheckMode(){
 
 //////////////////////////////////////////////////////////////////////////
 
-int main(int argc, char ** argv){
+int sc_main(int argc, char ** argv){
 	sc_report_handler::set_actions("/IEEE_Std_1666/deprecated", SC_DO_NOTHING);
 	system("set SC_SIGNAL_WRITE_CHECK=\"DISABLE\"");
 
@@ -274,12 +277,10 @@ int main(int argc, char ** argv){
 
 
 	if (gc_simMode == 1)
-		initOverviewMode();
+		initStandardMode();
 	else if (gc_simMode == 2)
-		initStepMode();
-	else if (gc_simMode == 3)
 		initDebugMode();
-	else if (gc_simMode == 4)
+	else if (gc_simMode == 3)
 		initSelfcheckMode();
 
 	NoC noc("noc", g_a);
@@ -289,20 +290,16 @@ int main(int argc, char ** argv){
 	g_tracker->addProbes(noc);
 
 	if (gc_simMode == 1)
-		doOverviewMode();
+		doStandardMode();
 	else if (gc_simMode == 2)
-		doStepMode();
-	else if (gc_simMode == 3)
 		doDebugMode();
-	else if (gc_simMode == 4)
+	else if (gc_simMode == 3)
 		doSelfcheckMode();
 
 	if (gc_simMode == 1)
-		finaOverviewMode();
+		finaStandardMode();
 	else if (gc_simMode == 2)
-		finaStepMode();
-	else if (gc_simMode == 3)
 		finaDebugMode();
-	else if (gc_simMode == 4)
+	else if (gc_simMode == 3)
 		finaSelfcheckMode();
 }

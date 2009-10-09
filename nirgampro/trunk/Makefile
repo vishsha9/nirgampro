@@ -26,13 +26,16 @@ ROUTER_SRCS = ${shell ls src/router/*.cpp}
 WIRE_SRCS = ${shell ls src/wireModel/*.cpp}
 
 MAIN_SRCS = src/main.cpp \
-	src/default.cpp
+	src/global.cpp	\
+	src/config.cpp	\
+	src/dirtool.cpp	\
+	src/cfgLoader.cpp
 	
-CORE_OBJS = $(CORE_SRCS:.cpp=.o)
+CORE_OBJS = ${CORE_SRCS:.cpp=.o}
 
-APP_OBJS = $(APP_SRCS:.cpp=.o)
+APP_OBJS = ${APP_SRCS:.cpp=.o}
 
-ROUTER_OBJS = $(ROUTER_SRCS:.cpp=.o)
+ROUTER_OBJS = ${ROUTER_SRCS:.cpp=.o}
 
 MAIN_OBJS = ${MAIN_SRCS:.cpp=.o}
 

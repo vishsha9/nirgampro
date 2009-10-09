@@ -44,8 +44,10 @@ ctr("Controller", nb_num+1, &portTable){
 			ip = new selfCheck(name.c_str());
 		else if(g_appLibName[tileID].compare("CBR.so") == 0)
 			ip = new CBRTraffic(name.c_str());
+		else if(g_appLibName[tileID].compare("Trace_traffic.so") == 0)
+			ip = new TraceTraffic(name.c_str());
 		else{
-			cout<<"error: no such APP"<<endl;
+			cout<<"error: no such APP: " << g_appLibName[tileID] <<endl;
 			exit(-1);
 		}
 		ip->tileID = tileID;

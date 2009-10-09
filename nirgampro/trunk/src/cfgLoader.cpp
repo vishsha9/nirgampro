@@ -117,10 +117,9 @@ void printConfig(ostream & xout){
 	xout	<< "Nirgam Home Dir:\t" << g_nirgamHome << endl
 		<< "Main Config File:\t" << ga_configPath << endl
 			<< "Simulation Mode:\t" << gc_simMode;
-				if(gc_simMode == 1) xout << " (Overview Mode)" << endl;
-				else if (gc_simMode == 2) xout << " (Step Mode)" << endl;
-				else if (gc_simMode == 3) xout << " (Debug Mode)" << endl;
-				else if (gc_simMode == 4) xout << " (Selfcheck Mode)" << endl;
+				if(gc_simMode == 1) xout << " (Standard Mode)" << endl;
+				else if (gc_simMode == 2) xout << " (Debug Mode)" << endl;
+				else if (gc_simMode == 3) xout << " (Selfcheck Mode)" << endl;
 	xout	<< "Using Tile Type:\t" << gc_tileType;
 				if(gc_tileType == 1) xout << " (Generic Tile)" << endl;
 				else if (gc_tileType == 2) xout << " (Soclib Tile)" << endl;		
@@ -159,8 +158,8 @@ bool checkConfig(){
 		ret = false;
 		return ret;
 	}
-	if ( gc_simMode < 1 || gc_simMode > 4 ){
-		cerr << "Simulation Mode error : "<< gc_simMode <<" { 1 ->Overview; 2 ->Step; 3 ->Debug; 4 ->SelfCheck }" << endl;
+	if ( gc_simMode < 1 || gc_simMode > 3 ){
+		cerr << "Simulation Mode error : "<< gc_simMode <<" { 1 ->Standard; 2 ->Debug; 3 ->SelfCheck }" << endl;
 		ret = false;
 		return ret;
 	}

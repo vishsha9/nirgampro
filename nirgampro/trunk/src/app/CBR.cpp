@@ -26,6 +26,7 @@
 
 #include "CBR.h"
 #include "../platform.h"
+#include "../dirtool.h"
 
 ////////////////////////////////////////////////
 /// Constructor
@@ -46,6 +47,7 @@ CBRTraffic::CBRTraffic(sc_module_name CBRTraffic) : TrafficGenerator(CBRTraffic)
 	ofstream trafstream;
 
 	// create new traffic log file
+	tryDir(rwDirInLinuxStyl(gc_resultHome + "traffic"));
 	for(int i = 0; i < g_tileNum; i++) {
 		sprintf(str_id, "%d", i);
 		string traffic_filename = gc_resultHome + string("traffic/tile-") + string(str_id);
@@ -115,6 +117,7 @@ void CBRTraffic::init()
 	//cerr << pkt_interval<<" ";
 	// open traffic log file
 	string dest_type;
+	
 	traffic_filename = gc_resultHome + string("traffic/tile-") + string(str_id);
 	ofstream trafstream;
 	trafstream.open(traffic_filename.c_str());

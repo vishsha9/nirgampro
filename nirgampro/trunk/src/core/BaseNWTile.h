@@ -100,6 +100,8 @@ struct BaseNWTile: public sc_module {
 	
 	virtual void closeLogs(){};
 
+	int idToDir(UI id, UI* dir);
+	int dirToId(UI dir, UI* id);
 	//////////////////////////////////////////////////////////////////////////
 	// for test
 	//void read();

@@ -81,10 +81,9 @@ diagram for time points of simulation and statistic
 //////////////////////////////////////////////////////////////////////////
 UI gc_simMode;
 /*
-1. overview
-2. step
-3. debug
-4. selfcheck
+1. standard
+2. debug
+3. selfcheck
 */
 UI gc_tileType;
 /*

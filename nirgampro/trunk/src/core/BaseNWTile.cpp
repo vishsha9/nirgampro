@@ -77,6 +77,25 @@ BaseNWTile::BaseNWTile(sc_module_name NWTile, UI id, UI nb): sc_module(NWTile){
 	SC_THREAD(write);
 	sensitive_pos<<clk;*/
 } // end constructor
+int BaseNWTile::dirToId(UI dir, UI* id){
+	if(dir < portTable.size()){
+		*id = portTable.at(dir);
+		return 0;
+	}
+	else
+		return -1;
+}
+
+int BaseNWTile::idToDir(UI id, UI* dir){
+	for (int i=0; i<portTable.size(); i++)
+	{
+		if(portTable.at(i) == id){
+			*dir = i;
+			return 0;
+		}
+	}
+	return -1;
+}
 
 bool BaseNWTile::connect(UI nb_id, sc_signal<flit>& sig_from, sc_signal<flit>& sig_to, sc_signal<creditLine> credit_from[NUM_VCS], sc_signal<creditLine> credit_to[NUM_VCS]){
 	op_port[nb_initPtr](sig_from);
