@@ -1,5 +1,5 @@
 #ifndef _CONFIG_H_
-#define _CONFIGl_H_
+#define _CONFIG_H_
 
 #include <string>
 #include <vector>
@@ -100,6 +100,7 @@ extern UI gc_HEAD_PAYLOAD;	///< payload size (in bytes) in head/hdt flit
 extern UI gc_DATA_PAYLOAD;	///< payload size (in bytes) in data/tail flit
 //////////////////////////////////////////////////////////////////////////
 extern string ga_configPath;	///< Path of the Main config file 
+extern string ga_elfPath;
 extern string g_configHome;		///< Directory of the Main config file
 extern string gc_resultHome;	///< Directory of result
 extern string g_nirgamHome;		///< current Directory

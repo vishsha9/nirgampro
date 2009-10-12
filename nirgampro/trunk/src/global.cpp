@@ -22,3 +22,4 @@ int * g_ckTable;
 vector<string> g_appLibName;
 
 sc_clock *g_clock;
+sc_signal<bool> g_resetN;

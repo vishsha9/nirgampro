@@ -5,12 +5,14 @@
 #include "core/noc.h"
 #include "core/tracker/tracker.h"
 
-void printHeader(){
-	cout<<"---------------------------------------------------------------------------"<<endl;
-	cout<<"  NIRGAM: Simulator for NoC Interconnect RoutinG and Application Modeling\n";
-	cout<<"---------------------------------------------------------------------------"<<endl;
+
+#ifdef SL_TILE
+#include "core/nwtile/slTile.h"
+void loadApp(int num_tiles){
+	loadSocLibConfig();
 }
 
+#else
 void loadApp(int num_tiles){
 	for(int i = 0; i < num_tiles; i++) {
 		g_appLibName.push_back(string("NULL"));
@@ -34,7 +36,7 @@ void loadApp(int num_tiles){
 	}
 	app_fil.close();
 }
-
+#endif
 //////////////////////////////////////////////////////////////////////////
 
 void loadSelfcheckApp(int tileNum){
@@ -230,6 +232,12 @@ bool finaSelfcheckMode(){
 
 //////////////////////////////////////////////////////////////////////////
 
+void printHeader(){
+	cout<<"---------------------------------------------------------------------------"<<endl;
+	cout<<"  NIRGAM: Simulator for NoC Interconnect RoutinG and Application Modeling\n";
+	cout<<"---------------------------------------------------------------------------"<<endl;
+}
+
 int sc_main(int argc, char ** argv){
 	sc_report_handler::set_actions("/IEEE_Std_1666/deprecated", SC_DO_NOTHING);
 	system("set SC_SIGNAL_WRITE_CHECK=\"DISABLE\"");
@@ -246,6 +254,16 @@ int sc_main(int argc, char ** argv){
 				ga_configPath = string(argv[i]);
 			else {
 				cout << "Argument to '-f' is missing" << endl; 
+				return 0;
+			}
+		}
+		else if (args == "-e")
+		{
+			i++;
+			if (i<argc && argv[i][0] !='-')
+				ga_elfPath = string(argv[i]);
+			else {
+				cout << "Argument to '-e' is missing" << endl; 
 				return 0;
 			}
 		}
@@ -288,6 +306,25 @@ int sc_main(int argc, char ** argv){
 
 	g_tracker = new Tracker();
 	g_tracker->addProbes(noc);
+
+//////////////////////////////////////////////////////////////////////////
+// soclib tile
+#ifdef SL_TILE
+	if (gc_tileType == 1){
+		cerr << "SLNIRGAM is used for soclib IP" << endl;
+		return 1;
+	}
+	sc_start(sc_time(0, SC_NS));
+	g_resetN = false;
+	sc_start(sc_time(1, SC_NS));
+	g_resetN = true;
+#else
+	if (gc_tileType == 2){
+		cerr << "NIRGAM is used for generic IP" << endl;
+		return 1;
+	}
+#endif
+//////////////////////////////////////////////////////////////////////////
 
 	if (gc_simMode == 1)
 		doStandardMode();

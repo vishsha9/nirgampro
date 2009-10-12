@@ -151,6 +151,7 @@ void NWTile::innerConnect(){
 	}
 	if(g_appLibName[tileID] != "NULL") {
 		ip->clock(*g_clock);
+		ip->resetn(g_resetN);
 		ip->flit_inport(sigs_OcIp.flit_OC_CR);
 		ip->flit_outport(sigs_IcIp.flit_CS_IC);
 		for (UI i = 0; i < NUM_VCS; i++)

@@ -12,9 +12,9 @@ OTHER  = -Wall
 LDFLAG = -rdynamic
 
 #CFLAGS = $(DEBUG) $(OTHER) $(LDFLAG)
-CFLAGS = $(DEBUG) $(LDFLAG)
+CFLAGS = $(DEBUG) $(LDFLAG) -DSL_TILE
 
-MODULE = nirgam
+MODULE = slnirgam
 
 APP_SRCS = ${shell ls src/app/*.cpp}
 
@@ -29,6 +29,15 @@ TILECOM = 	src/core/nwtile/Controller.cpp \
 
 TILE_SRCS = $(TILECOM)	\
 			src/core/nwtile/NWTile.cpp
+			
+SLTILE_SRCS = $(TILECOM)	\
+			src/core/nwtile/ranvar.cpp	\
+			src/core/nwtile/slElfFileLoader.cpp	\
+			src/core/nwtile/slInitiatorInterface.cpp	\
+			src/core/nwtile/slIpmap.cpp	\
+			src/core/nwtile/slSecmap.cpp	\
+			src/core/nwtile/slTargetInterface.cpp	\
+			src/core/nwtile/slTile.cpp
 
 ROUTER_SRCS = ${shell ls src/router/*.cpp}
 
@@ -44,6 +53,8 @@ CORE_OBJS = ${CORE_SRCS:.cpp=.o}
 
 TILE_OBJS = ${TILE_SRCS:.cpp=.o}
 
+SLTILE_OBJS = ${SLTILE_SRCS:.cpp=.o}
+
 APP_OBJS = ${APP_SRCS:.cpp=.o}
 
 ROUTER_OBJS = ${ROUTER_SRCS:.cpp=.o}
@@ -56,5 +67,5 @@ WIRE_OBJS= ${WIRE_SRCS:.cpp=.o}
 
 #ROUTER_LIB = $(subst src,lib,$(ROUTER_OBJS:.o=.so))
 
-include Makefile.defs
+include SlMakefile.defs
 # DO NOT DELETE

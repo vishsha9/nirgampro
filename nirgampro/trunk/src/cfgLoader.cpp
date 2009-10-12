@@ -113,39 +113,39 @@ bool loadConfig(string fileName){
 
 void printConfig(ostream & xout){
 	xout 	<< "PRINT MAIN CONFIG:" << endl
-			<< "-------------------------------------------------------" <<endl;
+		<< "-------------------------------------------------------" <<endl;
 	xout	<< "Nirgam Home Dir:\t" << g_nirgamHome << endl
 		<< "Main Config File:\t" << ga_configPath << endl
-			<< "Simulation Mode:\t" << gc_simMode;
-				if(gc_simMode == 1) xout << " (Standard Mode)" << endl;
-				else if (gc_simMode == 2) xout << " (Debug Mode)" << endl;
-				else if (gc_simMode == 3) xout << " (Selfcheck Mode)" << endl;
+		<< "Simulation Mode:\t" << gc_simMode;
+	if(gc_simMode == 1) xout << " (Standard Mode)" << endl;
+	else if (gc_simMode == 2) xout << " (Debug Mode)" << endl;
+	else if (gc_simMode == 3) xout << " (Selfcheck Mode)" << endl;
 	xout	<< "Using Tile Type:\t" << gc_tileType;
-				if(gc_tileType == 1) xout << " (Generic Tile)" << endl;
-				else if (gc_tileType == 2) xout << " (Soclib Tile)" << endl;		
+	if(gc_tileType == 1) xout << " (Generic Tile)" << endl;
+	else if (gc_tileType == 2) xout << " (Soclib Tile)" << endl;		
 	xout	<< "Topo Config File:\t" << gc_topoFile << endl;
-if(gc_tileType == 1)
-	xout	<< "App Config File:\t" << gc_appFile << endl;
-else if (gc_tileType == 2) {
-	xout	<< "IpMap Config File:\t" <<gc_ipmapFile << endl
+	if(gc_tileType == 1)
+		xout	<< "App Config File:\t" << gc_appFile << endl;
+	else if (gc_tileType == 2) {
+		xout	<< "IpMap Config File:\t" <<gc_ipmapFile << endl
 			<< "SecMap Config File:\t" << gc_secmapFile << endl;
-}
+	}
 	xout	<< endl
-			<< "Clock Frequency: " << gc_simFreq << " GHz" << endl
-			<< "0\tsimWarm\t\t\tsimTg\tsimNum" << endl
-			<< "|-------|-----------------------|-------|" <<  endl
-			<< "0(cyc)\t" <<  gc_simWarm << "\t\t\t" << gc_simTg << "\t" << gc_simNum << endl
-			<< endl
-			<< "\tstatOP\tstatRes\t\tstatEd" <<  endl
-			<< "\t|-------|---|-----------|" <<  endl
-			<< "\t" <<  gc_statOp << "\t" << gc_statRes << "\t\t" << gc_statEd << endl
-			<< endl
-			<< "VC buffer size:\t\t" << gc_VC_BUFS << " flits" << endl
-			<< "flit fize\t\t" << gc_FLITSIZE << " bytes" <<endl
-			<< "Head payload\t\t" << gc_HEAD_PAYLOAD << " bytes" << endl
-			<< "Data payload\t\t" << gc_DATA_PAYLOAD << " bytes" << endl
-			<< endl
-			<< "Result Dir:\t\t" << gc_resultHome <<  endl;
+		<< "Clock Frequency: " << gc_simFreq << " GHz" << endl
+		<< "0\tsimWarm\t\t\tsimTg\tsimNum" << endl
+		<< "|-------|-----------------------|-------|" <<  endl
+		<< "0(cyc)\t" <<  gc_simWarm << "\t\t\t" << gc_simTg << "\t" << gc_simNum << endl
+		<< endl
+		<< "\tstatOP\tstatRes\t\tstatEd" <<  endl
+		<< "\t|-------|---|-----------|" <<  endl
+		<< "\t" <<  gc_statOp << "\t" << gc_statRes << "\t\t" << gc_statEd << endl
+		<< endl
+		<< "VC buffer size:\t\t" << gc_VC_BUFS << " flits" << endl
+		<< "flit fize\t\t" << gc_FLITSIZE << " bytes" <<endl
+		<< "Head payload\t\t" << gc_HEAD_PAYLOAD << " bytes" << endl
+		<< "Data payload\t\t" << gc_DATA_PAYLOAD << " bytes" << endl
+		<< endl
+		<< "Result Dir:\t\t" << gc_resultHome <<  endl;
 	xout	<< "-------------------------------------------------------" <<endl;
 }
 
@@ -153,17 +153,21 @@ else if (gc_tileType == 2) {
 bool checkConfig(){
 	cout << "CHECK MAIN CONFIG : " << ga_configPath << " ..."<< endl;
 	bool ret = true;
-		if( gc_tileType < 1 || gc_tileType > 2 ){
+	if( gc_tileType < 1 || gc_tileType > 2 ){
 		cerr << "Tile Type error: "<< gc_tileType <<" { 1 ->Generic Tile; 2 ->Soclib Tile }" << endl;
-		ret = false;
-		return ret;
+		return false;
 	}
 	if ( gc_simMode < 1 || gc_simMode > 3 ){
 		cerr << "Simulation Mode error : "<< gc_simMode <<" { 1 ->Standard; 2 ->Debug; 3 ->SelfCheck }" << endl;
-		ret = false;
-		return ret;
+		return false;
 	}
-	
+
+
+	if ( gc_simMode == 3 && gc_tileType == 2){
+		cerr << "Soclib Tile Noc can't use SelfCheck Mode" << endl;
+		return false;
+	}
+
 	ifstream file;
 	file.open(gc_topoFile.c_str());
 	if(!file.is_open()){
@@ -171,7 +175,7 @@ bool checkConfig(){
 		ret = false;
 	}
 	file.close();
-	
+
 	/*
 	if tileType == 1, nirgam use appFile to map generic IP.
 	else if tileType == 2, nirgam use ipmapFile and secmapFile to map soclib IP
@@ -191,7 +195,7 @@ bool checkConfig(){
 			ret = false;
 		}
 		file.close();
-		
+
 		file.open(gc_secmapFile.c_str());
 		if(!file.is_open()){
 			cerr << "Sec map file: Can't open " << gc_secmapFile << endl;
