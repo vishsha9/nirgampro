@@ -71,7 +71,11 @@ NoC::NoC(sc_module_name name, AdjList* a): sc_module(name) {
 		Node * node = a->nodes[i];
 		char name[50];
 		sprintf(name, "tile%d", node->nodeId);
+#ifdef SL_TILE
+		BaseNWTile * tile = new SlTile(name, node->nodeId, node->adjNum);
+#else
 		BaseNWTile * tile = new NWTile(name, node->nodeId, node->adjNum);
+#endif
 		tile->clk(switch_cntrl);
 		nwtile.push_back(tile);
 	}

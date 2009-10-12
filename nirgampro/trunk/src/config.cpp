@@ -105,6 +105,7 @@ UI gc_HEAD_PAYLOAD;             ///< payload size (in bytes) in head/hdt flit
 UI gc_DATA_PAYLOAD;             ///< payload size (in bytes) in data/tail flit
 //////////////////////////////////////////////////////////////////////////
 string ga_configPath;			///< Path of the Main config file 
+string ga_elfPath;
 string g_configHome;			///< Directory of the Main config file
 string gc_resultHome;			///< Directory of result
 string g_nirgamHome;			///< current Directory

@@ -31,8 +31,13 @@
 #ifndef __NOC__
 #define __NOC__
 
+#ifndef SL_TILE
+	#include "nwtile/NWTile.h"
+#else
+	#include "nwtile/slTile.h"
+#endif
+
 #include "BaseNWTile.h"
-#include "nwtile/NWTile.h"
 #include "wireModule.h"
 #include "topoAnalyzer.h"
 //#include "../config/extern.h"

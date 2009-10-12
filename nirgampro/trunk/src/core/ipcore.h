@@ -51,7 +51,7 @@ struct ipcore : public sc_module {
 
 	// PORTS ////////////////////////////////////////////////////
 	sc_in_clk clock;			///< input clock port
-	//sc_in<bool> resetn;			// global reset signal
+	sc_in<bool> resetn;			// global reset signal
 	sc_in<flit> flit_inport;		///< input data/flit port
 	sc_out<flit> flit_outport;		///< ouput data/flit port
 	sc_in<creditLine> credit_in[NUM_VCS];	///<ports to recieve credit info (buffer status)

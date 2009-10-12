@@ -178,26 +178,6 @@
 			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
-			<File
-				RelativePath=".\cfgLoader.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\config.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\dirtool.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\global.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\main.cpp"
-				>
-			</File>
 			<Filter
 				Name="app"
 				>
@@ -225,46 +205,6 @@
 			<Filter
 				Name="core"
 				>
-				<File
-					RelativePath=".\core\BaseNWTile.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\core\ipcore.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\core\noc.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\core\notation.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\core\rng.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\core\router.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\core\selfCheck.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\core\topoAnalyzer.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\core\wireModelForName.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\core\wireModule.cpp"
-					>
-				</File>
 				<Filter
 					Name="nwtile"
 					>
@@ -296,12 +236,84 @@
 				<Filter
 					Name="soclibTile"
 					>
+					<File
+						RelativePath=".\core\nwtile\ranvar.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\core\nwtile\slElfFileLoader.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\core\nwtile\slInitiatorInterface.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\core\nwtile\slIpmap.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\core\nwtile\slSecmap.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\core\nwtile\slTargetInterface.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\core\nwtile\slTile.cpp"
+						>
+					</File>
 				</Filter>
 				<Filter
 					Name="tracker"
 					>
 					<File
 						RelativePath=".\core\tracker\tracker.cpp"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="common"
+					>
+					<File
+						RelativePath=".\core\BaseNWTile.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\core\ipcore.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\core\noc.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\core\notation.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\core\rng.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\core\router.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\core\selfCheck.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\core\topoAnalyzer.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\core\wireModelForName.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\core\wireModule.cpp"
 						>
 					</File>
 				</Filter>
@@ -334,48 +346,36 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="common"
+				>
+				<File
+					RelativePath=".\cfgLoader.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\config.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\dirtool.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\global.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\main.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Í·ÎÄ¼þ"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
-			<File
-				RelativePath=".\app_inc.h"
-				>
-			</File>
-			<File
-				RelativePath=".\cfgLoader.h"
-				>
-			</File>
-			<File
-				RelativePath=".\config.h"
-				>
-			</File>
-			<File
-				RelativePath=".\constants.h"
-				>
-			</File>
-			<File
-				RelativePath=".\dirtool.h"
-				>
-			</File>
-			<File
-				RelativePath=".\global.h"
-				>
-			</File>
-			<File
-				RelativePath=".\platform.h"
-				>
-			</File>
-			<File
-				RelativePath=".\router_inc.h"
-				>
-			</File>
-			<File
-				RelativePath=".\typedef.h"
-				>
-			</File>
 			<Filter
 				Name="app"
 				>
@@ -403,58 +403,6 @@
 			<Filter
 				Name="core"
 				>
-				<File
-					RelativePath=".\core\BaseNWTile.h"
-					>
-				</File>
-				<File
-					RelativePath=".\core\baseWireModel.h"
-					>
-				</File>
-				<File
-					RelativePath=".\core\credit.h"
-					>
-				</File>
-				<File
-					RelativePath=".\core\flit.h"
-					>
-				</File>
-				<File
-					RelativePath=".\core\ipcore.h"
-					>
-				</File>
-				<File
-					RelativePath=".\core\noc.h"
-					>
-				</File>
-				<File
-					RelativePath=".\core\notation.h"
-					>
-				</File>
-				<File
-					RelativePath=".\core\rng.h"
-					>
-				</File>
-				<File
-					RelativePath=".\core\rng_win.h"
-					>
-				</File>
-				<File
-					RelativePath=".\core\router.h"
-					>
-				</File>
-				<File
-					RelativePath=".\core\selfCheck.h"
-					>
-				</File>
-				<File
-					RelativePath=".\core\topoAnalyzer.h"
-					>
-				</File>
-				<File
-					RelativePath=".\core\wireModule.h"
-					>
-				</File>
 				<Filter
 					Name="nwtile"
 					>
@@ -490,6 +438,30 @@
 				<Filter
 					Name="soclibTile"
 					>
+					<File
+						RelativePath=".\core\nwtile\ranvar.h"
+						>
+					</File>
+					<File
+						RelativePath=".\core\nwtile\slInitiatorInterface.h"
+						>
+					</File>
+					<File
+						RelativePath=".\core\nwtile\slIpmap.h"
+						>
+					</File>
+					<File
+						RelativePath=".\core\nwtile\slSecmap.h"
+						>
+					</File>
+					<File
+						RelativePath=".\core\nwtile\slTargetInterface.h"
+						>
+					</File>
+					<File
+						RelativePath=".\core\nwtile\slTile.h"
+						>
+					</File>
 				</Filter>
 				<Filter
 					Name="tracker"
@@ -499,10 +471,66 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="common"
+					>
+					<File
+						RelativePath=".\core\BaseNWTile.h"
+						>
+					</File>
+					<File
+						RelativePath=".\core\credit.h"
+						>
+					</File>
+					<File
+						RelativePath=".\core\flit.h"
+						>
+					</File>
+					<File
+						RelativePath=".\core\ipcore.h"
+						>
+					</File>
+					<File
+						RelativePath=".\core\noc.h"
+						>
+					</File>
+					<File
+						RelativePath=".\core\notation.h"
+						>
+					</File>
+					<File
+						RelativePath=".\core\rng.h"
+						>
+					</File>
+					<File
+						RelativePath=".\core\rng_win.h"
+						>
+					</File>
+					<File
+						RelativePath=".\core\router.h"
+						>
+					</File>
+					<File
+						RelativePath=".\core\selfCheck.h"
+						>
+					</File>
+					<File
+						RelativePath=".\core\topoAnalyzer.h"
+						>
+					</File>
+					<File
+						RelativePath=".\core\wireModule.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="wire"
 				>
+				<File
+					RelativePath=".\core\baseWireModel.h"
+					>
+				</File>
 				<File
 					RelativePath=".\wireModel\ptmModel.h"
 					>
@@ -525,6 +553,46 @@
 				</File>
 				<File
 					RelativePath=".\router\XY_router.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="common"
+				>
+				<File
+					RelativePath=".\app_inc.h"
+					>
+				</File>
+				<File
+					RelativePath=".\cfgLoader.h"
+					>
+				</File>
+				<File
+					RelativePath=".\config.h"
+					>
+				</File>
+				<File
+					RelativePath=".\constants.h"
+					>
+				</File>
+				<File
+					RelativePath=".\dirtool.h"
+					>
+				</File>
+				<File
+					RelativePath=".\global.h"
+					>
+				</File>
+				<File
+					RelativePath=".\platform.h"
+					>
+				</File>
+				<File
+					RelativePath=".\router_inc.h"
+					>
+				</File>
+				<File
+					RelativePath=".\typedef.h"
 					>
 				</File>
 			</Filter>

@@ -31,6 +31,7 @@ extern vector<string> g_appLibName;
 
 extern sc_clock *g_clock;	///< pointer to clock
 
+extern sc_signal<bool> g_resetN;
 
 
 #endif
