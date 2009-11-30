@@ -1,0 +1,38 @@
+# Variable that points to SystemC installation path
+#SYSTEMC = ../../..
+SYSTEMC = /opt/systemc-2.2.0
+SOCLIB_ROOT = $(HOME)/noc/hdware@1000/components
+
+INCDIR = -I. -I.. -I$(SYSTEMC)/include
+LIBDIR = -L. -L.. -L$(SYSTEMC)/lib-$(TARGET_ARCH)
+LIBS   =  -lsystemc -lm -ldl $(EXTRA_LIBS)
+
+SOCLIB_INCDIR = $(INCDIR) -I$(SOCLIB_ROOT)/include
+SOCLIB_LIBDIR = $(LIBDIR) -L$(SOCLIB_ROOT)/lib
+SOCLIB_LIBS   = $(LIBS) -lsoclib -lbfd -lstdc++ 
+
+EXE    = $(MODULE)
+	
+.SUFFIXES: .cc .cpp .o .x .so
+
+$(EXE): $(CORE_OBJS) $(SLTILE_OBJS) $(APP_OBJS) $(ROUTER_OBJS) $(MAIN_OBJS) $(WIRE_OBJS) $(SYSTEMC)/lib-$(TARGET_ARCH)/libsystemc.a
+	$(CC) $(CFLAGS) $(SOCLIB_INCDIR) $(SOCLIB_LIBDIR) -o $@ $(CORE_OBJS) $(SLTILE_OBJS) $(APP_OBJS) $(WIRE_OBJS) $(ROUTER_OBJS) $(MAIN_OBJS) $(SOCLIB_LIBS) 2>&1 | c++filt	
+
+.cpp.o:
+	$(CC) $(CFLAGS) $(SOCLIB_INCDIR) -o $@ -c $<
+
+.cc.o:
+	$(CC) $(CFLAGS) $(SOCLIB_INCDIR) -o $@ -c $<
+
+
+ultraclean : clean cleanlogs cleanresults
+
+clean:
+	rm -f $(CORE_OBJS) $(SLTILE_OBJS) $(TILE_OBJS) $(APP_OBJS) $(ROUTER_OBJS) $(EXE) $(APP_LIB) $(ROUTER_LIB) $(MAIN_OBJS) $(WIRE_OBJS)
+	rm -f `find -name "*~"`
+
+cleanlogs:
+	rm -rf log/*/*
+
+cleanresults:
+	rm -rf results/*

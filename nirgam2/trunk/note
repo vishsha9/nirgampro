@@ -1,0 +1,18 @@
+/*
+WanghHan 2009.10.19
+About packet:
+I decide to comment all statistic fields relevant to packet except pkt_num at the present stage.
+I found the method calculating pkt_latency of OC in nirgam1.1 is wrong. It's simply got by (latency/num_pkts); latency is the sum of latency of flits passed by the tile. Pkt_latency include flit_latencies and interval between flits. But this method ignore the interval between flits.
+
+This fault raise me another question. If I wanna calc statistic data relevant to pkts, How can I distinguish packets. The way by tile_id combined with unique pkt_id in tile is clumsy. So I should find another way to identify them, like the way I used to identify flits by a global sequence. Obviously it's more complex and difficult.
+
+It should be clear that flit/pkt delay within a tile is different with flit/pkt latency within the whole net. In fact the original nirgam only provides the flit/pkt delay within tiles and the pkt delay is wrong.
+I represented delay and latency in the source codes as the same meaning in the last paragraph. 
+
+Nirgam use fixed route at present. So each flits within a packet follow the same path to the destination. If we using dynamic route in the future which means flits can use different path, pkt delay in tiles will not existed only more.
+
+I think the measure of packets is more about switch mechanism. And the mechanism of virtual channel is deeply coupled in nirgam. I can't change the switch mechanism, so I don't need data to prove it, and then I comment all *_pkt_*.
+
+All the above should be considered more carefully.
+
+*/
