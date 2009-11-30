@@ -1,0 +1,21 @@
+VERSION 1.5
+TILENUM 7    #  ddd id num
+
+### folded torus 4*4*4
+
+WIRE simplewire
+	NAME WIRE1
+# name length must be less than 8
+WIREEND
+
+
+CONNECTION
+
+WIRE1 0 1
+WIRE1 0 2
+WIRE1 0 3
+WIRE1 0 4
+WIRE1 0 5
+WIRE1 0 6
+
+CONNECTIONEND

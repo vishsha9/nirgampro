@@ -1,0 +1,83 @@
+Tracker
+	ULL total_flit_latency;
+	ULL total_pkt_latency;
+	ULL total_flit_hops;
+
+	ULL total_flit_send;
+	ULL total_pkt_send;
+	ULL total_flit_recved;
+	ULL total_pkt_recved;
+	
+	float avg_pkt_swDelay;		// package switch Delay
+	float avg_flit_swDelay;		// flit switch delay
+
+	float avg_flit_latency;		// flit latency
+	float avg_pkt_latency;		// package latency
+	float avg_flit_hops;
+
+	float avg_inputRate;
+	float avg_outputRate;
+	
+Tile:
+	ULL total_flit_in;
+	ULL total_flit_out;
+	ULL total_pkt_in;
+	ULL total_pkt_out;
+
+	ULL total_pkt_delay;			///< total latency
+	ULL total_flit_delay;
+
+	float avg_inputRate;
+	float avg_outputRate;		///< average throughput (in Gbps)
+	float avg_pkt_delay;		///< average latency (in clock cycles) per packet
+	float avg_flit_delay;		///< average latency (in clock cycles) per flit
+
+	ULL flit_send;
+	ULL pkt_send;
+	ULL flit_recved;
+	ULL pkt_recved;
+
+	vector<ULL> flitFrom;
+	vector<ULL> flitTo;
+	vector<ULL> pktFrom;
+	vector<ULL> pktTo;
+
+	vector<ULL> flit_latency;
+	vector<ULL> pkt_latency;
+	vector<ULL> flit_hops;
+
+	vector<ULL> avg_flit_latency;
+	vector<ULL> avg_pkt_latency;
+	vector<ULL> avg_flit_hops;
+
+	ULL total_flit_latency;
+	ULL total_pkt_latency;
+	ULL total_flit_hops;
+
+IcProbe
+	ULL flit_in;
+	ULL pkt_in;
+
+	float avg_inputRate;
+	float avg_inputRate2;
+
+	int beg_cycle;
+	int end_cycle;
+
+OcProbe
+	ULL pkts_out;			///< total number of packets
+	ULL flits_out;			///< total number of flits
+	ULL enterIc_time[NUM_VCS];			///< generation timestamp of head flit of a packet
+	ULL enterNoc_time[NUM_VCS];
+
+	ULL pkt_delay_sum;			///< total latency
+	ULL flit_delay_sum;
+
+	float avg_pkt_delay;		///< average latency (in clock cycles) per packet
+	float avg_flit_delay;		///< average latency (in clock cycles) per flit
+
+	float avg_outputRate;		///< average throughput (in Gbps)
+	float avg_outputRate2;
+
+	int beg_cycle;			///< clock cycle in which first flit is recieved in the channel
+	int end_cycle;			///< clock cycle in which last flit leaves the channel
